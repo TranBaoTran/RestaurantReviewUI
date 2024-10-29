@@ -1,3 +1,27 @@
 body {
 	background-color: #eee;
-  }
+}
+
+.dropdown-item {
+  position: relative;
+  padding-right: 100px; /* Adds space for the number */
+}
+
+.dropdown-item::before {
+  content: attr(data-number); /* Retrieves the number from the data attribute */
+  position: absolute;
+  right: 10px;
+  color: #6c757d; /* Optional: Adjust color to fit the style */
+}
+
+.dropdown-item:focus,
+.dropdown-item:active {
+  background-color: transparent !important;
+  color: inherit !important;
+  outline: none;
+}
+
+.selected {
+  background-color: #007bff;
+  color: white;
+}
