@@ -4,7 +4,7 @@ body {
 
 .dropdown-item {
   position: relative;
-  padding-right: 100px; /* Adds space for the number */
+  margin-right: 100px; /* Adds space for the number */
 }
 
 .dropdown-item::before {

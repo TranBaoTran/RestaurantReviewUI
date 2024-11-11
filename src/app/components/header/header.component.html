@@ -20,34 +20,28 @@
         <li mdbDropdown class="nav-item dropdown">
           <a
             class="nav-link dropdown-toggle"
-            href="#"
             id="navbarDropdownMenuLink"
             role="button"
             mdbDropdownToggle
             aria-expanded="false"
           >
-            {{dropDownProvince}}
+            {{ dropDownProvince }}
           </a>
           <ul mdbDropdownMenu class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-            <li>
+            <li *ngFor="let province of provinces" style="margin: 0;"> 
               <a 
-                class="dropdown-item" 
-                href="#" 
-                data-number="1" 
-                (click)="updateDropdown('Action', $event)"
-                >
-                  Action
-                </a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="#" data-number="1" (click)="updateDropdown('Another action', $event)">Another action</a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="#" data-number="1" (click)="updateDropdown('Something else here', $event)">Something else here</a>
+                class="dropdown-item d-flex justify-content-between align-items-center" 
+                (click)="updateDropdown(province.name, province.id, $event)"
+                style="width: 100%; margin: 0; margin-right: 100px;"
+              >
+                <span>{{ province.name }}</span>
+                <span class="badge bg-secondary" style="margin-left: auto;">{{ province.resCount }}</span>
+              </a>
             </li>
           </ul>
         </li>
       </ul>
+      
 
       <button 
         class="btn btn-light me-3" mdbRipple rippleColor="dark"
@@ -58,7 +52,7 @@
           ><i class="fa fa-bars"></i>
       </button>
       
-      <form class="d-flex input-group w-auto">
+      <form class="d-flex input-group" style="width: 500px;">
         <input
           type="search"
           class="form-control"
@@ -73,43 +67,45 @@
     </div>
     
     <div class="d-flex align-items-center">
-      <button type="button" class="btn btn-link px-3 me-2">
-        Đăng nhập
-      </button>
-      <button type="button" class="btn btn-primary me-3">
-        Đăng ký
-      </button>
-
-      <ul class="navbar-nav">
-        <!-- Avatar -->
-        <li mdbDropdown class="nav-item dropdown">
-          <a
-            class="nav-link dropdown-toggle d-flex align-items-center"
-            href="#"
-            id="navbarDropdownMenuLink"
-            role="button"
-            mdbDropdownToggle
-            aria-expanded="false"
-          >
-            <img
-              src="https://mdbootstrap.com/img/Photos/Avatars/img (31).webp"
-              class="rounded-circle"
-              height="22"
-              alt=""
-              loading="lazy"
-            />
-          </a>
-          <ul mdbDropdownMenu class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-            <li>
-              <a class="dropdown-item" href="#">Thông tin cá nhân</a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="#">Đăng xuất</a>
-            </li>
-          </ul>
-        </li>
-      </ul>
-
+      @if (!isUserLoggedIn){
+        <button type="button" class="btn btn-link px-3 me-2" routerLink = "/login">
+          Đăng nhập
+        </button>
+        <button type="button" class="btn btn-primary me-3">
+          Đăng ký
+        </button>
+      }
+      @else {
+        <ul class="navbar-nav">
+          <!-- Avatar -->
+          <li mdbDropdown class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle d-flex align-items-center"
+              href="#"
+              id="navbarDropdownMenuLink"
+              role="button"
+              mdbDropdownToggle
+              aria-expanded="false"
+            >
+              <img
+                src="https://mdbootstrap.com/img/Photos/Avatars/img (31).webp"
+                class="rounded-circle"
+                height="22"
+                alt=""
+                loading="lazy"
+              />
+            </a>
+            <ul mdbDropdownMenu class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <li>
+                <a class="dropdown-item" href="#">Thông tin cá nhân</a>
+              </li>
+              <li>
+                <a class="dropdown-item" (click)="logOut()">Đăng xuất</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      }
     </div>
 
   </div>
@@ -128,61 +124,61 @@
   <div class="row">
 
     <div class="col-md-3">
-      <div *ngFor="let checkbox of checkboxes  | slice: 0 : (checkboxes.length / 2); let i = index" class="form-check">
+      <div *ngFor="let district of districts  | slice: 0 : Math.ceil(districts.length / 2);" class="form-check">
         <input
           mdbCheckbox
           class="form-check-input"
           type="checkbox"
-          [id]="'flexCheckChecked' + i" 
-          [(ngModel)]="checkboxStates[i]"
+          [id]="'district' + district.id" 
+          (change)="onCheckBoxDistrictChange(district.id, $event)"
         />
-        <label class="form-check-label" [for]="'flexCheckChecked' +  i">
-          Checked checkbox {{ i + 1 }} 
+        <label class="form-check-label" [for]="'district' + district.id">
+          {{district.name}}
         </label>
       </div>
     </div>
 
     <div class="col-md-3">
-      <div *ngFor="let checkbox of checkboxes  | slice: (checkboxes.length / 2) : checkboxes.length; let i = index" class="form-check">
+      <div *ngFor="let district of districts  | slice:  Math.ceil(districts.length / 2) : districts.length;" class="form-check">
         <input
           mdbCheckbox
           class="form-check-input"
           type="checkbox"
-          [id]="'flexCheckChecked' + i" 
-          [(ngModel)]="checkboxStates[i]"
+          [id]="'district' + district.id" 
+          (change)="onCheckBoxDistrictChange(district.id, $event)"
         />
-        <label class="form-check-label" [for]="'flexCheckChecked' +  i">
-          Checked checkbox {{ i + 1 }} 
+        <label class="form-check-label" [for]="'district' + district.id">
+          {{district.name}}
         </label>
       </div>
     </div>
 
     <div class="col-md-3">
-      <div *ngFor="let checkbox of checkboxes | slice: 0 : (checkboxes.length / 2); let i = index" class="form-check">
+      <div *ngFor="let category of categories | slice: 0 :  Math.ceil(categories.length / 2)" class="form-check">
         <input
           mdbCheckbox
           class="form-check-input"
           type="checkbox"
-          [id]="'flexCheckCheckedSecond' + i" 
-          [(ngModel)]="checkboxStates[i]"
+          [id]="'category' + category.id" 
+          (change)="onCheckboxChange(category.id, $event)"
         />
-        <label class="form-check-label" [for]="'flexCheckCheckedSecond' + i">
-          Checkedlol checkbox {{ i + 1 }} 
+        <label class="form-check-label" [for]="'category' + category.id">
+          {{category.name}}
         </label>
       </div>
     </div>
 
     <div class="col-md-3">
-      <div *ngFor="let checkbox of checkboxes | slice: (checkboxes.length / 2) : checkboxes.length; let i = index" class="form-check">
+      <div *ngFor="let category of categories | slice:  Math.ceil(categories.length / 2) : categories.length" class="form-check">
         <input
           mdbCheckbox
           class="form-check-input"
           type="checkbox"
-          [id]="'flexCheckCheckedSecond' + i" 
-          [(ngModel)]="checkboxStates[i]"
+          [id]="'category' + category.id" 
+          (change)="onCheckboxChange(category.id, $event)"
         />
-        <label class="form-check-label" [for]="'flexCheckCheckedSecond' + i">
-          Checkedlol checkbox {{ i + 1 }} 
+        <label class="form-check-label" [for]="'category' + category.id">
+          {{category.name}}
         </label>
       </div>
     </div>
