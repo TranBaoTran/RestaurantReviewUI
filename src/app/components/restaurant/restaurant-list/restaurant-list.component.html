@@ -1,0 +1,11 @@
+<div class="container">
+    <div class="row">
+        @for(restaurant of restaurantService.restaurants(); track restaurant.id){
+        <div class="col-3">
+
+            <app-restaurant-card [restaurant]="restaurant"></app-restaurant-card>
+        </div>
+
+        }
+    </div>
+</div>
