@@ -3,12 +3,13 @@ import { MdbCarouselModule } from 'mdb-angular-ui-kit/carousel';
 import { RestaurantReviewComponent } from "../restaurant-review/restaurant-review.component";
 import { RestaurantService } from '../../../services/restaurant.service';
 import { Restaurant } from '../../../models/restaurant.model';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { RatingStarComponent } from '../rating-star/rating-star.component';
 
 @Component({
   selector: 'app-restaurant-detail',
   standalone: true,
-  imports: [MdbCarouselModule, RestaurantReviewComponent],
+  imports: [MdbCarouselModule, RestaurantReviewComponent,RatingStarComponent,RouterLink],
   templateUrl: './restaurant-detail.component.html',
   styleUrl: './restaurant-detail.component.css'
 })

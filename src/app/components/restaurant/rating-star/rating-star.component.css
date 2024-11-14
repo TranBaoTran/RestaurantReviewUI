@@ -1,0 +1,9 @@
+.star {
+   transition: color 0.3s ease-in-out;
+    font-size: xx-large;
+    cursor: pointer;
+}
+
+.rated {
+    color: gold;
+}
