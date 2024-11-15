@@ -26,7 +26,8 @@ export class RestaurantService {
 
   getRestaurant() {
     return this.http.get<Restaurant[]>(this.apiUrl + 'Restaurant').subscribe({
-      next: restaurants => this.restaurants.set(restaurants)
+      next: restaurants => this.restaurants.set(restaurants) 
+      
     });
   }
 

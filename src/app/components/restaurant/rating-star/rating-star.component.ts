@@ -8,7 +8,7 @@ import { Component, Input } from '@angular/core';
   styleUrl: './rating-star.component.scss'
 })
 export class RatingStarComponent {
- @Input() rating:number = 0;
+ @Input() rating:number | undefined = 0;
  @Input() readonly:boolean = false;
  setRating(value: number){
   if(this.readonly){

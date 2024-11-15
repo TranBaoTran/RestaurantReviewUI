@@ -41,14 +41,13 @@
 .card-title {
     border-bottom: 1px solid black;
     margin-bottom: 10px;
-    font-weight: bolder;
+    /* font-weight: bolder; */
 }
 
 .card-text{
     display: flex;
     flex-direction: row;
-    font-size: x-large;
-    font-size: xx-large;
+    /* font-size: x-large; */
 
 }
 

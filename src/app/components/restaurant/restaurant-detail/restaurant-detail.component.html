@@ -61,7 +61,7 @@
                             Vị Trí
                         </h5>
                         <div class="col-6">
-                            <app-rating-star [rating]="5" [readonly]="true"></app-rating-star>
+                            <app-rating-star [rating]="this.rating?.location" [readonly]="true"></app-rating-star>
                         </div>
                     </div>
                     <div class="row">
@@ -69,7 +69,7 @@
                             Giá cả
                         </h5>
                         <div class="col-6">
-                            <app-rating-star [rating]="4" [readonly]="true"></app-rating-star>
+                            <app-rating-star [rating]="this.rating?.price" [readonly]="true"></app-rating-star>
                         </div>
                     </div>
                     <div class="row">
@@ -77,7 +77,7 @@
                             Chất Lượng
                         </h5>
                         <div class="col-6">
-                            <app-rating-star [rating]="3" [readonly]="true"></app-rating-star>
+                            <app-rating-star [rating]="this.rating?.quality" [readonly]="true"></app-rating-star>
                         </div>
                     </div>
                     <div class="row">
@@ -85,7 +85,7 @@
                             Dịch Vụ
                         </h5>
                         <div class="col-6">
-                            <app-rating-star [rating]="2" [readonly]="true"></app-rating-star>
+                            <app-rating-star [rating]="this.rating?.service" [readonly]="true"></app-rating-star>
                         </div>
                     </div>
                     <div class="row ">
@@ -93,7 +93,7 @@
                             Không Giang
                         </h5>
                         <div class="col-6">
-                            <app-rating-star [rating]="1" [readonly]="true"></app-rating-star>
+                            <app-rating-star [rating]="this.rating?.space" [readonly]="true"></app-rating-star>
                         </div>
                     </div>
                 </div>

@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { MdbCarouselModule } from 'mdb-angular-ui-kit/carousel';
 import { RestaurantReviewComponent } from "../restaurant-review/restaurant-review.component";
 import { RestaurantService } from '../../../services/restaurant.service';
-import { Restaurant } from '../../../models/restaurant.model';
+import { averageRatings, Restaurant } from '../../../models/restaurant.model';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { RatingStarComponent } from '../rating-star/rating-star.component';
 
@@ -17,6 +17,7 @@ export class RestaurantDetailComponent implements OnInit{
   private restaurantService = inject(RestaurantService);
   private route = inject(ActivatedRoute);
   restaurant?: Restaurant
+  rating?: averageRatings
 
   ngOnInit(): void {
     this.loadRestaurant()
@@ -24,14 +25,16 @@ export class RestaurantDetailComponent implements OnInit{
 
   loadRestaurant() {
     const id = this.route.snapshot.paramMap.get('id');
-    console.log(id);
+    // console.log(id);
 
     if(!id) return;
 
     this.restaurantService.getRestaurantById(id).subscribe({
       next: restaurant => {
         this.restaurant = restaurant
+        this.rating = restaurant.averageRatings
       }
     });
+
   }
 }

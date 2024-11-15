@@ -1,40 +1,30 @@
 <div class="card">
     <div class="header">
-        <h2>Số lượng đánh giá: {{this.reviewService.reviews().length}}</h2>
+        <h2>Số lượng đánh giá: {{this.restaurantReview().length}}</h2>
     </div>
     <div class="body">
         <ul class="comment-reply list-unstyled">
             @if(restaurantReview().length > 0) {
             @for(review of restaurantReview(); track review.id){
-            <li class="row clearfix">
-                <!-- <div class="icon-box col-md-2 col-4"><img class="img-fluid img-thumbnail"
-                                src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Awesome Image">
-                        </div> -->
-                <div class="text-box col-md-10 col-8 p-l-0 p-r0">
-                    <h5 class="m-b-0">{{review.title}}</h5>
-                    <p>{{review.content}} </p>
-                    <ul class="list-inline">
-                        <li><a href="javascript:void(0);">{{review.createdOn}}</a></li>
-                        <li><a href="javascript:void(0);">Reply</a></li>
-                    </ul>
+            <div class="card mb-3">
+                <img src="https://mdbcdn.b-cdn.net/img/new/slides/041.webp" class="card-img-top" alt="Wild Landscape" />
+                <div class="card-body">
+                    <h5 class="card-title">User ID: {{review.userId}}</h5>
+
+                    <h5 class="card-title">{{review.title}}</h5>
+                    <p class="card-text">
+                        {{review.content}}
+                    </p>
+                    <p class="card-text">
+                        <small class="text-muted">Create on: {{review.createdOn}}</small>
+                    </p>
                 </div>
-            </li>
+            </div>
+
             }
 
             }@else {
-            <li class="row clearfix">
-                <div class="icon-box col-md-2 col-4"><img class="img-fluid img-thumbnail"
-                        src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Awesome Image">
-                </div>
-                <div class="text-box col-md-10 col-8 p-l-0 p-r0">
-                    <h5 class="m-b-0">Somthing</h5>
-                    <p>Somthihng </p>
-                    <ul class="list-inline">
-                        <li><a href="javascript:void(0);">Somthing</a></li>
-                        <li><a href="javascript:void(0);">Reply</a></li>
-                    </ul>
-                </div>
-            </li>
+            <h1>Chua co danh gia nao het</h1>
             }
 
 

@@ -9,5 +9,14 @@ export interface Restaurant {
     highestCost: number
     phone: string
     website: string
+    totalReviews: number 
+    averageRatings: averageRatings
+}
 
+export interface averageRatings {
+    location: number
+    price: number
+    quality: number
+    service: number
+    space: number
 }
