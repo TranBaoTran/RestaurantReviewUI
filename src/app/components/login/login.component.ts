@@ -5,6 +5,7 @@ import { Login, LoginResponse } from '../../models/user.model';
 import { UserService } from '../../services/user.service';
 import { jwtDecode } from 'jwt-decode';
 import { Router } from '@angular/router';
+import { SecureStorageService } from '../../services/secure-storage.service';
 
 @Component({
   selector: 'app-login',
@@ -19,7 +20,7 @@ export class LoginComponent implements OnInit {
     password : ''
   }
 
-  constructor(private userService: UserService, private router : Router){}
+  constructor(private userService: UserService, private router : Router, private secureStorageService : SecureStorageService){}
 
   ngOnInit(): void {
     
@@ -30,9 +31,9 @@ export class LoginComponent implements OnInit {
       next: (data: LoginResponse) => {
         if (data && data.token) {
           const decodedToken = jwtDecode<any>(data.token);
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('userid', decodedToken.UserId);
-          localStorage.setItem('roleid', decodedToken.RoleId);
+          this.secureStorageService.setToken(data.token);
+          this.secureStorageService.setUserId(decodedToken.UserId);
+          this.secureStorageService.setRole(decodedToken.RoleId);
           this.router.navigate(['']);
         } else {
           window.alert("Login Error: Missing token.");
@@ -50,6 +51,5 @@ export class LoginComponent implements OnInit {
         window.alert("Đăng nhập thành công!");
       },
     });
-    
   }
 }

@@ -1,1 +1,81 @@
-<p>signup works!</p>
+<!-- Section: Design Block -->
+<section class="min-vh-100 d-flex align-items-center" style="background-color: hsl(0, 0%, 96%)">
+    <!-- Jumbotron -->
+    <div class="px-4 py-5 px-md-5 text-center text-lg-start" style="background-color: hsl(0, 0%, 96%)">
+      <div class="container">
+        <div class="row gx-lg-5 align-items-center">
+          <div class="col-lg-6 mb-5 mb-lg-0">
+            <h1 class="my-5 display-3 fw-bold ls-tight">
+              Restaurant Review <br />
+            </h1>
+            <p style="color: hsl(217, 10%, 50.8%)">
+              Restaurant Review là nền tảng lý tưởng dành cho những tín đồ ẩm thực, nơi bạn có thể khám phá, đánh giá và chia sẻ trải nghiệm tại các nhà hàng hàng đầu. Với hệ thống xếp hạng chi tiết theo vị trí, giá cả, chất lượng, dịch vụ và không gian, chúng tôi giúp bạn dễ dàng tìm được địa điểm ăn uống hoàn hảo cho mọi dịp. Hãy tham gia cộng đồng để cùng thưởng thức và góp phần xây dựng những trải nghiệm ẩm thực đáng nhớ!
+            </p>
+          </div>
+  
+          <div class="col-lg-6 mb-5 mb-lg-0">
+            <div class="card">
+              <div class="card-body py-5 px-md-5">
+                <form #userSignUp = "ngForm" (ngSubmit) = "signUpUser()">
+  
+                  <div data-mdb-input-init class="form-floating mb-4">
+                    <input type="text" id="form3Example1" class="form-control" name = "name" [(ngModel)] = "user.name" #name = "ngModel" required />
+                    <label class="form-label active" for="form3Example1">Họ và tên</label>
+                    <div *ngIf="name.errors?.['required'] && (phone.touched || userSignUp.submitted)" class="text-danger">
+                      Họ và tên không được bỏ trống.
+                    </div>
+                  </div>
+
+                  <div data-mdb-input-init class="form-floating mb-4">
+                    <input type="tel" id="form3Example6" class="form-control" name = "phone" [(ngModel)] = "user.phone" #phone = "ngModel" pattern="^\+?[0-9]{10,15}$|^\+?[0-9]{1,4}[-\s]?[0-9]{1,4}[-\s]?[0-9]{1,4}[-\s]?[0-9]{4}$" required />
+                    <label class="form-label active" for="form3Example6">Số điện thoại</label>
+                    <div *ngIf="phone.errors?.['required'] && (phone.touched || userSignUp.submitted)" class="text-danger">
+                      Số điện thoại không được bỏ trống.
+                    </div>
+                    <div *ngIf="phone.errors?.['pattern'] && (phone.touched || userSignUp.submitted)" class="text-danger">
+                      Vui lòng nhập số điện thoại hợp lệ.
+                    </div>
+                  </div>
+
+                  <div data-mdb-input-init class="form-floating mb-4">
+                    <input type="email" id="form3Example3" class="form-control" name = "email" [(ngModel)] = "user.email" #email = "ngModel" pattern="[^@\s]+@[^@\s]+\.[^@\s]+" required/>
+                    <label class="form-label active" for="form3Example3">Email</label>
+                    <div *ngIf="email.errors?.['required'] && (email.touched || userSignUp.submitted)" class="text-danger">
+                      Email không được bỏ trống.
+                    </div>
+                    <div *ngIf="email.errors?.['pattern'] && (email.touched || userSignUp.submitted)" class="text-danger">
+                      Vui lòng nhập email hợp lệ.
+                    </div>
+                  </div>
+
+                  <div data-mdb-input-init class="form-floating mb-4">
+                    <input type="text" id="form3Example4" class="form-control" name = "username" [(ngModel)] = "user.username" #username = "ngModel" required pattern="^\S+$"/>
+                    <label class="form-label active" for="form3Example4">Tên tài khoản</label>
+                    <div *ngIf="username.errors?.['required'] && (username.touched || userSignUp.submitted)" class="text-danger">
+                      Tên tài khoản không được bỏ trống.
+                    </div>
+                    <div *ngIf="username.errors?.['pattern'] && (username.touched || userSignUp.submitted)" class="text-danger">
+                      Tên tài khoản không được có khoảng trống.
+                    </div>
+                  </div>
+  
+                  <div data-mdb-input-init class="form-floating mb-4">
+                    <input type="password" id="form3Example5" class="form-control" name = "password" [(ngModel)] = "user.password" #password = "ngModel" required/>
+                    <label class="form-label active" for="form3Example5">Mật khẩu</label>
+                    <div *ngIf="password.errors?.['required'] && (password.touched || userSignUp.submitted)" class="text-danger">
+                      Mật khẩu không được bỏ trống.
+                    </div>
+                  </div>
+  
+                  <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4" [disabled]="userSignUp.invalid">
+                    Đăng ký
+                  </button>
+
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>

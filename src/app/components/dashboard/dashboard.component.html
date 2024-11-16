@@ -1,1 +1,208 @@
-<p>dashboard works!</p>
+<div
+  class="bg-image p-5 text-center shadow-1-strong rounded mb-5 text-white mt-5"
+  style="background-image: url(/img/resBackground.webp); height: 400px;"
+>
+
+  <div class="mask d-flex flex-column justify-content-center align-items-center" style="background-color: rgba(0, 0, 0, 0.6);">
+      <h1 class="mb-3 h2 fw-bold">Restaurant Review</h1>
+
+      <h2 class="mb-3 fw-bold">Nhà hàng tốt nhất năm 2024</h2>
+      <p>
+        Khám phá danh sách những nhà hàng tốt nhất, nơi hương vị và chất lượng gặp nhau để mang đến cho bạn trải nghiệm ẩm thực đỉnh cao!
+      </p>
+      <a href="https://www.tripadvisor.com.vn/TravelersChoice-Restaurants" class="btn btn-outline-light">Xem danh sách</a>
+  </div>
+</div>
+<div class="container" style="margin-bottom: 30px;">
+<mdb-tabs  [fill]="true" [justified]="true">
+  <mdb-tab>
+    <ng-template mdbTabTitle><span class="fw-bold"><i class="fa fa-fire fa-fw me-2"></i>Phổ biến nhất</span></ng-template>
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-md-3 mb-4" *ngFor="let res of famousRes">
+            <div class="card">
+              <div class="image-container">
+                <div class="first">  
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="wishlist"><i class="fa" [ngClass]="{'fa-heart': res.isFavorite, 'fa-heart-o': !res.isFavorite}" [ngStyle]="{'color': res.isFavorite ? '#ff0066' : ''}" (click)="changeFav(res.isFavorite, res.id)"></i></span>
+                  </div>
+                </div>
+    
+                <img [src] = "res.image[0].imgPath" class="img-fluid rounded thumbnail-image">
+                
+              </div>
+    
+    
+              <div class="product-detail-container p-2">
+                  <div class="d-flex justify-content-between align-items-center" style="height: 40px;">
+                    <h5 class="dress-name">{{res.name}}</h5>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center" style="height: 30px;">
+                    <h5 class="old-price">{{res.address}}, Quận {{getDistrictAndProvinceName(res.districtId, province)?.districtName}} </h5>
+                  </div>
+    
+                  <div class="d-flex justify-content-between align-items-center pt-1">
+                    <div>
+                      <i class="fa fa-star-o rating-star"></i>
+                      <span class="rating-number">{{getAverageRating(res)}}</span>
+                    </div>
+    
+                    <div>
+                      <i class="fa fa-comment-o rating-star" style="margin-right: 1px;"></i>
+                      <span class="rating-number">{{res.totalReviews}}</span>
+                    </div>
+                    
+                  </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </mdb-tab>
+  <mdb-tab>
+    <ng-template mdbTabTitle><span class="fw-bold"><i class="fa fa-star fa-fw me-2"></i>Mới nhất</span></ng-template>
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-md-3" *ngFor="let res of newestRes">
+            <div class="card">
+              <div class="image-container">
+                <div class="first">  
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="wishlist"><i class="fa" [ngClass]="{'fa-heart': res.isFavorite, 'fa-heart-o': !res.isFavorite}" [ngStyle]="{'color': res.isFavorite ? '#ff0066' : ''}" (click)="changeFav(res.isFavorite, res.id)"></i></span>
+                  </div>
+                </div>
+    
+                <img [src] = "res.image[0].imgPath" class="img-fluid rounded thumbnail-image">
+                
+              </div>
+    
+    
+              <div class="product-detail-container p-2">
+                  <div class="d-flex justify-content-between align-items-center" style="height: 40px;">
+                    <h5 class="dress-name">{{res.name}}</h5>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center" style="height: 30px;">
+                    <h5 class="old-price">{{res.address}}, Quận {{getDistrictAndProvinceName(res.districtId, province)?.districtName}} </h5>
+                  </div>
+    
+                  <div class="d-flex justify-content-between align-items-center pt-1">
+                    <div>
+                      <i class="fa fa-star-o rating-star"></i>
+                      <span class="rating-number">{{getAverageRating(res)}}</span>
+                    </div>
+    
+                    <div>
+                      <i class="fa fa-comment-o rating-star" style="margin-right: 1px;"></i>
+                      <span class="rating-number">{{res.totalReviews}}</span>
+                    </div>
+                    
+                  </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </mdb-tab>
+  <mdb-tab>
+    <ng-template mdbTabTitle><span class="fw-bold"><i class="fa fa-heart fa-fw me-2"></i>Yêu thích</span></ng-template>
+    <div *ngIf="!isUserLoggedIn" class="text-danger">
+      Vui lòng đăng nhập để có thể thấy được mục này
+    </div>
+    <div *ngIf="isUserLoggedIn && likedRes.length == 0" class="text-secondary">
+      Bạn hiện chưa có nhà hàng yêu thích nào.
+    </div>
+    <div class="container mt-5" *ngIf="isUserLoggedIn && likedRes.length > 0">
+      <div class="row">
+        <div class="col-md-3" *ngFor="let res of likedRes">
+            <div class="card">
+              <div class="image-container">
+                <div class="first">  
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="wishlist"><i class="fa" [ngClass]="{'fa-heart': res.isFavorite, 'fa-heart-o': !res.isFavorite}" [ngStyle]="{'color': res.isFavorite ? '#ff0066' : ''}" (click)="changeFav(res.isFavorite, res.id)"></i></span>
+                  </div>
+                </div>
+    
+                <img [src] = "res.image[0].imgPath" class="img-fluid rounded thumbnail-image">
+                
+              </div>
+    
+    
+              <div class="product-detail-container p-2">
+                  <div class="d-flex justify-content-between align-items-center" style="height: 40px;">
+                    <h5 class="dress-name">{{res.name}}</h5>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center" style="height: 30px;">
+                    <h5 class="old-price">{{res.address}}, Quận {{getDistrictAndProvinceName(res.districtId, province)?.districtName}} </h5>
+                  </div>
+    
+                  <div class="d-flex justify-content-between align-items-center pt-1">
+                    <div>
+                      <i class="fa fa-star-o rating-star"></i>
+                      <span class="rating-number">{{getAverageRating(res)}}</span>
+                    </div>
+    
+                    <div>
+                      <i class="fa fa-comment-o rating-star" style="margin-right: 1px;"></i>
+                      <span class="rating-number">{{res.totalReviews}}</span>
+                    </div>
+                    
+                  </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </mdb-tab>
+  <mdb-tab>
+    <ng-template mdbTabTitle><span class="fw-bold"><i class="fa fa-comments fa-fw me-2"></i>Đã bình luận</span></ng-template>
+    <div *ngIf="!isUserLoggedIn" class="text-danger">
+      Vui lòng đăng nhập để có thể thấy được mục này
+    </div>
+    <div *ngIf="isUserLoggedIn && revRes.length == 0" class="text-secondary">
+      Bạn hiện chưa bình luận về nhà hàng nào.
+    </div>
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-md-3" *ngFor="let res of revRes">
+            <div class="card">
+              <div class="image-container">
+                <div class="first">  
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="wishlist"><i class="fa" [ngClass]="{'fa-heart': res.isFavorite, 'fa-heart-o': !res.isFavorite}" [ngStyle]="{'color': res.isFavorite ? '#ff0066' : ''}" (click)="changeFav(res.isFavorite, res.id)"></i></span>
+                  </div>
+                </div>
+    
+                <img [src] = "res.image[0].imgPath" class="img-fluid rounded thumbnail-image">
+                
+              </div>
+    
+    
+              <div class="product-detail-container p-2">
+                  <div class="d-flex justify-content-between align-items-center" style="height: 40px;">
+                    <h5 class="dress-name">{{res.name}}</h5>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center" style="height: 30px;">
+                    <h5 class="old-price">{{res.address}}, Quận {{getDistrictAndProvinceName(res.districtId, province)?.districtName}} </h5>
+                  </div>
+    
+                  <div class="d-flex justify-content-between align-items-center pt-1">
+                    <div>
+                      <i class="fa fa-star-o rating-star"></i>
+                      <span class="rating-number">{{getAverageRating(res)}}</span>
+                    </div>
+    
+                    <div>
+                      <i class="fa fa-comment-o rating-star" style="margin-right: 1px;"></i>
+                      <span class="rating-number">{{res.totalReviews}}</span>
+                    </div>
+                    
+                  </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </mdb-tab>
+</mdb-tabs>
+</div>
+

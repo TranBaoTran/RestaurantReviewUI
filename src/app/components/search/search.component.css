@@ -1,0 +1,32 @@
+body{background:#eee}
+.ratings i{font-size: 16px;color: red}
+.strike-text{color: red;text-decoration: line-through}
+.product-image{width: 100%}
+.dot{height: 7px;width: 7px;margin-left: 6px;margin-right: 6px;margin-top: 3px;background-color: blue;border-radius: 50%;display: inline-block}
+.spec-1{color: #938787;font-size: 15px}h5{font-weight: 400}
+.para{font-size: 16px}
+.first{
+	position: absolute;
+	width: 100%;
+	padding: 9px;
+}
+.wishlist{
+	height: 25px;
+	width: 25px;
+	background-color: #eee;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 50%;
+	box-shadow:  0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.category-link {
+	text-decoration: none; /* Remove underline by default */
+	color: #007bff; /* Set a default link color */
+	cursor: pointer; /* Show pointer cursor on hover */
+  }
+  
+.category-link:hover {
+	text-decoration: underline; /* Add underline on hover */
+  }

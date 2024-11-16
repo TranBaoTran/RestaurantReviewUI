@@ -1,0 +1,59 @@
+<div class="container mt-5 mb-5">
+    <div *ngIf="restaurants.length == 0" class="text-danger">
+        Không tìm thấy nhà hàng bạn yêu cầu.
+    </div>
+    <div class="d-flex justify-content-center row">
+        <div class="col-md-10" *ngFor="let res of restaurants">
+
+            <div class="row p-2 bg-white border rounded mt-3">
+                <div class="col-md-3 mt-1" style="position: relative;">
+                    <div class="first">  
+                        <div class="d-flex justify-content-between align-items-center">
+                          <span class="wishlist"><i class="fa" [ngClass]="{'fa-heart': res.isFavorite, 'fa-heart-o': !res.isFavorite}" [ngStyle]="{'color': res.isFavorite ? '#ff0066' : ''}" (click)="changeFav(res.isFavorite, res.id)"></i></span>
+                        </div>
+                      </div>
+                    <img class="img-fluid img-responsive rounded product-image" [src] = "res.image[0].imgPath">
+                </div>
+                <div class="col-md-9 mt-1">
+                    <h3>{{res.name}}</h3>
+                    <div class="d-flex flex-row">
+                        <div class="ratings mr-2">
+                            <ng-container *ngFor="let star of [].constructor(5); let i = index">
+                                <i 
+                                  class="fa"
+                                  [ngClass]="{
+                                    'fa-star': i < Math.floor(getAverageRating(res)), 
+                                    'fa-star-half-o': i === Math.floor(getAverageRating(res)) && getAverageRating(res) % 1 !== 0,
+                                    'fa-star-o': i >= Math.floor(getAverageRating(res)) 
+                                  }">
+                                </i>
+                              </ng-container>
+                        </div>
+                        <span class="ms-3">{{getAverageRating(res)}} / {{res.totalReviews}} đánh giá  </span>
+                        @if(isCurrentTimeBetween(res.openedTime, res.closedTime)){
+                            <span class="ps-5 text-success">Đang mở cửa</span>
+                        }
+                        @else {
+                            <span class="ps-5 text-danger">Đang đóng cửa</span>
+                        }
+                    </div>
+                    <div class="mt-1 mb-1 spec-1" *ngFor="let cate of res.category">
+                        <span class="dot"></span><a class="category-link" (click)="searchByCate(cate.id)">{{cate.name}}</a>
+                    </div>
+                    <div class="mt-1 mb-1 spec-1"><span>{{res.address}}</span><span *ngIf="getDistrictAndProvinceName(res.districtId, provinces) as location">
+                        , Quận {{ location.districtName }}, Thành phố {{ location.provinceName }}
+                      </span>
+                    </div>
+
+                    <div class="align-items-center align-content-center col-md-12 border-top mt-1" *ngFor="let rev of res.reviews">
+                        <div class="d-flex flex-row align-items-center">
+                            <span class="text-secondary text-truncate">"{{rev.content}}"</span>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+        </div>
+    </div>
+</div>

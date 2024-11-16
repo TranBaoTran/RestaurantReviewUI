@@ -25,3 +25,27 @@ body {
   background-color: #007bff;
   color: white;
 }
+
+.autocomplete-list {
+  position: absolute;
+  top: 100%; /* Position the list directly below the input */
+  left: 0;
+  width: 100%; /* Make it match the width of the input */
+  background-color: white;
+  border: 1px solid #ccc;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000; /* Ensure it is above other elements */
+}
+
+.autocomplete-item {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.autocomplete-item:hover {
+  background-color: #e9ecef;
+}

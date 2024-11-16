@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container d-flex align-items-center">
 
-    <a class="navbar-brand me-3" href="#">
+    <a class="navbar-brand me-3" routerLink="/">
       <img
         src="/img/logo.jpg"
         height="30"
@@ -52,14 +52,29 @@
           ><i class="fa fa-bars"></i>
       </button>
       
-      <form class="d-flex input-group" style="width: 500px;">
+      <form class="d-flex input-group" style="width: 500px; position: relative;">
         <input
           type="search"
+          id = "autocomplete"
+          name= "search"
           class="form-control"
           placeholder="Nhập tên nhà hàng bạn muốn tìm"
-          aria-label="Search"
+          [(ngModel)]="searchText"
+          (input)="onSearch()"
+          [attr.aria-expanded]="filteredOptions.length > 0"
+          autocomplete="off"
         />
-        <button class="btn btn-outline-primary" type="button">
+
+        <ul class="autocomplete-list" *ngIf="filteredOptions.length > 0">
+          <li 
+            *ngFor="let option of filteredOptions" 
+            (click)="onSelectOption(option)" 
+            class="autocomplete-item"
+          >
+            {{ option.name }}
+          </li>
+        </ul>
+        <button class="btn btn-outline-primary" type="button" (click)="searchButton()">
           Tìm kiếm
         </button>
       </form>
@@ -71,7 +86,7 @@
         <button type="button" class="btn btn-link px-3 me-2" routerLink = "/login">
           Đăng nhập
         </button>
-        <button type="button" class="btn btn-primary me-3">
+        <button type="button" class="btn btn-primary me-3" routerLink="/signup">
           Đăng ký
         </button>
       }
@@ -81,23 +96,25 @@
           <li mdbDropdown class="nav-item dropdown">
             <a
               class="nav-link dropdown-toggle d-flex align-items-center"
-              href="#"
               id="navbarDropdownMenuLink"
               role="button"
               mdbDropdownToggle
               aria-expanded="false"
             >
+            {{ user.name | titlecase }}
               <img
-                src="https://mdbootstrap.com/img/Photos/Avatars/img (31).webp"
+                [src]="user.avatarPath"
+                style="margin-left: 10px;"
                 class="rounded-circle"
-                height="22"
+                width="30"
+                height="30"
                 alt=""
                 loading="lazy"
               />
             </a>
             <ul mdbDropdownMenu class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
               <li>
-                <a class="dropdown-item" href="#">Thông tin cá nhân</a>
+                <a class="dropdown-item">Thông tin cá nhân</a>
               </li>
               <li>
                 <a class="dropdown-item" (click)="logOut()">Đăng xuất</a>
@@ -187,7 +204,7 @@
 
   <div class="row justify-content-center pt-3">
     <div class="col-auto text-center">
-      <button type="button" class="btn btn-info me-3" mdbRipple>Tìm kiếm</button>
+      <button type="button" class="btn btn-info me-3" mdbRipple (click)="searchExceptQuery()">Tìm kiếm</button>
       <button 
         type="button" 
         class="btn btn-danger" 
