@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { Province } from '../models/district.model';
 import { Category } from '../models/category.model';

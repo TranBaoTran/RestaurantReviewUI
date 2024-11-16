@@ -14,4 +14,8 @@ export class ReviewService {
   getTop2Review(id : number): Observable<Review[]> {
     return this.http.get<Review[]>(`${this.apiUrl}/Top2UpVoteReview/${id}`);
   } 
+
+  getRestaurantReviews(id : number): Observable<Review[]> {
+    return this.http.get<Review[]>(`${this.apiUrl}/HighestUpVoteReview/${id}`);
+  }
 }

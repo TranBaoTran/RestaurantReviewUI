@@ -8,11 +8,11 @@ import { UserService } from '../../services/user.service';
 import { forkJoin, map } from 'rxjs';
 import { SecureStorageService } from '../../services/secure-storage.service';
 import { Province } from '../../models/district.model';
-
+import { RestaurantDetailComponent } from "../restaurant/restaurant-detail/restaurant-detail.component";
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [MdbTabsModule, CommonModule],
+  imports: [CommonModule, MdbTabsModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -275,5 +275,9 @@ export class DashboardComponent implements OnInit {
       }
     }
     return null;
+  }
+
+  goToDetailRes(id : number): void{
+    this.router.navigate([`/restaurants/${id}`])
   }
 }

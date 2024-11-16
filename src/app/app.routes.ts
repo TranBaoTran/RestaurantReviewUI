@@ -3,6 +3,8 @@ import { HomeComponent } from './components/home/home.component';
 import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { RestaurantDetailComponent } from './components/restaurant/restaurant-detail/restaurant-detail.component';
+import { PostReviewComponent } from './components/restaurant/post-review/post-review.component';
 import { SearchComponent } from './components/search/search.component';
 
 export const routes: Routes = [
@@ -12,6 +14,8 @@ export const routes: Routes = [
             { path: '', component: DashboardComponent },
             { path: 'province/:query', component: DashboardComponent},
             { path: 'search', component: SearchComponent },
+            { path: 'restaurants/:id', component: RestaurantDetailComponent},
+            { path: 'restaurants/:id/review', component: PostReviewComponent}
         ]},
     {   path: 'login', component: LoginComponent},
     {   path: 'signup', component: SignupComponent}

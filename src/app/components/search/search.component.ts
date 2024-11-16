@@ -184,4 +184,8 @@ export class SearchComponent {
       categoryIds : [id]
     });
   }
+
+  goToDetailRes(id : number): void{
+    this.router.navigate([`/restaurants/${id}`])
+  }
 }

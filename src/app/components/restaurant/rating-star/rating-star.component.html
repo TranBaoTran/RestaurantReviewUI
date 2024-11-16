@@ -1,0 +1,12 @@
+<div class="">
+    @if (rating != undefined) {
+    <i class="fa fa-star star" (click)="setRating(1)" [class.rated]="rating >= 1"></i>
+    <i class="fa fa-star star" (click)="setRating(2)" [class.rated]="rating >= 2"></i>
+    <i class="fa fa-star star" (click)="setRating(3)" [class.rated]="rating >= 3"></i>
+    <i class="fa fa-star star" (click)="setRating(4)" [class.rated]="rating >= 4"></i>
+    <i class="fa fa-star star" (click)="setRating(5)" [class.rated]="rating >= 5"></i>
+    <span class="ratingPoint">{{rating}}</span>
+    }
+
+
+</div>

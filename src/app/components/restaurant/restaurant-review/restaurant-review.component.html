@@ -1,0 +1,34 @@
+<div class="card">
+    <div class="header">
+        <h2>Số lượng đánh giá: {{this.restaurantReview.length}}</h2>
+    </div>
+    <div class="body">
+        <ul class="comment-reply list-unstyled">
+            @if(restaurantReview.length > 0) {
+            @for(review of restaurantReview; track review.id){
+            <div class="card mb-3">
+                <img src="https://mdbcdn.b-cdn.net/img/new/slides/041.webp" class="card-img-top" alt="Wild Landscape" />
+                <div class="card-body">
+                    <h5 class="card-title">User ID: {{review.userId}}</h5>
+
+                    <h5 class="card-title">{{review.title}}</h5>
+                    <p class="card-text">
+                        {{review.content}}
+                    </p>
+                    <p class="card-text">
+                        <small class="text-muted">Create on: {{review.createdOn}}</small>
+                    </p>
+                </div>
+            </div>
+
+            }
+
+            }@else {
+            <h1>Chua co danh gia nao het</h1>
+            }
+
+
+
+        </ul>
+    </div>
+</div>

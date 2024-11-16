@@ -1,0 +1,64 @@
+.res-title {
+    /* border-bottom: 1px solid black ; */
+    border-radius: 5px;
+    font-weight: bolder;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+}
+
+.res-title h1 {
+    margin-right: 20px;
+    font-size: 56px;
+}
+
+.res-title button {
+    font-size: 24px;
+}
+ 
+.res-title button:hover {
+    background-color: yellowgreen;
+    color: white;
+}
+
+
+.open-close-text {
+    padding: 0 10px;
+    border: 1px solid green;
+    margin: 10px;
+    background-color: green;
+    border-radius: 5px;
+    color: white;
+}
+
+.card {
+
+    min-height: 300px;
+}
+
+.card-title {
+    border-bottom: 1px solid black;
+    margin-bottom: 10px;
+    /* font-weight: bolder; */
+}
+
+.card-text{
+    display: flex;
+    flex-direction: row;
+    /* font-size: x-large; */
+
+}
+
+.card-text-icon {
+
+    margin-right: 10px;
+    /* margin-left: 10px; */
+    justify-content: center;
+
+}
+
+.card-text-item {
+    margin: auto;
+}
