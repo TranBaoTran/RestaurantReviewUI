@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-rating-star',
@@ -8,8 +8,10 @@ import { Component, Input } from '@angular/core';
   styleUrl: './rating-star.component.scss'
 })
 export class RatingStarComponent {
- @Input() rating:number | undefined = 0;
+ @Input() rating:number  = 0;
  @Input() readonly:boolean = false;
+ @Output() OutputRaing : number = this.rating;
+
  setRating(value: number){
   if(this.readonly){
     return;

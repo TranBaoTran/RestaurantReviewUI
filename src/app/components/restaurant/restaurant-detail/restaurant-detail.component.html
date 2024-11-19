@@ -1,54 +1,87 @@
+@if (restaurant == undefined) {
+<h1>404</h1>
+}@else {
 <div class="container">
-    <div class="row row-cols-1 g-4 mt-5">
-        <div class="col res-title">
-            <h1 class="">
-                {{restaurant?.name || "Tên Nhà Hàng"}}
+    <div class="row restaurant-detail-info mt-5">
+        <div class="d-flex flex-row">
+            <div class="res-title">
+                <h1>{{restaurant.name || "Restaurant Title"}} <i class="fa fa-check-circle text-success h1"></i>
+                </h1>
 
-            </h1>
-            <button routerLink="/restaurants/{{restaurant?.id}}/review" type="button" class="btn btn-outline-success"
-                mdbRipple rippleColor="dark">
-
-                <i class=" fa fa-pencil"></i> Viết Đánh Giá</button>
-        </div>
-
-
-    </div>
-
-    <div class="row row-cols-1 row-cols-md-2">
-        <div class="col">
-            <div class="h2">
-                <i class="fa fa-clock-o"></i>
-                <span class="open-close-text">Giờ Phục Vụ</span>
-                {{restaurant?.openedTime || "7h00"}} - {{restaurant?.closedTime || "24h00"}}
             </div>
         </div>
-        <div class="col">
-            <div class="h2">
-                <i class="fa fa-map-marker
-                "></i>
-                {{restaurant?.address || "Địa chỉ Của Nhà Hàng"}}
+        <div class="d-flex flex-column">
+            <div class="d-flex flex-row h3">
+                <div class="ratings mr-2 border-end pe-3">
+                    <ng-container *ngFor="let star of [].constructor(5); let i = index">
+                        <i class="fa" [ngClass]="{
+                                'fa-star': i < Math.floor(getAverageRating(restaurant)), 
+                                'fa-star-half-o': i === Math.floor(getAverageRating(restaurant)) && getAverageRating(restaurant) % 1 !== 0,
+                                'fa-star-o': i >= Math.floor(getAverageRating(restaurant)) 
+                              }">
+                        </i>
+                    </ng-container>
+                </div>
+                <span class="ms-3">{{getAverageRating(restaurant)}} / {{restaurant.totalReviews}} đánh giá </span>
+                @if(isCurrentTimeBetween(restaurant.openedTime, restaurant.closedTime)){
+                <span class="text-success ms-3">
+                    <i class="fa fa-clock-o"></i>
+                    Đang mở cửa</span>
+                }
+                @else {
+                <span class="text-danger ms-3">
+                    <i class="fa fa-clock-o"></i>
+                    Đang đóng cửa</span>
+                }
+            </div>
+            <div class="d-flex flex-row flex-wrap">
+                <div class="mr-2">
+                    <i class="fa fa-map-marker"></i>
+                    {{restaurant.address || "Address"}}
+                    <span *ngIf="getDistrictAndProvinceName(restaurant.districtId, Provinces) as location">
+                        , Quận {{ location.districtName }}, Thành phố {{ location.provinceName }}
+                    </span>
+                </div>
+                <div class="ms-3 border-start ps-3">
+                    <i class="fa fa-phone
+                        "></i>
+                    {{restaurant.phone || "Phone"}}
+                </div>
+                <div class="ms-3 border-start ps-3">
+                    <i class="fa fa-laptop
+                        "></i>
+                    {{restaurant.website || "Website"}}
+                </div>
+                <div class="ms-3 border-start ps-3">
+                    <i class="fa fa-usd card-text-icon"></i>
+                    {{restaurant.lowestCost || "100k"}}đ -
+                    {{restaurant.highestCost ||"200k"}}đ
+                </div>
+
             </div>
         </div>
-
-
-
+        <div class="PostReview mt-3">
+            <button routerLink="/restaurants/{{restaurant.id}}/review" type="button"
+                class="btn btn-outline-info btn-rounded h2" mdbRipple rippleColor="dark"> <i class=" fa fa-pencil"></i>
+                Viết đánh giá</button>
+        </div>
     </div>
 
-
-
-
-    <mdb-carousel [controls]="true" [indicators]="true" class="mt-2">
-
-        <mdb-carousel-item>
-            <img src="https://mdbcdn.b-cdn.net/img/new/slides/041.webp" class="d-block w-100" alt="..." />
-        </mdb-carousel-item>
-        <mdb-carousel-item>
-            <img src="https://mdbcdn.b-cdn.net/img/new/slides/042.webp" class="d-block w-100" alt="..." />
-        </mdb-carousel-item>
-        <mdb-carousel-item>
-            <img src="https://mdbcdn.b-cdn.net/img/new/slides/043.webp" class="d-block w-100" alt="..." />
-        </mdb-carousel-item>
-    </mdb-carousel>
+    @if (resImage.length > 0) {
+    <div class="row mt-5">
+        @if (resImage.length
+        <= 1) { <img src="{{resImage[0].imgPath}}" class="img-fluid rounded d-block w-100" alt="" />
+        }@else {
+        <mdb-carousel [indicators]="true">
+            @for (image of resImage ;track $index ) {
+            <mdb-carousel-item>
+                <img src="{{image.imgPath}}" class="img-fluid d-block w-100 rounded" alt="..." />
+            </mdb-carousel-item>
+            }
+        </mdb-carousel>
+        }
+    </div>
+    }
 
 
     <div class="row row-cols-1 row-cols-md-3 g-4 mt-5">
@@ -56,44 +89,64 @@
             <div class="card">
                 <div class="card-body">
                     <h3 class="card-title mb-2">Đánh Giá & Trải Nghiệm</h3>
-                    <div class="row">
-                        <h5 class="col-6">
+                    <div class="d-flex flex-row h4">
+                        {{getAverageRating(restaurant)}}
+                        <div class="ratings mr-2 border-end pe-3 ps-2">
+                            <ng-container *ngFor="let star of [].constructor(5); let i = index">
+                                <i class="fa" [ngClass]="{
+                                        'fa-star': i < Math.floor(getAverageRating(restaurant)), 
+                                        'fa-star-half-o': i === Math.floor(getAverageRating(restaurant)) && getAverageRating(restaurant) % 1 !== 0,
+                                        'fa-star-o': i >= Math.floor(getAverageRating(restaurant)) 
+                                      }">
+                                </i>
+                            </ng-container>
+                        </div>
+                        <span class="ms-3">{{restaurant.totalReviews}} đánh giá
+                        </span>
+                    </div>
+                    <div class="d-flex flex-row justify-content-between">
+                        <h5 class="">
                             Vị Trí
                         </h5>
-                        <div class="col-6">
-                            <app-rating-star [rating]="restaurant?.averageRatings?.location" [readonly]="true"></app-rating-star>
+                        <div class="">
+                            <app-rating-star [rating]="restaurant.averageRatings.location"
+                                [readonly]="true"></app-rating-star>
                         </div>
                     </div>
-                    <div class="row">
-                        <h5 class="col-6">
+                    <div class="d-flex flex-row justify-content-between">
+                        <h5 class="">
                             Giá cả
                         </h5>
-                        <div class="col-6">
-                            <app-rating-star [rating]="restaurant?.averageRatings?.price" [readonly]="true"></app-rating-star>
+                        <div class="">
+                            <app-rating-star [rating]="restaurant.averageRatings.price"
+                                [readonly]="true"></app-rating-star>
                         </div>
                     </div>
-                    <div class="row">
-                        <h5 class="col-6">
+                    <div class="d-flex flex-row justify-content-between">
+                        <h5 class="">
                             Chất Lượng
                         </h5>
-                        <div class="col-6">
-                            <app-rating-star [rating]="restaurant?.averageRatings?.quality" [readonly]="true"></app-rating-star>
+                        <div class="">
+                            <app-rating-star [rating]="restaurant.averageRatings.quality"
+                                [readonly]="true"></app-rating-star>
                         </div>
                     </div>
-                    <div class="row">
-                        <h5 class="col-6">
+                    <div class="d-flex flex-row justify-content-between">
+                        <h5 class="">
                             Dịch Vụ
                         </h5>
-                        <div class="col-6">
-                            <app-rating-star [rating]="restaurant?.averageRatings?.service" [readonly]="true"></app-rating-star>
+                        <div class="">
+                            <app-rating-star [rating]="restaurant.averageRatings.service"
+                                [readonly]="true"></app-rating-star>
                         </div>
                     </div>
-                    <div class="row ">
-                        <h5 class="col-6">
+                    <div class="d-flex flex-row justify-content-between">
+                        <h5 class="">
                             Không Giang
                         </h5>
-                        <div class="col-6">
-                            <app-rating-star [rating]="restaurant?.averageRatings?.space" [readonly]="true"></app-rating-star>
+                        <div class="">
+                            <app-rating-star [rating]="restaurant.averageRatings.space"
+                                [readonly]="true"></app-rating-star>
                         </div>
                     </div>
                 </div>
@@ -106,20 +159,22 @@
 
                     <h5 class="card-text ">
                         <i class="fa fa-cutlery card-text-icon"></i>
-                        <div class="card-text-item">{{restaurant?.name || "Nha Hang Thuy Ta"}}</div>
+                        <div class="card-text-item">{{restaurant.name || "Nha Hang"}}</div>
                     </h5>
                     <h5 class="card-text ">
                         <i class="fa fa-clock-o card-text-icon"></i>
-                        <div class="card-text-item">{{restaurant?.openedTime || "7h00"}} - {{restaurant?.closedTime ||
+                        <div class="card-text-item">{{restaurant.openedTime || "7h00"}} -
+                            {{restaurant.closedTime ||
                             "24h00"}}</div>
                     </h5>
 
 
                     <h5 class="card-text ">
                         <i class="fa fa-usd card-text-icon"></i>
-                        <div class="card-text-item">{{restaurant?.lowestCost|| "100k"}} -
-                            {{restaurant?.highestCost ||"200k"}}</div>
+                        <div class="card-text-item">{{restaurant.lowestCost|| "100k"}}đ -
+                            {{restaurant.highestCost ||"200k"}}đ</div>
                     </h5>
+
                 </div>
             </div>
         </div>
@@ -128,24 +183,34 @@
                 <div class="card-body">
                     <h3 class="card-title">Địa Điểm & Liên Lạc</h3>
                     <h5 class="card-text">
+                        <span *ngIf="getDistrictAndProvinceName(restaurant.districtId, Provinces) as location">
+                            <iframe width="100%" height="80" style="border:0;"
+                                [src]="getGoogleMapURI(location.districtName,location.provinceName)" loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade">
+                            </iframe>
+                        </span>
+                    </h5>
+                    <h5 class="card-text">
                         <i class="fa fa-map-marker card-text-icon"></i>
-                        <div class="card-text-item">{{restaurant?.address || "Dia Chi Cua Nha Hang"}}</div>
+                        <div class="card-text-item">{{restaurant.address || "Dia Chi Cua Nha Hang"}}</div>
                     </h5>
                     <h5 class="card-text ">
                         <i class="fa fa-laptop card-text-icon"></i>
-                        <div class="card-text-item">{{restaurant?.website || "fit.sgu.vn"}}</div>
+                        <div class="card-text-item">{{restaurant.website || "fit.sgu.vn"}}</div>
                     </h5>
                     <h5 class="card-text">
                         <i class="fa fa-phone card-text-icon"></i>
-                        <div class="card-text-item">{{restaurant?.phone || "090909090909"}}</div>
+                        <div class="card-text-item">{{restaurant.phone || "090909090909"}}</div>
                     </h5>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="row row-cols-1  g-4 mt-5">
         <app-restaurant-review></app-restaurant-review>
     </div>
 
 
 </div>
+}

@@ -2,5 +2,25 @@
     margin-top: 10px;
     margin-bottom: 10px;
     /* border-bottom: 1px solid black; */
+}
+
+.res-info {
+    position: sticky;
+}
+
+.res-review {
+   
+    margin-left: 24px;
 
 }
+
+.form-review {
+    border-left: 1px solid ;
+    padding-left: 48px;
+    border-color: rgba(0, 0, 0,0.1);
+}
+
+
+/* .res-info-card {
+    position: sticky;
+} */

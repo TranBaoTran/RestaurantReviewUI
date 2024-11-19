@@ -4,6 +4,7 @@ import { MdbFormsModule } from 'mdb-angular-ui-kit/forms';
 import { MdbValidationModule } from 'mdb-angular-ui-kit/validation';
 import { RatingStarComponent } from "../rating-star/rating-star.component";
 import { CommonModule } from '@angular/common';
+import { RestaurantService } from '../../../services/restaurant.service';
 
 @Component({
   selector: 'app-post-review',
@@ -16,7 +17,7 @@ export class PostReviewComponent {
   validationForm: FormGroup;
   imageUrl: string | ArrayBuffer | null | undefined = null;
 
-  constructor() {
+  constructor(private restaurantService : RestaurantService) {
     this.validationForm = new FormGroup({
       firstName: new FormControl(null, { validators: Validators.required, updateOn: 'submit' }),
       lastName: new FormControl(null, { validators: Validators.required, updateOn: 'submit' }),

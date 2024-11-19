@@ -24,13 +24,30 @@
 }
 
 
-.open-close-text {
+.open-text {
     padding: 0 10px;
     border: 1px solid green;
     margin: 10px;
     background-color: green;
     border-radius: 5px;
     color: white;
+}
+
+.close-text {
+    padding: 0 10px;
+    border: 1px solid red;
+    margin: 10px;
+    background-color: red;
+    border-radius: 5px;
+    color: white;
+}
+
+.ratings {
+    color: gold;
+}
+
+.reviewBtn {
+    cursor: pointer;
 }
 
 .card {

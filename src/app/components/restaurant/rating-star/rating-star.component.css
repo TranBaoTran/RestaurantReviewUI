@@ -10,7 +10,8 @@
 
 .ratingPoint {
      /* padding: auto 0; */
-     text-align: center;
+     /* text-align: center; */
      /* font-size: 25px; */
      padding-left: 10px;
+     margin-right: 10px;
 }

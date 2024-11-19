@@ -1,34 +1,49 @@
-<div class="card">
-    <div class="header">
-        <h2>Số lượng đánh giá: {{this.restaurantReview.length}}</h2>
+<section class="rounded" style="background-color: #e0edfa;">
+    <div class="d-flex flex-row justify-content-between align-items-center ps-5 pe-5 pt-5">
+        <h2 class="fw-bold">{{this.restaurantReview.length}} Đánh Giá</h2>
+        <button type="button" (click)="goToPostReview()" class=" btn btn-dark btn-rounded " mdbRipple>
+            <h4>Viết Đánh giá</h4>
+        </button>
     </div>
-    <div class="body">
-        <ul class="comment-reply list-unstyled">
-            @if(restaurantReview.length > 0) {
-            @for(review of restaurantReview; track review.id){
-            <div class="card mb-3">
-                <img src="https://mdbcdn.b-cdn.net/img/new/slides/041.webp" class="card-img-top" alt="Wild Landscape" />
-                <div class="card-body">
-                    <h5 class="card-title">User ID: {{review.userId}}</h5>
-
-                    <h5 class="card-title">{{review.title}}</h5>
-                    <p class="card-text">
-                        {{review.content}}
-                    </p>
-                    <p class="card-text">
-                        <small class="text-muted">Create on: {{review.createdOn}}</small>
-                    </p>
+    <div class="container mb-10 text-body">
+        @if(restaurantReview.length > 0) {
+        <div class="row d-flex justify-content-center">
+            <div class="d-flex flex-row ps-5 pe-5 mb-3">
+                <!-- <div class="sorting">
+                    <div class="form-check form-check-inline">
+                        <input mdbRadio class="form-check-input" type="radio" name="inlineRadioOptions"
+                            id="inlineRadio1" value="option1" #sortByHighest />
+                        <label class="form-check-label" for="inlineRadio1">Từ Cao Đến Thấp</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input mdbRadio class="form-check-input" type="radio" name="inlineRadioOptions"
+                            id="inlineRadio2" value="option2" #sortByDate />
+                        <label class="form-check-label" for="inlineRadio2">Mới Nhất</label>
+                    </div>
+                </div> -->
+            </div>
+            <div class="row">
+                <div class="col-0"></div>
+                <div class="col-12">
+                    @for (review of restaurantReview; track review.id) {
+                    <app-review-card [Review]="review"></app-review-card>
+                    }
                 </div>
             </div>
+        </div>
+        }@else {
+        <div class="row d-flex justify-content-center">
+            <div class="col-md-11 col-lg-9 col-xl-7 text-italic ">
+                <h3 class="font-italic">Hiện nhà hàng này chưa đánh giá nào. Bạn hãy trở thành người đầu tiên nhé
+                    <span class="btn text-white" style="background-color: #55acee;" (click)="this.goToPostReview()"
+                        role="button" mdbRipple>
+                        <i class="fa fa-pencil me-2"></i>
+                        Đánh giá ngay
+                    </span>
+                </h3>
 
-            }
-
-            }@else {
-            <h1>Chua co danh gia nao het</h1>
-            }
-
-
-
-        </ul>
+            </div>
+        </div>
+        }
     </div>
-</div>
+</section>
