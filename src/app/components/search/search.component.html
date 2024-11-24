@@ -15,7 +15,7 @@
                     <img class="img-fluid img-responsive rounded product-image" [src] = "res.image[0].imgPath">
                 </div>
                 <div class="col-md-9 mt-1">
-                    <h3>{{res.name}}</h3>
+                    <h3 (click)="goToDetailRes(res.id);">{{res.name}}</h3>
                     <div class="d-flex flex-row">
                         <div class="ratings mr-2">
                             <ng-container *ngFor="let star of [].constructor(5); let i = index">

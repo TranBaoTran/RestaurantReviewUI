@@ -1,3 +1,5 @@
+declare var google: any;
+
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { MdbDropdownModule } from 'mdb-angular-ui-kit/dropdown';
@@ -181,6 +183,7 @@ export class HeaderComponent implements OnInit, OnChanges{
 
   logOut(){
     this.secureStorageService.clearStorage();
+    google.accounts.id.disableAutoSelect();
     window.location.reload();
   }
 
