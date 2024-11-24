@@ -3,30 +3,32 @@ import { MdbCarouselModule } from 'mdb-angular-ui-kit/carousel';
 import { RestaurantReviewComponent } from "../restaurant-review/restaurant-review.component";
 import { RestaurantService } from '../../../services/restaurant.service';
 import { Image, Restaurant } from '../../../models/restaurant.model';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { RatingStarComponent } from '../rating-star/rating-star.component';
 import { CommonModule } from '@angular/common';
 import { Category } from '../../../models/category.model';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { District, Province } from '../../../models/district.model';
+import { Province } from '../../../models/district.model';
+import { SearchComponent } from '../../search/search.component';
+import { SearchService } from '../../../services/search.service';
+
 @Component({
   selector: 'app-restaurant-detail',
   standalone: true,
-  imports: [MdbCarouselModule, RestaurantReviewComponent,RatingStarComponent,RouterLink,CommonModule],
+  imports: [MdbCarouselModule, RestaurantReviewComponent,RatingStarComponent,RouterLink,CommonModule,SearchComponent],
   templateUrl: './restaurant-detail.component.html',
   styleUrl: './restaurant-detail.component.css'
 })
 export class RestaurantDetailComponent implements OnInit{
   restaurant!: Restaurant;
   resProvin?: Province;
-  resDistric? : District;
   resImage: Image[] = [];
   resCate: Category[] = [];
   Provinces: Province[] = [];
   Math = Math;
   sanitizedMapUrl!: SafeResourceUrl;
   
-  constructor( private sanitizer: DomSanitizer,
+  constructor( private sanitizer: DomSanitizer, private searchService : SearchService, private router : Router,
     private restaurantService: RestaurantService, private route: ActivatedRoute){}
 
 
@@ -34,10 +36,9 @@ export class RestaurantDetailComponent implements OnInit{
     this.loadRestaurant()
     this.loadResImages()
     this.loadProvince();
+    this.loadResCate();
     window.scrollTo(0, 0);
-    
   }
-
 
   loadRestaurant() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -78,29 +79,29 @@ export class RestaurantDetailComponent implements OnInit{
 
       const resId = Number(id);
 
-      // this.restaurantService.getCategories().subscribe({
-      //   next: (image: Image[]) => {
-      //     this.resImage = image
-      //   },
-      //   error: (error) => {
-      //     console.error('Error fetching images:', error);
-      //     window.alert('An error occurred while fetching restaurant images.');
-      //     }
-      //   });
+      this.restaurantService.getRestaurantCategoryByResId(resId).subscribe({
+        next: (data : Category[]) => {
+          this.resCate = data
+        },
+        error: (error) => {
+          console.error('Error fetching Restaurant Category:', error);
+          window.alert('An error occurred while fetching Restaurant Category.');
+          }
+        });
   }
 
   loadProvince(){
-      this.restaurantService.getProvinces().subscribe({
+    this.restaurantService.getProvinces().subscribe({
         next: (data : Province[]) => {
           this.Provinces = data;
         },
         error: (err) => {
           console.log("Cant fetch this Provices: " + err);         
         }
-      })
-    }
+    })
+  }
 
-    getDistrictAndProvinceName(districtID: number, provinces: Province[]): { districtName: string; provinceName: string } | null {
+  getDistrictAndProvinceName(districtID: number, provinces: Province[]): { districtName: string; provinceName: string } | null {
       for (const province of provinces) {
         const district = province.districts.find(d => d.id === districtID);
         if (district) {
@@ -111,13 +112,13 @@ export class RestaurantDetailComponent implements OnInit{
         }
       }
       return null;
-    }
+  }
 
-    getGoogleMapURI(districName: string, provinceName: string) {
-      const mapUrl = `https://www.google.com/maps/embed/v1/place?q=${encodeURIComponent(districName)}&key=AIzaSyAQaAR2rwH3sirB97zhco3jvf5R3xHyWiQ`;
+  getGoogleMapURI(districName: string, provinceName: string) {
+      const mapUrl = `https://www.google.com/maps/embed/v1/place?q=${encodeURIComponent(districName + " " + provinceName)}&key=AIzaSyAQaAR2rwH3sirB97zhco3jvf5R3xHyWiQ`;
       this.sanitizedMapUrl = this.sanitizer.bypassSecurityTrustResourceUrl(mapUrl);
       return this.sanitizedMapUrl;
-    }
+  }
 
   isCurrentTimeBetween(startTime: string, endTime: string): boolean {
     const currentDate = new Date();
@@ -144,7 +145,22 @@ export class RestaurantDetailComponent implements OnInit{
     return sum / values.length;
   }
 
+  searchByCate(id : number): void{
+    this.searchService.updateSearchCriteria({
+      query: '',
+      districtIds : [],
+      categoryIds : [id]
+    });
+  }
 
+  goToSearch(cateId : number): void{
+    this.router.navigate([`/search`]),
+    this.searchService.updateSearchCriteria({
+      query: '',
+      districtIds : [],
+      categoryIds : [cateId]
+    });
+  }
 
 }
 

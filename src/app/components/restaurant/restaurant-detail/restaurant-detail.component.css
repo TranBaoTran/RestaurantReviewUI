@@ -63,19 +63,10 @@
 
 .card-text{
     display: flex;
-    flex-direction: row;
-    /* font-size: x-large; */
-
+    flex-direction:row;
 }
 
-.card-text-icon {
-
-    margin-right: 10px;
-    /* margin-left: 10px; */
+.card-text-icon { 
     justify-content: center;
-
-}
-
-.card-text-item {
-    margin: auto;
+   margin-right: 10px;
 }

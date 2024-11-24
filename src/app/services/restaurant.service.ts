@@ -52,4 +52,8 @@ export class RestaurantService {
 
     return this.http.get<Restaurant[]>(`${this.apiUrl}RestaurantFilter/filter?${params.toString()}`);
   }
+
+  getRestaurantCategoryByResId(id: number): Observable<Category[]>{
+    return this.http.get<{category : Category[]}>(`${this.apiUrl}RestaurantFilter/RestaurantCategory/${id}`).pipe(map((res) => res.category));
+  }
 }

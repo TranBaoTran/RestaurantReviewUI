@@ -1,96 +1,110 @@
 <div class="container">
     <div class="row  mt-5">
         <div class="col-4 res-info">
-            <h1 class="title">Tell us, how was your visit?</h1>
+            <h1 class="title">Hãy kể mọi người nghe, chuyến thăm của bạn</h1>
             <div class="card">
                 <div class="bg-image hover-overlay" mdbRipple rippleColor="light">
-                    <img src="https://mdbcdn.b-cdn.net/img/new/standard/nature/111.webp" class="img-fluid" />
-                    <a href="#!">
+                    <img src="{{resImage[0].imgPath}}" class="img-fluid" />
+                    <a (click)="goToDetailRes(this.restaurant?.id!)">
                         <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
                     </a>
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">Card title</h5>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
-                        card's content.</p>
-                    <a href="#!" class="btn btn-primary">Button</a>
+                    <h5 class="card-title">{{restaurant?.name}}</h5>
                 </div>
             </div>
         </div>
 
-        <div class="col-7 res-review">
-            <div class="form mb-5 form-review">
-                <h1>ĐÁNH GIÁ TRẢI NGHIỆM CỦA BẠN</h1>
-                <div class="form-group">
-                    <div class="row mb-5">
-                        <div class="col-6">
-                            <h3>Vị trí</h3>
+        <form [formGroup]="validationForm" (ngSubmit)="onSubmit()" class="res-review col-7">
+            <div class="row">
+                <div class="">
+                    <div class="form mb-5 form-review">
+                        <h1>ĐÁNH GIÁ TRẢI NGHIỆM CỦA BẠN</h1>
+                        <div class="form-group">
+                            <div class="row mb-5">
+                                <div class="col-6">
+                                    <h3>Vị trí</h3>
+                                    <app-rating-star></app-rating-star>
+                                </div>
+                                <div class="col-6">
+                                    <h3>Giá cả</h3>
+                                    <app-rating-star></app-rating-star>
+                                </div>
+                            </div>
+                            <div class="row mb-5">
+                                <div class="col-6">
+                                    <h3>Chất Lượng</h3>
+                                    <app-rating-star></app-rating-star>
+                                </div>
+                                <div class="col-6">
+                                    <h3>Dịch Vụ</h3>
+                                    <app-rating-star></app-rating-star>
+                                </div>
+                            </div>
+                            <h3>Không Gian</h3>
                             <app-rating-star></app-rating-star>
                         </div>
-                        <div class="col-6">
-                            <h3>Giá cả</h3>
-                            <app-rating-star></app-rating-star>
+                        <div class="form-group mt-2 mb-2">
+
                         </div>
+                        <div class="form-group">
+                            <p class="fw-bolder">TIÊU ĐỀ ĐÁNH GIÁ</p>
+                            <mdb-form-control>
+                                <input mdbInput mdbValidate formControlName="firstName" required type="text"
+                                    id="formControlLg" class="form-control form-control-lg" />
+                                <label mdbLabel class="form-label" for="formControlLg">Tiêu Đề</label>
+                                <!-- <mdb-error class="mt-2 mb-2" *ngIf="
+                                    firstName?.invalid && (firstName?.dirty || firstName?.touched)
+                                    ">First name is required
+                                </mdb-error>
+                                <mdb-success class="mt-2 mb-2" *ngIf="
+                                    firstName?.valid && (firstName?.dirty || firstName?.touched)
+                                    ">Looks good!
+                                </mdb-success> -->
+                            </mdb-form-control>
+                        </div>
+                        <div class="form-group mt-2 mb-2">
+                            <p class="fw-bolder">NỘI DUNG ĐÁNH GIÁ</p>
+                            <mdb-form-control>
+                                <textarea mdbValidate mdbInput class="form-control" id="textAreaExample"
+                                    formControlName="lastName" required rows="4"></textarea>
+                                <label mdbLabel class="form-label" for="textAreaExample">Nội dung</label>
+                                <!-- <mdb-error *ngIf="lastName?.invalid && (lastName?.dirty || lastName?.touched)">Last name
+                                    is
+                                    required</mdb-error>
+                                <mdb-success *ngIf="lastName?.valid && (lastName?.dirty || lastName?.touched)">Looks
+                                    good!</mdb-success> -->
+                            </mdb-form-control>
+                        </div>
+                        <div class="form-group">
+                            <p class="fw-bolder">Thêm ảnh (nếu có)</p>
+                            <!-- <label class="form-label" for="customFile"></label> -->
+                            <input type="file" class="form-control" id="customFile" (change)="onFileSelected($event)"
+                                accept="image/*" />
+                            @if (imageUrl) {
+
+                            <img class="img-fluid rounded" [src]="imageUrl" alt="Preview" style="max-width: 500px;" />
+                            }
+                        </div>
+                        <!-- <div class="form-check mt-5 mb-3 ms-2 pb-1">
+                            <input mdbValidate mdbCheckbox class="form-check-input" type="checkbox" value=""
+                                id="flexCheckDefault" formControlName="checkbox" />
+                            <label class="form-check-label" for="flexCheckDefault">El Arsenal The Rum Box enchants guests with
+                                its warm welcome, offering complimentary rum and chocolate tastings upon arrival. The restaurant
+                                has a reputation for its attentive staff and the personal touches that contribute to its vibrant
+                                and charming atmosphere.
+                            </label>
+                            <mdb-error *ngIf="checkbox?.invalid && (checkbox?.dirty || checkbox?.touched)">Input
+                                invalid</mdb-error>
+                            <mdb-success *ngIf="checkbox?.valid && (checkbox?.dirty || checkbox?.touched)">Input
+                                valid</mdb-success>
+                        </div> -->
+                        <button type="submit" class="btn btn-primary mt-4">Submit</button>
                     </div>
-                    <div class="row mb-5">
-                        <div class="col-6">
-                            <h3>Chất Lượng</h3>
-                            <app-rating-star></app-rating-star>
-                        </div>
-                        <div class="col-6">
-                            <h3>Dịch Vụ</h3>
-                            <app-rating-star></app-rating-star>
-                        </div>
-                    </div>
-
-
-
-                    <h3>Không Gian</h3>
-                    <app-rating-star></app-rating-star>
                 </div>
-                <div class="form-group">
-
-                </div>
-                <div class="form-group">
-                    <p class="fw-bolder">TIÊU ĐỀ ĐÁNH GIÁ</p>
-                    <mdb-form-control>
-                        <input mdbInput type="text" id="formControlLg" class="form-control form-control-lg" />
-                        <label mdbLabel class="form-label" for="formControlLg">Tiêu Đề</label>
-                    </mdb-form-control>
-                </div>
-                <div class="form-group">
-                    <p class="fw-bolder">NỘI DUNG ĐÁNH GIÁ</p>
-                    <mdb-form-control>
-                        <textarea mdbInput class="form-control" id="textAreaExample" rows="4"></textarea>
-                        <label mdbLabel class="form-label" for="textAreaExample">Nội dung</label>
-                    </mdb-form-control>
-                </div>
-                <div class="form-group">
-                    <p class="fw-bolder">Thêm ảnh (nếu có)</p>
-                    <!-- <label class="form-label" for="customFile"></label> -->
-                    <input type="file" class="form-control" id="customFile" (change)="onFileSelected($event)"
-                        accept="image/*" />
-                    @if (imageUrl) {
-
-                    <img class="img-fluid rounded" [src]="imageUrl" alt="Preview" style="max-width: 500px;" />
-                    }
-                </div>
-                <!-- <div class="form-check mt-5 mb-3 ms-2 pb-1">
-                    <input mdbValidate mdbCheckbox class="form-check-input" type="checkbox" value=""
-                        id="flexCheckDefault" formControlName="checkbox" />
-                    <label class="form-check-label" for="flexCheckDefault">El Arsenal The Rum Box enchants guests with
-                        its warm welcome, offering complimentary rum and chocolate tastings upon arrival. The restaurant
-                        has a reputation for its attentive staff and the personal touches that contribute to its vibrant
-                        and charming atmosphere.
-                    </label>
-                    <mdb-error *ngIf="checkbox?.invalid && (checkbox?.dirty || checkbox?.touched)">Input
-                        invalid</mdb-error>
-                    <mdb-success *ngIf="checkbox?.valid && (checkbox?.dirty || checkbox?.touched)">Input
-                        valid</mdb-success>
-                </div> -->
-                <button type="submit" class="btn btn-primary mt-4">Submit</button>
             </div>
-        </div>
+        </form>
+
     </div>
     <div class="row">
         <div class="div"></div>
