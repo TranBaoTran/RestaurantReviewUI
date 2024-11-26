@@ -13,11 +13,12 @@ import { ReviewCardComponent } from '../review-card/review-card.component';
 })
 export class RestaurantReviewComponent implements OnInit {
   restaurantReview : Review[] = []
+  hasVoted : boolean = false; 
   
   constructor(private router : Router, private reviewService : ReviewService, 
     private activatedRoute : ActivatedRoute) {
    
-}
+  }
 
   ngOnInit(): void {
     this.loadReviews();
@@ -45,6 +46,13 @@ export class RestaurantReviewComponent implements OnInit {
 
     this.router.navigate([`/restaurants/${id}/review`])
   }
+
+  onReviewDeleted(reviewId: number): void {
+    console.log(`Review with ID ${reviewId} was deleted.`);
+    this.loadReviews(); // Reload the list of reviews
+  }
+
+
 
   // sortByDate() {
   //   this.filterReview = this.sortReviewsByDate(this.restaurantReview)

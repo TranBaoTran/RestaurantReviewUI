@@ -12,9 +12,29 @@
                     </div>
                 </div>
                 <div class="d-flex align-items-center h3 me-4">
-                    <a href="#!" class="link-muted me-2"><i class="fa fa-thumbs-o-up me-1"></i>{{Review.upVotes}}</a>
-                    <a href="#!" class="link-muted"><i
-                            class="fa fa-thumbs-o-down me-1 text-danger">{{Review.downVotes}}</i></a>
+                    <a class="link-muted me-2">
+                        <i 
+                          class="fa me-1" 
+                          [ngClass]="hasVoted.length === 0 
+                            ? 'fa-thumbs-o-up' 
+                            : hasVoted[0].type 
+                              ? 'fa-thumbs-up' 
+                              : 'fa-thumbs-o-up'">
+                        </i>
+                        {{ Review.upVotes }}
+                      </a>
+                      <a class="link-muted">
+                        <i 
+                          class="fa me-1 text-danger" 
+                          [ngClass]="hasVoted.length === 0 
+                            ? 'fa-thumbs-o-down' 
+                            : hasVoted[0].type 
+                              ? 'fa-thumbs-o-down' 
+                              : 'fa-thumbs-down'">
+                        </i>
+                        {{ Review.downVotes }}
+                      </a> 
+                    <a *ngIf="userid == Review.userId" class="link-muted me-2 text-danger" (click)="deleteReview()"><i class="fa fa-trash ms-3"></i></a>
                 </div>
             </div>
             <div class="ps-1 border-top pt-2">

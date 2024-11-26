@@ -18,4 +18,12 @@ export class ReviewService {
   getRestaurantReviews(id : number): Observable<Review[]> {
     return this.http.get<Review[]>(`${this.apiUrl}/HighestUpVoteReview/${id}`);
   }
+
+  getUserReviews(id : number): Observable<Review[]> {
+    return this.http.get<Review[]>(`${this.apiUrl}/GetUserReview/${id}`);
+  }
+
+  deleteReviewById(id : number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`)
+  }
 }

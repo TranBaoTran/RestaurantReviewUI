@@ -1,31 +1,43 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { Review } from '../../../models/review.model';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Review, VoteReview } from '../../../models/review.model';
 import { UserService } from '../../../services/user.service';
 import { User } from '../../../models/user.model';
 import { MdbAccordionModule } from 'mdb-angular-ui-kit/accordion';
 import { RatingStarComponent } from "../rating-star/rating-star.component";
+import { SecureStorageService } from '../../../services/secure-storage.service';
+import { CommonModule } from '@angular/common';
+import { ReviewService } from '../../../services/review.service';
 
 @Component({
   selector: 'app-review-card',
   standalone: true,
-  imports: [MdbAccordionModule, RatingStarComponent],
+  imports: [MdbAccordionModule, RatingStarComponent, CommonModule],
   templateUrl: './review-card.component.html',
   styleUrl: './review-card.component.css'
 })
 export class ReviewCardComponent implements OnInit{
   @Input({required: true}) Review! : Review
+  @Output() reviewDeleted = new EventEmitter<number>();
   userName: string = '';
   userAvatar: string = '';
   year: number = 0;
   month: number = 0;
   day: number = 0;
+  userid : number = -1;
+  hasVoted : VoteReview[] = [];
 
-  constructor( private userService : UserService){
+  constructor( private userService : UserService, private secureStorageService : SecureStorageService, private reviewService : ReviewService){
     
   }
+
   ngOnInit(): void {
     this.loadUserInfo(this.Review.userId);
     this.extractDateParts(this.Review.createdOn);
+    if(this.userService.isLoggedIn()){
+      const storedUserId = Number(this.secureStorageService.getUserId());
+      this.userid = storedUserId;
+    }
+    this.hasVoted = this.checkIfUserVoted(this.userid);
   }
 
   loadUserInfo(userId : number){
@@ -48,5 +60,21 @@ export class ReviewCardComponent implements OnInit{
     this.month = month
   }
 
+  deleteReview(): void{
+    if(window.confirm('Bạn có chắc chắn muốn xoá đánh giá này ?')){    
+      this.reviewService.deleteReviewById(this.Review.id).subscribe({
+        next: () => {
+          console.log('Review deleted successfully');
+          this.reviewDeleted.emit(this.Review.id); // Notify the parent about the deletion
+        },
+        error: (err) => {
+          console.error('Failed to delete review:', err);
+        },
+      });
+    }
+  }
 
+  checkIfUserVoted(userId: number): VoteReview[] {
+    return this.Review.voteReview.filter(vote => vote.userId === userId);
+  }
 }

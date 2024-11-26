@@ -6,6 +6,8 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { RestaurantDetailComponent } from './components/restaurant/restaurant-detail/restaurant-detail.component';
 import { PostReviewComponent } from './components/restaurant/post-review/post-review.component';
 import { SearchComponent } from './components/search/search.component';
+import { ProfileComponent } from './components/profile/profile.component';
+import { userAuthGuard } from './guards/user-auth.guard';
 
 export const routes: Routes = [
     {   path: '', 
@@ -15,7 +17,8 @@ export const routes: Routes = [
             { path: 'province/:query', component: DashboardComponent},
             { path: 'search', component: SearchComponent },
             { path: 'restaurants/:id', component: RestaurantDetailComponent},
-            { path: 'restaurants/:id/review', component: PostReviewComponent}
+            { path: 'restaurants/:id/review', component: PostReviewComponent, canActivate: [userAuthGuard] },
+            { path: 'profile', component: ProfileComponent, canActivate: [userAuthGuard] }
         ]},
     {   path: 'login', component: LoginComponent},
     {   path: 'signup', component: SignupComponent}

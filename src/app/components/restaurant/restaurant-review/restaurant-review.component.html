@@ -26,7 +26,7 @@
                 <div class="col-0"></div>
                 <div class="col-12">
                     @for (review of restaurantReview; track review.id) {
-                    <app-review-card [Review]="review"></app-review-card>
+                    <app-review-card [Review]="review" (reviewDeleted)="onReviewDeleted($event)"></app-review-card>
                     }
                 </div>
             </div>
