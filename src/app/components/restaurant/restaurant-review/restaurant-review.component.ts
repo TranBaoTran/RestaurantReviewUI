@@ -1,8 +1,10 @@
 import { Component, OnInit} from '@angular/core';
 import { ReviewService } from '../../../services/review.service';
-import { Review,  } from '../../../models/review.model';
+import { Review, VoteReview,  } from '../../../models/review.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReviewCardComponent } from '../review-card/review-card.component';
+import { SecureStorageService } from '../../../services/secure-storage.service';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-restaurant-review',
@@ -16,7 +18,7 @@ export class RestaurantReviewComponent implements OnInit {
   hasVoted : boolean = false; 
   
   constructor(private router : Router, private reviewService : ReviewService, 
-    private activatedRoute : ActivatedRoute) {
+    private activatedRoute : ActivatedRoute, private secureStorageService : SecureStorageService, private userService : UserService) {
    
   }
 
@@ -31,7 +33,18 @@ export class RestaurantReviewComponent implements OnInit {
 
     this.reviewService.getRestaurantReviews(id).subscribe({
       next: (data : Review[]) => {
-        this.restaurantReview = data
+        if(this.userService.isLoggedIn()){
+          const storedUserId = Number(this.secureStorageService.getUserId());
+          this.restaurantReview = data.map(review => ({
+            ...review,
+            hasVoted: this.checkIfUserVoted(review, storedUserId)
+          }));
+        }else{
+          this.restaurantReview = data.map(review => ({
+            ...review,
+            hasVoted: []
+          }));
+        }  
       },
       error: (error) => {
         console.log("Can't fetch Review:" + error);
@@ -52,7 +65,9 @@ export class RestaurantReviewComponent implements OnInit {
     this.loadReviews(); // Reload the list of reviews
   }
 
-
+  checkIfUserVoted(review : Review ,userId: number): VoteReview[] {
+    return review.voteReview.filter(vote => vote.userId === userId);
+  }
 
   // sortByDate() {
   //   this.filterReview = this.sortReviewsByDate(this.restaurantReview)

@@ -4,7 +4,7 @@ import { User } from '../../models/user.model';
 import { SecureStorageService } from '../../services/secure-storage.service';
 import { ReviewCardComponent } from '../restaurant/review-card/review-card.component';
 import { ReviewService } from '../../services/review.service';
-import { Review } from '../../models/review.model';
+import { Review, VoteReview } from '../../models/review.model';
 
 @Component({
   selector: 'app-profile',
@@ -45,20 +45,29 @@ export class ProfileComponent implements OnInit {
   }
 
   getReview(storedUserId : number): void {
-    this.reviewService.getUserReviews(storedUserId).subscribe({
+    this.reviewService.getRestaurantReviews(storedUserId).subscribe({
       next: (data : Review[]) => {
-        if (data) {
-          this.restaurantReview = data;
-        }
+        if(this.userService.isLoggedIn()){
+          const storedUserId = Number(this.secureStorageService.getUserId());
+          this.restaurantReview = data.map(review => ({
+            ...review,
+            hasVoted: this.checkIfUserVoted(review, storedUserId)
+          }));
+        }else{
+          this.restaurantReview = data.map(review => ({
+            ...review,
+            hasVoted: []
+          }));
+        }  
       },
       error: (error) => {
-        console.error('Error fetching review by user:', error);
-        window.alert('An error occurred while fetching the review by user.');
-      },
-      complete: () => {
-        console.log('getReviewByUser request completed.');
-      },
+        console.log("Can't fetch Review:" + error);
+      }
     })
+  }
+
+  checkIfUserVoted(review : Review ,userId: number): VoteReview[] {
+    return review.voteReview.filter(vote => vote.userId === userId);
   }
 
   onReviewDeleted(reviewId: number): void {

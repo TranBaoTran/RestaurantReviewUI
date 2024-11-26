@@ -1,3 +1,4 @@
+var google : any;
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Review, VoteReview } from '../../../models/review.model';
 import { UserService } from '../../../services/user.service';
@@ -7,6 +8,7 @@ import { RatingStarComponent } from "../rating-star/rating-star.component";
 import { SecureStorageService } from '../../../services/secure-storage.service';
 import { CommonModule } from '@angular/common';
 import { ReviewService } from '../../../services/review.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-review-card',
@@ -24,9 +26,9 @@ export class ReviewCardComponent implements OnInit{
   month: number = 0;
   day: number = 0;
   userid : number = -1;
-  hasVoted : VoteReview[] = [];
 
-  constructor( private userService : UserService, private secureStorageService : SecureStorageService, private reviewService : ReviewService){
+
+  constructor( private userService : UserService, private secureStorageService : SecureStorageService, private reviewService : ReviewService, private router : Router){
     
   }
 
@@ -37,7 +39,6 @@ export class ReviewCardComponent implements OnInit{
       const storedUserId = Number(this.secureStorageService.getUserId());
       this.userid = storedUserId;
     }
-    this.hasVoted = this.checkIfUserVoted(this.userid);
   }
 
   loadUserInfo(userId : number){
@@ -74,7 +75,49 @@ export class ReviewCardComponent implements OnInit{
     }
   }
 
-  checkIfUserVoted(userId: number): VoteReview[] {
-    return this.Review.voteReview.filter(vote => vote.userId === userId);
+  upVote(): void{
+    if(this.userid == -1){
+      this.router.navigate(['/login']);
+    }
+    this.reviewService.upvoteReiview(this.Review.id, this.userid).subscribe({
+      next: (data : {message : string}) => {
+        if(data){
+          this.reviewDeleted.emit(this.Review.id); 
+        }
+      },
+      error: (error) => {
+        if (error.status === 401) {
+          window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+          this.secureStorageService.clearStorage();
+          google.accounts.id.disableAutoSelect();
+          this.router.navigate(['/login']);
+        } else {
+          window.alert(`An error occurred: ${error.message}`);
+        }
+      },
+    })
+  }
+
+  downVote(): void{
+    if(this.userid == -1){
+      this.router.navigate(['/login']);
+    }
+    this.reviewService.downvoteReiview(this.Review.id, this.userid).subscribe({
+      next: (data : {message : string}) => {
+        if(data){
+          this.reviewDeleted.emit(this.Review.id); 
+        }
+      },
+      error: (error) => {
+        if (error.status === 401) {
+          window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+          this.secureStorageService.clearStorage();
+          google.accounts.id.disableAutoSelect();
+          this.router.navigate(['/login']);
+        } else {
+          window.alert(`An error occurred: ${error.message}`);
+        }
+      },
+    })
   }
 }

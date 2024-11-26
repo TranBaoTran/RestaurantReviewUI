@@ -11,6 +11,7 @@ export interface Review {
     voteReview: VoteReview[]
     upVotes: number
     downVotes: number
+    hasVoted : VoteReview[]
   }
   
   export interface ReviewCriterion {

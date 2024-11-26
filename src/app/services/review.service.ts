@@ -26,4 +26,12 @@ export class ReviewService {
   deleteReviewById(id : number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`)
   }
+
+  upvoteReiview(revId : number, userId : number): Observable<{message : string}> {
+    return this.http.post<{message : string}>(`${this.apiUrl}/UpVoteReviewButton/${revId}/${userId}`, null);
+  }
+
+  downvoteReiview(revId : number, userId : number): Observable<{message : string}> {
+    return this.http.post<{message : string}>(`${this.apiUrl}/DownVoteReviewButton/${revId}/${userId}`, null);
+  }
 }

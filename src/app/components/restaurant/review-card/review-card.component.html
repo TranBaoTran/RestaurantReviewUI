@@ -15,22 +15,24 @@
                     <a class="link-muted me-2">
                         <i 
                           class="fa me-1" 
-                          [ngClass]="hasVoted.length === 0 
+                          [ngClass]="Review.hasVoted.length === 0 
                             ? 'fa-thumbs-o-up' 
-                            : hasVoted[0].type 
+                            : Review.hasVoted[0].type 
                               ? 'fa-thumbs-up' 
-                              : 'fa-thumbs-o-up'">
+                              : 'fa-thumbs-o-up'"
+                            (click)="upVote()">
                         </i>
                         {{ Review.upVotes }}
                       </a>
-                      <a class="link-muted">
+                      <a class="link-muted" >
                         <i 
                           class="fa me-1 text-danger" 
-                          [ngClass]="hasVoted.length === 0 
+                          [ngClass]="Review.hasVoted.length === 0 
                             ? 'fa-thumbs-o-down' 
-                            : hasVoted[0].type 
+                            : Review.hasVoted[0].type 
                               ? 'fa-thumbs-o-down' 
-                              : 'fa-thumbs-down'">
+                              : 'fa-thumbs-down'"
+                            (click)="downVote()">
                         </i>
                         {{ Review.downVotes }}
                       </a> 
@@ -79,8 +81,6 @@
                     </mdb-accordion-item>
                 </mdb-accordion>
                 }
-
-
 
                 @if (Review.reviewImage.length > 0) {
                 <div class="d-flex flex-wrap">

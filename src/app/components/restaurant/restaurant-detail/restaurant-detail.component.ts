@@ -15,7 +15,7 @@ import { SearchService } from '../../../services/search.service';
 @Component({
   selector: 'app-restaurant-detail',
   standalone: true,
-  imports: [MdbCarouselModule, RestaurantReviewComponent,RatingStarComponent,RouterLink,CommonModule,SearchComponent],
+  imports: [MdbCarouselModule, RestaurantReviewComponent,RatingStarComponent,RouterLink,CommonModule],
   templateUrl: './restaurant-detail.component.html',
   styleUrl: './restaurant-detail.component.css'
 })
