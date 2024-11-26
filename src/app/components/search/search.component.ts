@@ -1,3 +1,4 @@
+var google : any;
 import { Component } from '@angular/core';
 import { Restaurant } from '../../models/restaurant.model';
 import { RestaurantService } from '../../services/restaurant.service';
@@ -149,7 +150,14 @@ export class SearchComponent {
             this.getSearchRes();
           }, 
           error: (error) => {
-            console.log(error);
+            if (error.status === 401) {
+              window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+              this.secureStorageService.clearStorage();
+              google.accounts.id.disableAutoSelect();
+              this.router.navigate(['/login']);
+            } else {
+              window.alert(`An error occurred: ${error.message}`);
+            }
           },
           complete: () => {
             console.log("Remove fav successful");
@@ -165,7 +173,14 @@ export class SearchComponent {
             this.getSearchRes();
           }, 
           error: (error) => {
-            console.log(error);
+            if (error.status === 401) {
+              window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+              this.secureStorageService.clearStorage();
+              google.accounts.id.disableAutoSelect();
+              this.router.navigate(['/login']);
+            } else {
+              window.alert(`An error occurred: ${error.message}`);
+            }
           },
           complete: () => {
             console.log("Add fav successful");

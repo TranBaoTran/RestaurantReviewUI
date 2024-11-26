@@ -45,7 +45,7 @@ export class ProfileComponent implements OnInit {
   }
 
   getReview(storedUserId : number): void {
-    this.reviewService.getRestaurantReviews(storedUserId).subscribe({
+    this.reviewService.getUserReviews(storedUserId).subscribe({
       next: (data : Review[]) => {
         if(this.userService.isLoggedIn()){
           const storedUserId = Number(this.secureStorageService.getUserId());

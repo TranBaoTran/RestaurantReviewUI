@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, Validators,ReactiveFormsModule} from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, Validators,ReactiveFormsModule, FormBuilder} from '@angular/forms';
 import { MdbFormsModule } from 'mdb-angular-ui-kit/forms';
 import { MdbValidationModule } from 'mdb-angular-ui-kit/validation';
 import { RatingStarComponent } from "../rating-star/rating-star.component";
@@ -10,6 +10,10 @@ import { Image, Restaurant } from '../../../models/restaurant.model';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzUploadFile, NzUploadModule } from 'ng-zorro-antd/upload';
+import { ReviewModelSent } from '../../../models/review.model';
+import { ReviewService } from '../../../services/review.service';
+import { SecureStorageService } from '../../../services/secure-storage.service';
+import { UserService } from '../../../services/user.service';
 
 const getBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
   new Promise((resolve, reject) => {
@@ -29,15 +33,30 @@ const getBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
 })
 export class PostReviewComponent implements OnInit {
   resImage: Image[] = [];
-  restaurant? : Restaurant;
-  validationForm: FormGroup;
+  restaurant !: Restaurant;
+  validationForm : FormGroup;
+  newReviewModelSent: ReviewModelSent = {
+    revTitle: "",
+    revContent: "",
+    revLocation: 0,
+    revPrice: 0,
+    revQuality: 0,
+    revService: 0,
+    revSpace: 0,
+    revImages: [],
+  };
   // imageUrl: string | ArrayBuffer | null | undefined = null;
 
-  constructor(private router : Router, private restaurantService : RestaurantService, private route : ActivatedRoute) {
-    this.validationForm = new FormGroup({
-      firstName: new FormControl(null, { validators: Validators.required, updateOn: 'submit' }),
-      lastName: new FormControl(null, { validators: Validators.required, updateOn: 'submit' }),
+  constructor(private router : Router, private restaurantService : RestaurantService, private route : ActivatedRoute, private fb: FormBuilder, private reiviewService : ReviewService, private secureStorageService : SecureStorageService, private userService : UserService) {
+    this.validationForm = this.fb.group({
+      title: [this.newReviewModelSent.revTitle],
+      content: [this.newReviewModelSent.revContent],
     });
+
+    this.validationForm.valueChanges.subscribe(values => {
+      this.newReviewModelSent.revTitle = values.title;
+      this.newReviewModelSent.revContent = values.content;
+    })
   }
 
   ngOnInit(): void {
@@ -45,16 +64,39 @@ export class PostReviewComponent implements OnInit {
     this.loadResImages();
   }
 
-  get firstName(): AbstractControl {
-    return this.validationForm.get('firstName')!;
-  }
-
-  get lastName(): AbstractControl {
-    return this.validationForm.get('lastName')!;
-  }
-
   onSubmit(): void {
     this.validationForm.markAllAsTouched();
+    const formData = new FormData();
+
+    formData.append('revTitle', this.newReviewModelSent.revTitle);
+    formData.append('revContent', this.newReviewModelSent.revContent);
+    formData.append('revLocation', String(this.newReviewModelSent.revLocation));
+    formData.append('revPrice', String(this.newReviewModelSent.revPrice)); 
+    formData.append('revQuality', String(this.newReviewModelSent.revQuality)); 
+    formData.append('revService', String(this.newReviewModelSent.revService)); 
+    formData.append('revSpace', String(this.newReviewModelSent.revSpace));   
+
+    this.fileList.forEach(file => {
+      if (file.originFileObj) {
+        formData.append('revImages', file.originFileObj); 
+      }
+    });
+
+    if(this.userService.isLoggedIn()){
+      const storedUserId = Number(this.secureStorageService.getUserId());
+      this.reiviewService.addReview(storedUserId, this.restaurant.id, formData).subscribe({
+        next : (data : {message : string}) => {
+          if(data){
+            window.alert(data.message);
+            this.router.navigate([`/restaurants/${this.restaurant.id}`]);
+          }
+        },
+        error : (error) => {
+          console.log("Error ; "+error);
+        }
+      })
+    }
+    
   }
 
   loadResImages() {
@@ -87,6 +129,26 @@ export class PostReviewComponent implements OnInit {
         this.restaurant = restaurant;
       }
     });
+  }
+
+  onLocationRatingChange(newRating: number): void{
+    this.newReviewModelSent.revLocation = newRating;
+  }
+
+  onPriceRatingChange(newRating: number): void{
+    this.newReviewModelSent.revPrice = newRating;
+  }
+
+  onQualityRatingChange(newRating: number): void{
+    this.newReviewModelSent.revQuality = newRating;
+  }
+
+  onServiceRatingChange(newRating: number): void{
+    this.newReviewModelSent.revService = newRating;
+  }
+
+  onSpaceRatingChange(newRating: number): void{
+    this.newReviewModelSent.revSpace = newRating;
   }
 
 

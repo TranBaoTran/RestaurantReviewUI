@@ -1,0 +1,7 @@
+.img-fluid {
+    width: 200px;           /* Fixed width */
+    height: 200px;          /* Fixed height */
+    object-fit: cover;      /* Crop the image to cover the container */
+    object-position: center;
+  }
+  

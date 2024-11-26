@@ -32,3 +32,14 @@ export interface Review {
     type: boolean
     isActive: boolean
   }
+
+  export interface ReviewModelSent{
+    revTitle : string
+    revContent : string
+    revLocation : number
+    revPrice : number
+    revQuality : number
+    revService : number
+    revSpace : number
+    revImages : File[]
+  }

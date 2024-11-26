@@ -85,7 +85,7 @@
                 @if (Review.reviewImage.length > 0) {
                 <div class="d-flex flex-wrap">
                     @for(img of Review.reviewImage;track $index) {
-                    <img class="img-thumbnail" src="{{Review.reviewImage[0].imgPath}}">
+                    <img class="img-fluid img-thumbnail" [src]="img.imgPath">
                     }
                 </div>
                 }

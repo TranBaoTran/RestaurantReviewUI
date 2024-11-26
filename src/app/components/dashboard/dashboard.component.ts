@@ -1,3 +1,4 @@
+var google : any;
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MdbTabsModule } from 'mdb-angular-ui-kit/tabs';
@@ -233,7 +234,14 @@ export class DashboardComponent implements OnInit {
             this.getReviewdRes(Number(this.secureStorageService.getUserId()));
           }, 
           error: (error) => {
-            console.log(error);
+            if (error.status === 401) {
+              window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+              this.secureStorageService.clearStorage();
+              google.accounts.id.disableAutoSelect();
+              this.router.navigate(['/login']);
+            } else {
+              window.alert(`An error occurred: ${error.message}`);
+            }
           },
           complete: () => {
             console.log("Remove fav successful");
@@ -252,7 +260,14 @@ export class DashboardComponent implements OnInit {
             this.getReviewdRes(Number(this.secureStorageService.getUserId()));
           }, 
           error: (error) => {
-            console.log(error);
+            if (error.status === 401) {
+              window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+              this.secureStorageService.clearStorage();
+              google.accounts.id.disableAutoSelect();
+              this.router.navigate(['/login']);
+            } else {
+              window.alert(`An error occurred: ${error.message}`);
+            }
           },
           complete: () => {
             console.log("Add fav successful");

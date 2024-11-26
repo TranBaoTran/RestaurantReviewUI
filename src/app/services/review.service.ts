@@ -34,4 +34,8 @@ export class ReviewService {
   downvoteReiview(revId : number, userId : number): Observable<{message : string}> {
     return this.http.post<{message : string}>(`${this.apiUrl}/DownVoteReviewButton/${revId}/${userId}`, null);
   }
+
+  addReview(userId : number, resId : number, formData : FormData): Observable<{message : string}> {
+    return this.http.post<{message : string}>(`${this.apiUrl}/AddReviewAndImage/${userId}/${resId}`, formData);
+  }
 }

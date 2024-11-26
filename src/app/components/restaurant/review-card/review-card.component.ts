@@ -1,6 +1,6 @@
 var google : any;
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Review, VoteReview } from '../../../models/review.model';
+import { Review } from '../../../models/review.model';
 import { UserService } from '../../../services/user.service';
 import { User } from '../../../models/user.model';
 import { MdbAccordionModule } from 'mdb-angular-ui-kit/accordion';

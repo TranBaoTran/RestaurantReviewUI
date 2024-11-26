@@ -1,4 +1,4 @@
-import { Component, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-rating-star',
@@ -10,13 +10,13 @@ import { Component, Input, Output } from '@angular/core';
 export class RatingStarComponent {
  @Input() rating:number  = 0;
  @Input() readonly:boolean = false;
- @Output() OutputRaing : number = this.rating;
+ @Output() ratingChange: EventEmitter<number> = new EventEmitter<number>();
 
  setRating(value: number){
   if(this.readonly){
     return;
   }
   this.rating = value;  
+  this.ratingChange.emit(this.rating);
  }
- 
 }

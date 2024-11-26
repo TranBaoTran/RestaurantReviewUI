@@ -5,12 +5,12 @@
             <div class="card">
                 <div class="bg-image hover-overlay" mdbRipple rippleColor="light">
                     <img src="{{resImage[0].imgPath}}" class="img-fluid" />
-                    <a (click)="goToDetailRes(this.restaurant?.id!)">
+                    <a (click)="goToDetailRes(this.restaurant.id!)">
                         <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
                     </a>
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">{{restaurant?.name}}</h5>
+                    <h5 class="card-title">{{restaurant.name}}</h5>
                 </div>
             </div>
         </div>
@@ -24,25 +24,45 @@
                             <div class="row mb-5">
                                 <div class="col-6">
                                     <h3>Vị trí</h3>
-                                    <app-rating-star></app-rating-star>
+                                    <app-rating-star 
+                                        [rating]="newReviewModelSent.revLocation" 
+                                        [readonly]="false" 
+                                        (ratingChange)="onLocationRatingChange($event)">
+                                    </app-rating-star>
                                 </div>
                                 <div class="col-6">
                                     <h3>Giá cả</h3>
-                                    <app-rating-star></app-rating-star>
+                                    <app-rating-star 
+                                        [rating]="newReviewModelSent.revPrice" 
+                                        [readonly]="false" 
+                                        (ratingChange)="onPriceRatingChange($event)">
+                                    </app-rating-star>
                                 </div>
                             </div>
                             <div class="row mb-5">
                                 <div class="col-6">
                                     <h3>Chất Lượng</h3>
-                                    <app-rating-star></app-rating-star>
+                                    <app-rating-star 
+                                        [rating]="newReviewModelSent.revQuality" 
+                                        [readonly]="false" 
+                                        (ratingChange)="onQualityRatingChange($event)">
+                                    </app-rating-star>
                                 </div>
                                 <div class="col-6">
                                     <h3>Dịch Vụ</h3>
-                                    <app-rating-star></app-rating-star>
+                                    <app-rating-star 
+                                        [rating]="newReviewModelSent.revService" 
+                                        [readonly]="false" 
+                                        (ratingChange)="onServiceRatingChange($event)">
+                                    </app-rating-star>
                                 </div>
                             </div>
                             <h3>Không Gian</h3>
-                            <app-rating-star></app-rating-star>
+                            <app-rating-star 
+                                [rating]="newReviewModelSent.revSpace" 
+                                [readonly]="false" 
+                                (ratingChange)="onSpaceRatingChange($event)">
+                            </app-rating-star>
                         </div>
                         <div class="form-group mt-2 mb-2">
 
@@ -50,30 +70,17 @@
                         <div class="form-group">
                             <p class="fw-bolder">TIÊU ĐỀ ĐÁNH GIÁ</p>
                             <mdb-form-control>
-                                <input mdbInput mdbValidate formControlName="firstName" required type="text"
+                                <input mdbInput mdbValidate formControlName="title" type="text"
                                     id="formControlLg" class="form-control form-control-lg" />
                                 <label mdbLabel class="form-label" for="formControlLg">Tiêu Đề</label>
-                                <!-- <mdb-error class="mt-2 mb-2" *ngIf="
-                                    firstName?.invalid && (firstName?.dirty || firstName?.touched)
-                                    ">First name is required
-                                </mdb-error>
-                                <mdb-success class="mt-2 mb-2" *ngIf="
-                                    firstName?.valid && (firstName?.dirty || firstName?.touched)
-                                    ">Looks good!
-                                </mdb-success> -->
                             </mdb-form-control>
                         </div>
                         <div class="form-group mt-2 mb-2">
                             <p class="fw-bolder">NỘI DUNG ĐÁNH GIÁ</p>
                             <mdb-form-control>
                                 <textarea mdbValidate mdbInput class="form-control" id="textAreaExample"
-                                    formControlName="lastName" required rows="4"></textarea>
+                                    formControlName="content" rows="4"></textarea>
                                 <label mdbLabel class="form-label" for="textAreaExample">Nội dung</label>
-                                <!-- <mdb-error *ngIf="lastName?.invalid && (lastName?.dirty || lastName?.touched)">Last name
-                                    is
-                                    required</mdb-error>
-                                <mdb-success *ngIf="lastName?.valid && (lastName?.dirty || lastName?.touched)">Looks
-                                    good!</mdb-success> -->
                             </mdb-form-control>
                         </div>
                         <div class="form-group">
@@ -114,7 +121,7 @@
                             <mdb-success *ngIf="checkbox?.valid && (checkbox?.dirty || checkbox?.touched)">Input
                                 valid</mdb-success>
                         </div> -->
-                        <button type="submit" class="btn btn-primary mt-4">Submit</button>
+                        <button type="submit" class="btn btn-primary mt-4">Gửi đánh giá</button>
                     </div>
                 </div>
             </div>
