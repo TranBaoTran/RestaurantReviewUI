@@ -1,0 +1,124 @@
+<div class="container">
+    <div class="d-flex flex-row justify-content-center mt-2">
+        <h1>Thêm Nhà Hàng</h1>
+    </div>
+    <div class="row ">
+        <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm()">
+            <nz-form-item>
+                <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="name">Tên Nhà Hàng</nz-form-label>
+                <nz-form-control [nzSm]=" 14" [nzXs]="24" nzErrorTip="Vui lòng nhập tên nhà hàng!">
+                    <input nz-input formControlName="name" id="name" placeholder="Tên Nhà Hàng" />
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="address" nzRequired>Địa Chỉ</nz-form-label>
+                <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Vui lòng nhập địa chỉ!">
+                    <input nz-input id="address" placeholder="Địa chỉ nhà hàng" formControlName="address" />
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSm]="6" nzFor="province" nzRequired>Tỉnh/Thành Phố</nz-form-label>
+                <nz-form-control [nzSm]="6" nzErrorTip="Vui lòng chọn Tỉnh/Thành Phố!">
+                    <nz-select [(ngModel)]="selectedProvinceId" (ngModelChange)="getDistrict(selectedProvinceId!)"
+                        id="province" formControlName="province" nzPlaceHolder="Lựa chọn tỉnh hoặc thành phố">
+                        @for (province of provinces; track $index) {
+                        <nz-option [nzValue]="province.id" [nzLabel]="province.name"></nz-option>
+                        }
+                    </nz-select>
+                </nz-form-control>
+                @if (currentDistrict.length > 0) {
+                <nz-form-label nzFor="district" nzRequired>Quận/Huyện</nz-form-label>
+                <nz-form-control [nzSm]="6" nzErrorTip="Vui lòng chọn Quận / Huyện">
+                    <nz-select id="district" formControlName="district" nzPlaceHolder="Vui lòng  chọn Quận / Huyện">
+                        @for (district of currentDistrict; track $index) {
+                        <nz-option [nzValue]="district.id" [nzLabel]="district.name"></nz-option>
+                        }
+                    </nz-select>
+                </nz-form-control>
+                }@else{
+                <nz-form-label nzFor="district" nzRequired>Quận/Huyện</nz-form-label>
+                <nz-form-control aria-disabled="true" [nzSm]="6" nzErrorTip="Vui lòng chọn Quận / Huyện">
+                    <nz-select id="district" formControlName="district" nzPlaceHolder="Lựa chọn Quận / Huyện">
+                    </nz-select>
+                </nz-form-control>
+                }
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="category" nzRequired>Phân loại</nz-form-label>
+                <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Hãy chọn thể loại của nhà hàng">
+                    <nz-select [nzMaxTagPlaceholder]="tagPlaceHolder" [(ngModel)]="SelectedCategories" nzMode="tags"
+                        id=" category" formControlName="category" nzPlaceHolder="Phân loại">
+                        @for (cate of categories; track cate) {
+                        <nz-option [nzValue]="cate.id" [nzLabel]="cate.name"></nz-option>
+                        }
+                    </nz-select>
+                    <ng-template #tagPlaceHolder let-selectedList>and {{ selectedList.length }} đã được
+                        chọn</ng-template>
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSm]="6" nzRequired>Giờ mở cửa</nz-form-label>
+                <nz-form-control [nzSm]="6">
+                    <nz-time-picker formControlName="openTime"></nz-time-picker>
+                </nz-form-control>
+                <nz-form-label nzRequired>Giờ đóng cửa</nz-form-label>
+                <nz-form-control [nzSm]="6">
+                    <nz-time-picker formControlName="closeTime"></nz-time-picker>
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="lowPrice" nzRequired>Giá Thấp Nhất</nz-form-label>
+                <nz-form-control [nzSm]="6" [nzXs]="12" nzErrorTip="Hãy Nhập Giá Thấp Nhất!">
+                    <input formControlName="lowPrice" id="'lowPrice'" nz-input placeholder="Giá Thấp Nhất" />
+                </nz-form-control>
+                <nz-form-label nzFor=" highPrice" nzRequired>Giá Cao Nhất</nz-form-label>
+                <nz-form-control [nzSm]="6" [nzXs]="12" nzErrorTip="Hãy Nhập Giá Cao Nhất!">
+                    <nz-input-group>
+                        <input nz-input id="highPrice" formControlName="highPrice" placeholder="Giá Cao Nhất" />
+                    </nz-input-group>
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="phoneNumber" nzRequired>Số Điện Thoại</nz-form-label>
+                <nz-form-control [nzSm]="6" [nzXs]="12" [nzValidateStatus]="validateForm.controls['phoneNumber']"
+                    nzErrorTip="Hãy Nhập Số Điện Thoại!">
+                    <input formControlName="phoneNumber" id="'phoneNumber'" nz-input placeholder="Số Điện Thoại" />
+                </nz-form-control>
+                <nz-form-label nzFor=" website" nzRequired>Website</nz-form-label>
+                <nz-form-control [nzSm]="6" [nzXs]="12" nzErrorTip="Hãy Nhập  website!">
+                    <nz-input-group>
+                        <input nz-input id="website" formControlName="website" placeholder="Website" />
+                    </nz-input-group>
+                </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+                <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="phoneNumber" nzRequired>Ảnh Nhà Hàng</nz-form-label>
+                <nz-form-control [nzSm]="14" [nzXs]="12" nzErrorTip="Hãy Nhập Số Điện Thoại!">
+                    <nz-upload nzAction="" nzListType="picture-card" [(nzFileList)]="fileList"
+                        [nzShowButton]="fileList.length < 8" [nzPreview]="handlePreview">
+                        <div>
+                            <div style="margin-top: 8px">Upload</div>
+                        </div>
+                    </nz-upload>
+                    <nz-modal [nzVisible]="previewVisible" [nzContent]="modalContent" [nzFooter]="null"
+                        (nzOnCancel)="previewVisible = false">
+                        <ng-template #modalContent>
+                            <img [src]="previewImage" style="width: 100%" />
+                        </ng-template>
+                    </nz-modal>
+                </nz-form-control>
+            </nz-form-item>
+
+
+
+
+
+            <nz-form-item nz-row class="register-area">
+                <nz-form-control [nzSpan]="14" [nzOffset]="6">
+                    <button nz-button nzType="primary">Đăng Ký Nhà Hàng</button>
+                </nz-form-control>
+            </nz-form-item>
+        </form>
+    </div>
+</div>
