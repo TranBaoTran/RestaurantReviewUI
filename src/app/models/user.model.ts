@@ -27,9 +27,4 @@ export interface User {
   avatarPath: string
   publicAvatarId: string
   isActive: boolean
-  favouriteRestaurants: any[]
-  restaurants: any[]
-  reviews: any[]
-  role: any
-  voteReviews: any[]
 }

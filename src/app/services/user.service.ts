@@ -48,4 +48,11 @@ export class UserService {
     return this.http.post<{message : string}>(`${this.apiUrl}/RemoveFavouriteRestaurant/${userid}/${resid}`, null);
   }
 
+  changeAvatar(userid : number, formData : FormData): Observable<{message : string}> {
+    return this.http.post<{message : string}>(`${this.apiUrl}/ChangeAvt/${userid}`, formData);
+  }
+  
+  editUserInfo(userid : number, name : string, phone : string): Observable<{message : string}> {
+    return this.http.post<{message : string}>(`${this.apiUrl}/EditUserInfo/${userid}/${name}/${phone}`, null);
+  }
 }

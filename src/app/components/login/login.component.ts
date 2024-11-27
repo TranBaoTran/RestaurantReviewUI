@@ -6,13 +6,13 @@ import { FormsModule } from '@angular/forms';
 import { Login, LoginResponse } from '../../models/user.model';
 import { UserService } from '../../services/user.service';
 import { jwtDecode } from 'jwt-decode';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { SecureStorageService } from '../../services/secure-storage.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })

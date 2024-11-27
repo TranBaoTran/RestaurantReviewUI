@@ -1,12 +1,33 @@
-.gradient-custom-2 {
-    /* fallback for old browsers */
-    background: #fbc2eb;
-    
-    /* Chrome 10-25, Safari 5.1-6 */
-    background: -webkit-linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238, 1));
-    
-    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238, 1))
-}
 
-    
+   .gradient-custom-2 {
+    background: linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238, 1));
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center; /* Center contents horizontally */
+    padding: 20px 0; /* Adds padding to prevent overflow */
+    box-sizing: border-box;
+  }
+  
+  .container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 100%;
+  }
+  
+  .card {
+    width: 100%; /* Ensure the card stays within the parent width */
+    overflow: visible; /* Allow overflow of content, if necessary */
+    margin-bottom: 20px; /* Prevent card from overlapping bottom padding */
+  }
+  
+  .card-body {
+    overflow: hidden; /* Prevent overflow within the card */
+  }
+  
+  .card img {
+    width: 100%; /* Ensure the image width is contained */
+    height: auto; /* Maintain aspect ratio */
+  }
+  
