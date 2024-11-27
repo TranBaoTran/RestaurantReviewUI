@@ -5,11 +5,13 @@ import { SecureStorageService } from '../../services/secure-storage.service';
 import { ReviewCardComponent } from '../restaurant/review-card/review-card.component';
 import { ReviewService } from '../../services/review.service';
 import { Review, VoteReview } from '../../models/review.model';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [ReviewCardComponent],
+  imports: [ReviewCardComponent, CommonModule, RouterModule],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css'
 })
@@ -75,3 +77,5 @@ export class ProfileComponent implements OnInit {
     this.getReview(Number(this.secureStorageService.getUserId())); // Reload the list of reviews
   }
 }
+
+

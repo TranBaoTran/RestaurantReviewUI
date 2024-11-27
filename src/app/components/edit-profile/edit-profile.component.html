@@ -1,0 +1,68 @@
+<div *ngIf="isLoading" class="loading-overlay">
+    <div class="spinner"></div>
+    <p>Loading...</p>
+  </div>
+
+<div class="container-xl px-4 mt-4">
+    <div class="row">
+        <div class="col-xl-4">
+            <!-- Profile picture card-->
+            <div class="card mb-4 mb-xl-0">
+                <div class="card-header">Hình đại diện</div>
+                <div class="card-body text-center">
+                    <!-- Profile picture image-->
+                    <img class="img-account-profile rounded-circle mb-2" [src] = "user.avatarPath" alt="">
+                    <!-- Profile picture help block-->
+                    <div class="small font-italic text-muted mb-4">JPG or PNG no larger than 5 MB</div>
+                    <!-- Profile picture upload button-->
+                    <label for="file-upload" class="btn btn-primary">
+                        Tải hình ảnh mới
+                      </label>
+                      <input type="file" id="file-upload" style="display: none;" (change)="onFileSelected($event)"/>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-8">
+            <!-- Account details card-->
+            <div class="card mb-4">
+                <div class="card-header">Thông tin cá nhân</div>
+                <div class="card-body">
+                    <form [formGroup]="validationForm" (ngSubmit)="onSubmit()">
+                        <!-- Form Group (username)-->
+                        <div class="mb-3">
+                            <label class="small mb-1" for="inputUsername">Tên tài khoản</label>
+                            <input class="form-control" id="inputUsername" type="text" formControlName="username">
+                        </div>
+                        <!-- Form Group (name)-->
+                        <div class="mb-3">
+                            <label class="small mb-1" for="inputName">Họ và tên</label>
+                            <input class="form-control" id="inputName" type="text" formControlName="name">
+                            <div *ngIf="validationForm.get('name')?.invalid && validationForm.get('name')?.touched">
+                                <small class="text-danger">
+                                  Tên không được bỏ trống.
+                                </small>
+                            </div>
+                        </div>
+                        <!-- Form Group (email address)-->
+                        <div class="mb-3">
+                            <label class="small mb-1" for="inputEmailAddress">Email</label>
+                            <input class="form-control" id="inputEmailAddress" type="email" formControlName="email">
+                        </div>
+                        <!-- Form Group (email address)-->
+                        <div class="mb-3">
+                            <label class="small mb-1" for="inputPhone">Phone number</label>
+                            <input class="form-control" id="inputPhone" type="tel" formControlName="phone">
+                            <div *ngIf="validationForm.get('phone')?.invalid && validationForm.get('phone')?.touched">
+                                <small class="text-danger">
+                                  Số điện thoại không được để trống và phải đúng định dạng (e.g., +1 (123) 456-7890).
+                                </small>
+                            </div>
+                        </div>       
+                        <!-- Save changes button-->
+                        <button class="btn btn-primary" type="submit" [disabled]="validationForm.invalid">Lưu thay đổi</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

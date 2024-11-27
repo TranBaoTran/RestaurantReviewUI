@@ -45,6 +45,7 @@ export class PostReviewComponent implements OnInit {
     revSpace: 0,
     revImages: [],
   };
+  isLoading = false; 
   // imageUrl: string | ArrayBuffer | null | undefined = null;
 
   constructor(private router : Router, private restaurantService : RestaurantService, private route : ActivatedRoute, private fb: FormBuilder, private reiviewService : ReviewService, private secureStorageService : SecureStorageService, private userService : UserService) {
@@ -65,6 +66,7 @@ export class PostReviewComponent implements OnInit {
   }
 
   onSubmit(): void {
+    this.isLoading = true;
     this.validationForm.markAllAsTouched();
     const formData = new FormData();
 
@@ -87,6 +89,7 @@ export class PostReviewComponent implements OnInit {
       this.reiviewService.addReview(storedUserId, this.restaurant.id, formData).subscribe({
         next : (data : {message : string}) => {
           if(data){
+            this.isLoading = false;
             window.alert(data.message);
             this.router.navigate([`/restaurants/${this.restaurant.id}`]);
           }
