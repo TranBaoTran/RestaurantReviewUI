@@ -16,6 +16,7 @@ import { RestaurantManagementComponent } from './components/admin/restaurant-man
 import { CategoryComponent } from './components/admin/category/category.component';
 import { DistrictComponent } from './components/admin/district/district.component';
 import { ProvinceComponent } from './components/admin/province/province.component';
+import { AdminDashboardComponent } from './components/admin/admin-dashboard/admin-dashboard.component';
 
 export const routes: Routes = [
     {   path: '', 
@@ -40,7 +41,7 @@ export const routes: Routes = [
             { path: 'province', component: ProvinceComponent },
             { path: 'restaurant-management', component: RestaurantManagementComponent },
             { path: 'category', component: CategoryComponent },
-            // { path: 'dashboard', component: AdminDashboardComponent },
+            { path: 'dashboard', component: AdminDashboardComponent },
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
         ]
     }
