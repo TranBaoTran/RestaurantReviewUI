@@ -1,0 +1,169 @@
+<!-- Filter  -->
+<div style="display: flex; align-items: center; justify-content: space-between;">
+    <div style="display: flex; align-items: center; position: relative;"></div>
+    <div style="display: flex; align-items: center;">
+        <!-- Search Bar -->
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-input" placeholder="Tìm kiếm..." [(ngModel)]="query"
+                (ngModelChange)="onSearch()">
+        </div>
+
+        <!-- Add Button (click)="openAdddistrictForm()" -->
+        <button class="add-button" (click)="openAddDistrictForm()">
+            <i class="fas fa-plus"></i>Thêm Quận / Huyện
+        </button>
+    </div>
+</div>
+
+<!-- Table Container -->
+<div class="table-container">
+    <div class="table-header">Quận / Huyện</div>
+
+    <!-- Add District Form -->
+    <div *ngIf="addStatus" class="edit-container">
+        <div class="form-wrapper">
+            <h3 class="form-title">Thêm Quận / Huyện</h3>
+            <div>
+                <form (ngSubmit)="onSave()">
+                    <div class="form-group">
+                        <label for="name">Tên Quận / Huyện</label>
+                        <input [(ngModel)]="newDistrict.name" name="name" id="name" #nameInput="ngModel" required />
+                        <div class="error" *ngIf="nameInput.invalid && nameInput.touched">
+                            Vui lòng nhập tên Quận / Huyện.
+                        </div>
+                    </div>
+                    <!-- Chọn Tỉnh -->
+                    <div class="form-group">
+                        <label for="name">Tên Thành Phố / Tỉnh</label>
+                        <mat-form-field appearance="fill" class="custom-form-field">
+                            <mat-label>Chọn Thành Phố / Tỉnh</mat-label>
+                            <mat-select [(ngModel)]="newDistrict.selectedProvince" name="selectedProvince" #provinceInput="ngModel" multiple required>
+                                <mat-option *ngFor="let province of provinces" [value]="province.id">
+                                    {{ province . name }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <div class="error" *ngIf="provinceInput.invalid && provinceInput.touched">
+                            Vui lòng chọn Thành Phố / Tỉnh.
+                        </div>
+                    </div>
+                    <div class="button-container">
+                        <button type="button" class="cancel" (click)="closeAddForm()">Thoát</button>
+                        <button type="submit" class="save" [disabled]="!provinceInput.valid || !nameInput.valid">Thêm</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit District Form -->
+    <div *ngIf="editStatus" class="edit-container">
+        <div class="form-wrapper">
+            <h3 class="form-title">Chỉnh Sửa Quận / Huyện</h3>
+            <div *ngIf="editedDistrict">
+                <form (ngSubmit)="onSave()">
+                    <div class="form-group">
+                        <label for="name">Tên Quận / Huyện</label>
+                        <input [(ngModel)]="editedDistrict.name" name="name" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="provinces">Tên Thành Phố / Tỉnh</label>
+                        <mat-form-field appearance="fill" class="custom-form-field">
+                            <mat-select [(ngModel)]="editedDistrict.selectedProvinces" name="selectedProvinces"
+                                multiple>
+                                <mat-option *ngFor="let province of provinces" [value]="province.id">
+                                    {{ province . name }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="button-container">
+                        <button type="button" class="cancel" (click)="goBack()">Thoát</button>
+                        <button type="submit" class="save">Lưu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <table mat-table [dataSource]="districtDataSource" class="mat-elevation-z8 mat-table" matSort matSortActive="id"
+        matSortDisableClear matSortDirection="asc">
+
+        <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+            <td mat-cell *matCellDef="let district"> {{ district . id }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="districtName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Tên Quận / Huyện </th>
+            <td mat-cell *matCellDef="let district"> {{ district . name }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="provinceName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Tên Thành Phố / Tỉnh</th>
+            <td mat-cell *matCellDef="let district"> {{ district . provinceName }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="restaurants">
+            <th mat-header-cell *matHeaderCellDef> Nhà hàng </th>
+            <td mat-cell *matCellDef="let district">
+                <div class="restaurant-info-wrapper">
+                    <div class="restaurant-info" (click)="showRestaurants(district.id)" matTooltip="Show Restaurants">
+                        <mat-icon>restaurant</mat-icon>
+                        <span>{{ getRestaurantCount(district . id) }}</span>
+                    </div>
+                </div>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let district">
+                <div class="action-buttons">
+                    <mat-icon class="action-icon edit-icon" (click)="openEditForm(district.id)">edit</mat-icon>
+                    <i class="fas fa-trash delete-icon" (click)="openDeleteDialog(district.id)" title="Delete"></i>
+                </div>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['id', 'districtName', 'provinceName', 'restaurants', 'action']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['id', 'districtName', 'provinceName', 'restaurants', 'action']"></tr>
+    </table>
+
+    <!-- Pagination Controls -->
+    <mat-paginator [pageSize]="pageSize" [length]="districts.length" [pageSizeOptions]="[10]"></mat-paginator>
+</div>
+
+<!-- Restaurant -->
+<div class="restaurant-popup" *ngIf="isRestaurantPopupVisible">
+    <div class="popup-overlay" (click)="closeRestaurantPopup()"></div>
+    <div class="popup-content">
+        <h4>Nhà hàng trong khu vực {{ selectedDistrictName }}</h4>
+        <!-- Scrollable List Container -->
+        <div class="scrollable-container">
+            <ul>
+                <li *ngFor="let restaurant of restaurantsInDistrict">
+                    <span>{{ restaurant . name }}</span>
+                    <a href="#" class="detail-link">Detail</a>
+                </li>
+            </ul>
+        </div>
+        <button class="close-button" (click)="closeRestaurantPopup()">Close</button>
+    </div>
+</div>
+
+<!-- Delete Confirmation Dialog -->
+<ng-template #lockDialog>
+  <div class="dialog-content">  
+    <div class="dialog-lock-icon">
+        <mat-icon>error_outline</mat-icon>
+    </div>
+    <h3>Bạn có chắc muốn xóa?</h3>
+    <div class="dialog-buttons">
+      <button mat-button (click)="closeDialog()">Thoát</button>
+      <button mat-button color="warn" (click)="confirmDelete()">Xác Nhận</button>
+    </div>
+  </div>
+</ng-template>

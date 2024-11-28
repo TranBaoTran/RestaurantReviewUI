@@ -1,0 +1,221 @@
+<!-- Filter Icon -->
+<div style="display: flex; align-items: center; justify-content: space-between;">
+    <div style="display: flex; align-items: center; position: relative;"></div>
+    <div style="display: flex; align-items: center; justify-content: flex-end; width: 100%;">
+        <!-- Search Bar -->
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-input" placeholder="Tìm kiếm..." [(ngModel)]="searchTerm"
+                (ngModelChange)="onSearch()">
+        </div>
+
+        <!-- Waiting Restaurants Button with Count -->
+        <button class="waiting-button" (click)="openWaitingPopup()">
+            <i class="fas fa-clock"></i>
+            Nhà Hàng Đang Chờ Duyệt
+            <span class="waiting-count">{{ waitingRestaurantsCount }}</span>
+        </button>
+    </div>
+</div>
+
+<!-- Waiting Restaurant Modal -->
+<div class="popup-overlay" *ngIf="isWaitingPopupVisible">
+    <div class="popup-container">
+        <h2>Nhà Hàng Đang Chờ Duyệt</h2>
+
+        <!-- Search Waiting Restaurant -->
+        <div class="waiting-search-container">
+            <!-- search box -->
+            <div class="search-waiting">
+                <div class="search-waiting-container">
+                    <input class="search-waiting-input" placeholder="Search..." type="text">
+                    <i class="fa fa-search search-icon"></i>
+                </div>
+            </div>
+
+            <!-- Category Filter Dropdown -->
+            <mat-form-field appearance="fill">
+                <mat-label>Thể Loại</mat-label>
+                <mat-select multiple [(value)]="selectedCategories" placeholder="Select categories">
+                    <mat-option *ngFor="let category of categories" [value]="category.id">
+                        {{ category.name }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <!-- waiting restaurant -->
+        <div class="popup-table-container">
+            <table mat-table [dataSource]="waitingRestaurantsDataSource" class="mat-elevation-z8"
+                style="box-shadow: none;" matSort matSortActive="id" matSortDisableClear matSortDirection="asc">
+                <!-- Checkbox Column -->
+                <ng-container matColumnDef="checkbox">
+                    <th mat-header-cell *matHeaderCellDef>
+                        <input type="checkbox" (change)="toggleSelectAll($event)" [checked]="isAllSelected()">
+                    </th>
+                    <td mat-cell *matCellDef="let waitingRestaurants">
+                        <input type="checkbox" [(ngModel)]="waitingRestaurants.selected">
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="id">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+                    <td mat-cell *matCellDef="let waitingRestaurants"> {{ waitingRestaurants . id }} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="userId">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> User ID </th>
+                    <td mat-cell *matCellDef="let waitingRestaurants"> {{ waitingRestaurants . userID }} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Nhà Hàng </th>
+                    <td mat-cell *matCellDef="let waitingRestaurants"> {{ waitingRestaurants . name }} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="category">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Thể Loại </th>
+                    <td mat-cell *matCellDef="let waitingRestaurants"> {{ waitingRestaurants . category }} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="detail">
+                    <th mat-header-cell *matHeaderCellDef> Chi Tiết </th>
+                    <td mat-cell *matCellDef="let waitingRestaurants">
+                        <mat-icon (click)="onDetailClick(waitingRestaurants)" class="detail-icon"
+                            aria-label="Detail icon">
+                            info
+                        </mat-icon>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="['checkbox', 'id', 'userId', 'name', 'category', 'detail']"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['checkbox', 'id', 'userId', 'name', 'category', 'detail'];"
+                    (click)="onRowClick(row)"></tr>
+            </table>
+        </div>
+
+        <!-- Box Chi Tiết -->
+        <div class="detail-box" *ngIf="selectedWaitingRestaurant">
+            <h4>Chi Tiết Nhà Hàng</h4>
+            <p><strong>ID:</strong> {{ selectedWaitingRestaurant . id }}</p>
+            <p><strong>Tên:</strong> {{ selectedWaitingRestaurant . name }}</p>
+            <p><strong>Thể Loại:</strong> {{ selectedWaitingRestaurant . category }}</p>
+            <p><strong>Địa Chỉ:</strong> {{ selectedWaitingRestaurant . address }} {{ selectedWaitingRestaurant . district }}</p>
+            <p><strong>Số Điện Thoại:</strong> {{ selectedWaitingRestaurant . phone }}</p>
+            <p><strong>Giờ Mở Cửa:</strong> {{ selectedWaitingRestaurant . openedTime }}</p>
+            <p><strong>Giờ Đóng Cửa:</strong> {{ selectedWaitingRestaurant . closedTime }}</p>
+            <button class="close-detail" (click)="closeDetailBox()">Close</button>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="popup-actions">
+            <button mat-button class="close-button" (click)="closeWaitingPopup()">Thoát</button>
+            <button mat-button class="reject-button" (click)="onReject()">Từ Chối</button>
+            <button mat-button class="accept-button" (click)="onAccept()">Chấp Nhận</button>
+        </div>
+    </div>
+</div>
+
+<!-- Data Table -->
+<div class="table-container">
+    <div class="table-header">Nhà Hàng</div>
+
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort matSortActive="id" matSortDisableClear
+        matSortDirection="asc">
+        <!-- ID Column -->
+        <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+            <td mat-cell *matCellDef="let restaurant"> {{ restaurant . id }} </td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Tên </th>
+            <td mat-cell *matCellDef="let restaurant"> {{ restaurant . name }} </td>
+        </ng-container>
+
+        <!-- Address Column -->
+        <ng-container matColumnDef="address">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Địa Chỉ </th>
+            <td mat-cell *matCellDef="let restaurant"> {{ restaurant . address }} </td>
+        </ng-container>
+
+        <!-- District Column -->
+        <ng-container matColumnDef="district">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Quận / Huyện </th>
+            <td mat-cell *matCellDef="let restaurant"> {{ getDistrictName(restaurant . districtID) }} </td>
+        </ng-container>
+
+        <!-- Opened Time Column -->
+        <ng-container matColumnDef="openedTime">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Giờ mở cửa </th>
+            <td mat-cell *matCellDef="let restaurant"> {{ restaurant . openedTime }} </td>
+        </ng-container>
+
+        <!-- Closed Time Column -->
+        <ng-container matColumnDef="closedTime">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Giờ đóng cửa </th>
+            <td mat-cell *matCellDef="let restaurant"> {{ restaurant . closedTime }} </td>
+        </ng-container>
+
+        <!-- Lowest Cost Column -->
+        <ng-container matColumnDef="lowestCost">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Giá Thấp Nhất </th>
+            <td mat-cell *matCellDef="let restaurant"> {{ restaurant . lowestCost }} </td>
+        </ng-container>
+
+        <!-- Highest Cost Column -->
+        <ng-container matColumnDef="highestCost">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Giá Cao Nhất </th>
+            <td mat-cell *matCellDef="let restaurant"> {{ restaurant . highestCost }} </td>
+        </ng-container>
+
+        <!-- Phone Column -->
+        <ng-container matColumnDef="phone">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Số Điện Thoại </th>
+            <td mat-cell *matCellDef="let restaurant"> {{ restaurant . phone }} </td>
+        </ng-container>
+
+        <!-- Website Column -->
+        <ng-container matColumnDef="website">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Website </th>
+            <td mat-cell *matCellDef="let restaurant"> {{ restaurant . website }} </td>
+        </ng-container>
+
+        <!-- User ID Column -->
+        <ng-container matColumnDef="userId">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>User ID</th>
+            <td mat-cell *matCellDef="let restaurant"> {{ restaurant . userId }} </td>
+        </ng-container>
+
+        <!-- Action Column -->
+        <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let restaurant">
+                <i class="fas fa-trash delete-icon" (click)="openDeleteDialog(restaurant.id)" title="Delete"></i>
+            </td>
+        </ng-container>
+
+        <!-- Header and Row Definition -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <!-- Pagination Controls -->
+    <mat-paginator [pageSize]="pageSize" [length]="restaurants.length" [pageSizeOptions]="[10]"></mat-paginator>
+</div>
+
+
+<!-- Delete Confirmation Dialog -->
+<ng-template #lockDialog>
+    <div class="dialog-content">  
+      <div class="dialog-lock-icon">
+          <mat-icon>error_outline</mat-icon>
+      </div>
+      <h3>Bạn có chắc muốn xóa?</h3>
+      <div class="dialog-buttons">
+        <button mat-button (click)="closeDialog()">Thoát</button>
+        <button mat-button color="warn" (click)="confirmDelete()">Xác Nhận</button>
+      </div>
+    </div>
+  </ng-template>

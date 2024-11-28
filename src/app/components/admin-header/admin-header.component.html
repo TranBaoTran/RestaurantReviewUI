@@ -1,0 +1,34 @@
+<nav class="navbar">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Admin Page</a>
+        <div class="navbar-icons">
+            <!-- Notification Icon -->
+            <div class="notification-container">
+                <i class="fa-solid fa-bell notification-icon"></i>
+                <span class="notification-badge" *ngIf="waitingRestaurantsCount > 0">{{ waitingRestaurantsCount }}</span>
+                <!-- Badge with number -->
+
+                <!-- Block containing notifications, only shown if there are waiting restaurants -->
+                <div class="notification-dropdown" *ngIf="waitingRestaurantsCount > 0">
+                    <ul class="notification-list">
+                        <li *ngFor="let restaurant of waitingRestaurants" class="notification-item"
+                            (click)="navigateToRestaurantManagement()">
+                            {{ restaurant . name }} Is Waiting For Approving
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="notification-dropdown no-notifications" *ngIf="waitingRestaurantsCount === 0">
+                    No restaurants are waiting for approval.
+                </div>
+            </div>
+
+            <div class="user-container">
+                <i class="fa-solid fa-user user-icon"></i>
+                <div class="logout-option">
+                    <a href="#" class="logout-link">Log Out</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
