@@ -1,3 +1,8 @@
+<div *ngIf="isLoading" class="loading-overlay">
+    <div class="spinner"></div>
+    <p>Loading...</p>
+</div>
+
 <div class="container">
     <div class="d-flex flex-row justify-content-center mt-2">
         <h1>Thêm Nhà Hàng</h1>
@@ -18,7 +23,7 @@
             </nz-form-item>
             <nz-form-item>
                 <nz-form-label [nzSm]="6" nzFor="province" nzRequired>Tỉnh/Thành Phố</nz-form-label>
-                <nz-form-control [nzSm]="6" nzErrorTip="Vui lòng chọn Tỉnh/Thành Phố!">
+                <nz-form-control [nzSm]="6" nzErrorTip="Vui lòng chọn Tỉnh/Thành Phố!"  style="margin-right: 5px;">
                     <nz-select [(ngModel)]="selectedProvinceId" (ngModelChange)="getDistrict(selectedProvinceId!)"
                         id="province" formControlName="province" nzPlaceHolder="Lựa chọn tỉnh hoặc thành phố">
                         @for (province of provinces; track $index) {
@@ -58,34 +63,51 @@
             </nz-form-item>
             <nz-form-item>
                 <nz-form-label [nzSm]="6" nzRequired>Giờ mở cửa</nz-form-label>
-                <nz-form-control [nzSm]="6">
-                    <nz-time-picker formControlName="openTime"></nz-time-picker>
+                <nz-form-control [nzSm]="6" nzErrorTip="Vui lòng chọn giờ mở cửa!"> 
+                    <nz-time-picker formControlName="openTime" [nzFormat]="'HH:mm'" (ngModelChange)="onTimeChange()"></nz-time-picker>
                 </nz-form-control>
+
                 <nz-form-label nzRequired>Giờ đóng cửa</nz-form-label>
-                <nz-form-control [nzSm]="6">
-                    <nz-time-picker formControlName="closeTime"></nz-time-picker>
+                <nz-form-control [nzSm]="6" nzErrorTip="Vui lòng chọn giờ đóng cửa!">
+                    <nz-time-picker formControlName="closeTime" [nzFormat]="'HH:mm'" (ngModelChange)="onTimeChange()"></nz-time-picker>
                 </nz-form-control>
-            </nz-form-item>
+
+              
+                <!-- Error message for cross-field validation -->
+                <nz-form-control *ngIf="validateForm.errors?.['timeRange']">
+                  <div class="ant-form-item-explain-error">
+                    <span>Giờ đóng cửa phải lớn hơn giờ mở cửa!</span>
+                  </div>
+                </nz-form-control>
+              </nz-form-item>
             <nz-form-item>
                 <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="lowPrice" nzRequired>Giá Thấp Nhất</nz-form-label>
-                <nz-form-control [nzSm]="6" [nzXs]="12" nzErrorTip="Hãy Nhập Giá Thấp Nhất!">
-                    <input formControlName="lowPrice" id="'lowPrice'" nz-input placeholder="Giá Thấp Nhất" />
+                <nz-form-control [nzSm]="6" [nzXs]="12" nzErrorTip="Giá thấp nhất không được bỏ trống và phải là số"  style="margin-right: 5px;">
+                  <input formControlName="lowPrice" id="lowPrice" nz-input placeholder="Giá Thấp Nhất" />
                 </nz-form-control>
-                <nz-form-label nzFor=" highPrice" nzRequired>Giá Cao Nhất</nz-form-label>
-                <nz-form-control [nzSm]="6" [nzXs]="12" nzErrorTip="Hãy Nhập Giá Cao Nhất!">
-                    <nz-input-group>
-                        <input nz-input id="highPrice" formControlName="highPrice" placeholder="Giá Cao Nhất" />
-                    </nz-input-group>
+                
+                <nz-form-label nzFor="highPrice" nzRequired>Giá Cao Nhất</nz-form-label>
+                <nz-form-control [nzSm]="6" [nzXs]="12" nzErrorTip="Giá cao nhất không được bỏ trống và phải là số">
+                  <nz-input-group>
+                    <input nz-input id="highPrice" formControlName="highPrice" placeholder="Giá Cao Nhất" />
+                  </nz-input-group>
                 </nz-form-control>
-            </nz-form-item>
+              
+                <!-- Error message for cross-field validation -->
+                <nz-form-control *ngIf="validateForm.errors?.['priceRange']">
+                  <div class="ant-form-item-explain-error">
+                    <span>Giá Cao Nhất phải lớn hơn Giá Thấp Nhất và phải lớn hơn hoặc bằng 0đ!</span>
+                  </div>
+                </nz-form-control>
+              </nz-form-item>
             <nz-form-item>
                 <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="phoneNumber" nzRequired>Số Điện Thoại</nz-form-label>
                 <nz-form-control [nzSm]="6" [nzXs]="12" [nzValidateStatus]="validateForm.controls['phoneNumber']"
-                    nzErrorTip="Hãy Nhập Số Điện Thoại!">
+                    nzErrorTip="Số điện thoại không được để trống và phải đúng định dạng (e.g., +1 (123) 456-7890)."  style="margin-right: 5px;">
                     <input formControlName="phoneNumber" id="'phoneNumber'" nz-input placeholder="Số Điện Thoại" />
                 </nz-form-control>
-                <nz-form-label nzFor=" website" nzRequired>Website</nz-form-label>
-                <nz-form-control [nzSm]="6" [nzXs]="12" nzErrorTip="Hãy Nhập  website!">
+                <nz-form-label nzFor=" website">Website</nz-form-label>
+                <nz-form-control [nzSm]="6" [nzXs]="12" nzErrorTip="Không đúng định dạng website.">
                     <nz-input-group>
                         <input nz-input id="website" formControlName="website" placeholder="Website" />
                     </nz-input-group>
@@ -93,19 +115,32 @@
             </nz-form-item>
 
             <nz-form-item>
-                <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="phoneNumber" nzRequired>Ảnh Nhà Hàng</nz-form-label>
-                <nz-form-control [nzSm]="14" [nzXs]="12" nzErrorTip="Hãy Nhập Số Điện Thoại!">
-                    <nz-upload nzAction="" nzListType="picture-card" [(nzFileList)]="fileList"
-                        [nzShowButton]="fileList.length < 8" [nzPreview]="handlePreview">
-                        <div>
-                            <div style="margin-top: 8px">Upload</div>
-                        </div>
+                <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="resImg" nzRequired>Ảnh Nhà Hàng</nz-form-label>
+                <nz-form-control
+                    [nzSm]="14"
+                    [nzXs]="12"
+                    >
+                    <nz-upload
+                    nzAction=""
+                    nzListType="picture-card"
+                    [(nzFileList)]="fileList"
+                    [nzShowButton]="fileList.length < 8"
+                    [nzPreview]="handlePreview"
+                    (nzChange)="validateForm.get('resImg')?.updateValueAndValidity()"
+                    >
+                    <div>
+                        <div style="margin-top: 8px">Upload</div>
+                    </div>
                     </nz-upload>
-                    <nz-modal [nzVisible]="previewVisible" [nzContent]="modalContent" [nzFooter]="null"
-                        (nzOnCancel)="previewVisible = false">
-                        <ng-template #modalContent>
-                            <img [src]="previewImage" style="width: 100%" />
-                        </ng-template>
+                    <nz-modal
+                    [nzVisible]="previewVisible"
+                    [nzContent]="modalContent"
+                    [nzFooter]="null"
+                    (nzOnCancel)="previewVisible = false"
+                    >
+                    <ng-template #modalContent>
+                        <img [src]="previewImage" style="width: 100%" />
+                    </ng-template>
                     </nz-modal>
                 </nz-form-control>
             </nz-form-item>

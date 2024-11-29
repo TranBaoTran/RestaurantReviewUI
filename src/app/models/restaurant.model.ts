@@ -1,6 +1,6 @@
 import { Review } from "./review.model"
 
-export interface Restaurant {
+  export interface Restaurant {
     id: number
     name: string
     address: string
@@ -18,6 +18,19 @@ export interface Restaurant {
     category : ResCate[]
     reviews : Review[]
     isFavorite: boolean
+  }
+
+  export interface SentRestaurant{
+    name: string
+    address: string
+    districtId: number
+    openedTime: string
+    closedTime: string
+    lowestCost: number
+    highestCost: number
+    phone: string
+    website: string
+    catagoryId: number[]
   }
   
   export interface AverageRatings {

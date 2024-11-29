@@ -3,7 +3,7 @@ import { Injectable, signal } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { Province } from '../models/district.model';
 import { Category } from '../models/category.model';
-import { Restaurant, Image } from '../models/restaurant.model';
+import { Restaurant, Image, SentRestaurant } from '../models/restaurant.model';
 
 @Injectable({
   providedIn: 'root'
@@ -55,5 +55,29 @@ export class RestaurantService {
 
   getRestaurantCategoryByResId(id: number): Observable<Category[]>{
     return this.http.get<{category : Category[]}>(`${this.apiUrl}RestaurantFilter/RestaurantCategory/${id}`).pipe(map((res) => res.category));
+  }
+
+  getUserRestaurant(id : number): Observable<Restaurant[]> {
+    return this.http.get<Restaurant[]>(`${this.apiUrl}Restaurant/GetUserRestaurant/${id}`);
+  }
+
+  addRestaurantImg(resId : number, formData : FormData): Observable<Image[]>{
+    return this.http.post<Image[]>(`${this.apiUrl}Restaurant/UploadResImage/${resId}`, formData);
+  }
+
+  delRestaurantImg(resId : number, publicId : string): Observable<{message : string}>{
+    return this.http.put<{message : string}>(`${this.apiUrl}Restaurant/DeleteRestaurantImage/${resId}/${publicId}`, null);
+  }
+
+  updateRestaurant(resId : number, sentRes : SentRestaurant): Observable<{message : string}>{
+    return this.http.put<{message : string}>(`${this.apiUrl}Restaurant/UptadeRestaurant/${resId}`, sentRes);
+  }
+
+  deleteRestaurant(resId : number): Observable<{message : string}>{
+    return this.http.post<{message : string}>(`${this.apiUrl}Restaurant/DeleteRestaurant/${resId}`, null);
+  }
+
+  createRestaurant(userId: number, formData : FormData): Observable<{message : string}>{
+    return this.http.post<{message : string}>(`${this.apiUrl}Restaurant/CreateRestaurant/${userId}`, formData);
   }
 }

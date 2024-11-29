@@ -42,8 +42,7 @@ export class EditProfileComponent implements OnInit {
       ],
       email: [this.user.email, [Validators.required, Validators.email]],
       phone: [this.user.phone, 
-        [Validators.required,
-        Validators.pattern("^([0-9]{10})$|^([0-9]{3}-[0-9]{3}-[0-9]{4})$|^(\\+?[0-9]{1,4}[\\s]?\\(?[0-9]{3}\\)?[\\s]?[0-9]{3}[-\\s]?[0-9]{4})$")]
+        [Validators.pattern("^([0-9]{10})$|^([0-9]{3}-[0-9]{3}-[0-9]{4})$|^(\\+?[0-9]{1,4}[\\s]?\\(?[0-9]{3}\\)?[\\s]?[0-9]{3}[-\\s]?[0-9]{4})$")]
       ]
     });
   }

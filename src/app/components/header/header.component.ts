@@ -204,4 +204,23 @@ export class HeaderComponent implements OnInit, OnChanges{
     });
     this.router.navigate(['/search']);
   }
+
+  changeRes(): void{
+    this.restaurantService.getUserRestaurant(this.user.id).subscribe({
+      next : (data : Restaurant[]) => {
+        if(data){
+          console.log(data);
+          if(data.length > 0){
+            this.router.navigate(['/edit-restaurant']);
+          }else{
+            this.router.navigate(['/add-restaurant']);
+          }
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching user restaurant:', error);
+        window.alert('An error occurred while fetching user restaurant.');
+      }
+    })
+  }
 }
