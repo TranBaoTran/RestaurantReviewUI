@@ -1,0 +1,134 @@
+.navbar {
+  background-color: #f7f7f7;
+  height: 50px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.navbar .container-fluid {
+  margin-left: 10px;
+  border-radius: 10px;
+  background-color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Navbar Icons */
+.navbar-icons {
+  position: sticky;
+  display: flex;
+  gap: 20px;
+  z-index: 1000;
+}
+
+/* Notification Icon and Badge */
+.notification-icon {
+  font-size: 1rem;
+  color: #333;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -10px;
+  background-color: red;
+  color: white;
+  font-size: 0.8rem;
+  width: 15px;
+  height: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%; /* Make it circular */
+}
+
+/* Notification Dropdown (Block of Notifications) */
+.notification-dropdown {
+  display: none; /* Hidden by default */
+  position: absolute;
+  top: 15px;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 400px;
+  max-height: 300px;
+  overflow-y: auto;
+  border-radius: 5px;
+  z-index: 100;
+}
+
+/* Display notifications on hover */
+.notification-container:hover .notification-dropdown {
+  display: block; /* Display the dropdown when hover on the notification container */
+}
+
+/* Style for no notifications message */
+.notification-dropdown.no-notifications {
+  display: none; /* Hidden by default */
+  padding: 10px;
+  text-align: center;
+}
+
+.notification-container:hover .notification-dropdown.no-notifications {
+  display: block; /* Display the "No notifications" message on hover */
+}
+
+.notification-list {
+  list-style: none;
+  padding: 10px;
+  margin: 0;
+}
+
+.notification-item {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.notification-item:hover {
+  background-color: #f1f1f1;
+}
+
+.notification-container {
+  position: relative;
+}
+
+
+/* User Icon with Logout Option */
+.user-container {
+  position: relative;
+
+}
+
+.user-icon {
+  font-size: 1rem;
+  color: #333;
+}
+
+.logout-option {
+  display: none;
+  position: absolute;
+  top: 20px;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  width: 100px;
+  z-index: 1;
+}
+
+.user-container:hover .logout-option {
+  display: block; /* Show logout option when hovering over the user container */
+}
+
+.logout-link {
+  color: #333;
+  text-decoration: none;
+}
+
+.logout-link:hover {
+  color: #000;
+}

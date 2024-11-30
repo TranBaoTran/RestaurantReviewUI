@@ -1,0 +1,290 @@
+<!-- Filter  -->
+<div style="display: flex; align-items: center; justify-content: space-between;">
+  <div style="display: flex; align-items: center; position: relative;"></div>
+
+  <div style="display: flex;">
+    <!-- Search Bar -->
+    <div class="search-container">
+      <i class="fas fa-search search-icon"></i>
+      <input type="text" class="search-input" placeholder="Tìm kiếm..." [(ngModel)]="query" (ngModelChange)="onSearch()">
+    </div>
+
+    <select class="status-select" [(ngModel)]="selectedStatus" (change)="applyStatusFilter()">
+      <option [ngValue]="true">Unlock</option>
+      <option [ngValue]="false">Lock</option>
+    </select>
+    
+    <!-- Add Button (click)="openAddUserForm()" -->
+    <button class="add-button" (click)="openAddUserForm()">
+      <i class="fas fa-plus"></i>Thêm Admin
+    </button>
+  </div>
+</div>
+
+<!-- Table Container -->
+<div class="table-container">
+  <div class="table-header">Người Dùng</div>
+
+  <!-- Add Account Form -->
+  <div *ngIf="addStatus" class="edit-container">
+    <div class="form-wrapper">
+      <h3 class="form-title">Thêm Admin</h3>
+      <div>
+        <form (ngSubmit)="onSubmit()" #addUserForm="ngForm">
+          <div class="form-group">
+            <label for="name"> Tên Người Dùng</label>
+            <input [(ngModel)]="newUser.name" name="name" id="name" required #username="ngModel"/>
+          </div>
+          
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input [(ngModel)]="newUser.email" name="email" id="email" required email #email="ngModel" />
+            <div *ngIf="email.invalid && email.touched" class="error">
+              Sai định dạng Email!
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="username">Tài Khoản</label>
+            <input [(ngModel)]="newUser.username" name="username" id="username" #username="ngModel" required />
+            <div *ngIf="username.errors?.['required'] && username.touched" class="error">
+              Tên Tài khoản là bắt buộc!
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Mật Khẩu</label>
+            <input type="password" [(ngModel)]="newUser.password" name="password" id="password" required #password="ngModel" />
+            <div *ngIf="password.invalid && password.touched" class="error">
+              Mật khẩu phải có ít nhất 6 chữ số!
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Số Điện Thoại</label>
+            <input [(ngModel)]="newUser.phone" name="phone" id="phone" required #phone="ngModel"/>
+            <div *ngIf="phone.invalid && phone.touched" class="error">
+              Số điện thoại sai định dạng!
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="avatarUrl">Avatar</label>
+            <input type="file" id="avatarUrl" (change)="onFileSelected($event)" />
+          </div>
+
+          <div class="button-container">
+            <button type="button" class="cancel" (click)="goBack()">Thoát</button>
+            <button type="submit" class="save" [disabled]="!email.valid || !phone.valid || !password.valid || 
+              !newUser.email || !newUser.phone || !newUser.username || !newUser.password">
+              Thêm
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit User Form -->
+  <div *ngIf="editStatus" class="edit-container">
+    <div class="form-wrapper">
+      <h3 class="form-title">Sửa Thông Tin Người Dùng</h3>
+      <div *ngIf="editedUser">
+        <form (ngSubmit)="onSave()">
+          <div class="form-group">
+            <label for="name">Tên Người Dùng</label>
+            <input [(ngModel)]="editedUser.name" name="name" required (ngModelChange)="checkFormChanged()" />
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input [(ngModel)]="editedUser.email" name="email" required email #email="ngModel" (ngModelChange)="checkFormChanged()" />
+            <div *ngIf="email.invalid && email.touched" class="error">
+              Sai định dạng Email!
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input [(ngModel)]="editedUser.username" name="username" required #username="ngModel" (ngModelChange)="checkFormChanged()" />
+            <div *ngIf="username.errors?.['required'] && username.touched" class="error">
+              Tên người dùng là bắt buộc!
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input [(ngModel)]="editedUser.password" name="password" type="password" required #password="ngModel" (ngModelChange)="checkFormChanged()" />
+            <div *ngIf="password.invalid && password.touched" class="error">
+              Mật khẩu phải có ít nhất 6 chữ số!
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Phone</label>
+            <input [(ngModel)]="editedUser.phone" name="phone" required #phone="ngModel" (ngModelChange)="checkFormChanged()" />
+            <div *ngIf="phone.invalid && phone.touched" class="error">
+              Số điện thoại sai định dạng!
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="avatarUrl">Avatar URL:</label>
+            <input type="file" id="avatarUrl" (change)="onFileSelected($event)" />
+          </div>
+
+          <div class="button-container">
+            <button type="button" class="cancel" (click)="goBack()">Thoát</button>
+            <button type="submit" class="save" [disabled]="!editChanged">Lưu</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form thay đổi mật khẩu -->
+  <div *ngIf="showChangePasswordForm" class="edit-container">
+    <div class="form-wrapper">
+      <h3 class="form-title">Đổi Mật Khẩu</h3>
+      <div *ngIf="changePwUser">
+        <form #changePasswordForm="ngForm" (ngSubmit)="onChangePassword(changePwUser.id)">
+          <div class="form-group">
+            <label for="id">ID</label>
+            <input [(ngModel)]="changePwUser.id" id="id" name="id" required class="blurred-background" />
+          </div>
+
+          <div class="form-group">
+            <label for="username">Tài Khoản</label>
+            <input [(ngModel)]="changePwUser.username" id="username" name="username" required class="blurred-background" />
+          </div>
+
+          <div class="form-group">
+            <label for="newPassword">Mật Khẩu Mới</label>
+            <input [(ngModel)]="newPassword" (input)="onInputChange()" type="password" id="newPassword" name="newPassword" required />
+            <div *ngIf="changePasswordForm.controls['newPassword']?.invalid && changePasswordForm.controls['newPassword']?.touched" class="error">
+              Mật khẩu là bắt buộc!
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword">Xác Nhận Mật Khẩu</label>
+            <input [(ngModel)]="confirmPassword" (input)="onInputChange()" type="password" id="confirmPassword" name="confirmPassword" required />
+            <div *ngIf="changePasswordForm.controls['confirmPassword']?.invalid && changePasswordForm.controls['confirmPassword']?.touched" class="error">
+              Xác nhận mật khẩu là bắt buộc!
+            </div>
+          </div>
+
+          <div class="button-container">
+            <button type="button" class="cancel" (click)="goBack()">Cancel</button>
+            <button type="submit" class="save" [disabled]="!isFormChanged || !changePasswordForm.valid">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" 
+      matSort matSortActive="id" matSortDisableClear matSortDirection="asc">
+
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+      <td mat-cell *matCellDef="let user"> {{ user.id }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="user">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Người Dùng </th>
+      <td mat-cell *matCellDef="let user">
+        <div class="user-info">
+          <img [src]="user.avatar" alt="avatar" class="avatar">
+          <div class="user-details">
+            <div class="user-name">{{ user.name }}</div>
+            <div class="user-email">{{ user.email }}</div>
+          </div>
+        </div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="username">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Tài Khoản </th>
+      <td mat-cell *matCellDef="let user"> {{ user.username }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="password">
+      <th mat-header-cell *matHeaderCellDef> Mật Khẩu </th>
+      <td mat-cell *matCellDef="let user">
+        {{ user.password | slice:0:30 }} 
+      </td>
+    </ng-container>
+    
+    <ng-container matColumnDef="phone">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Số Điện Thoại </th>
+      <td mat-cell *matCellDef="let user"> {{ user.phone }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef> Tình Trạng </th>
+      <td mat-cell *matCellDef="let user">
+        <span [ngClass]="{
+            'unlock': user.isActive === true,
+            'lock': user.isActive === false,
+          }" class="status-label">
+          {{ user.isActive ? 'Unlock' : 'Lock' }}
+        </span>
+      </td>
+    </ng-container>
+    
+    <ng-container matColumnDef="createdOn">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Thời Gian Tạo </th>
+      <td mat-cell *matCellDef="let user">
+        {{ user.createdOn | date: 'dd/MM/yyyy' }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="action">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let user">
+        <div class="action-buttons">
+          <mat-icon class="action-icon edit-icon" (click)="openEditForm(user.id)">edit</mat-icon>
+    
+          <!-- Lock/Unlock Icon -->
+          <mat-icon 
+            class="action-icon" 
+            [ngClass]="{'lock-icon': user.isActive, 'unlock-icon': !user.isActive}" 
+            (click)="openDialog(user?.id)" 
+            aria-label="Lock/Unlock User">
+            <i [class]="user.isActive ? 'fas fa-lock' : 'fas fa-unlock'"></i>
+          </mat-icon>
+
+          <mat-icon 
+            class="action-icon password-icon" 
+            (click)="openChangePasswordForm(user.id)" 
+            aria-label="Change Password">
+            <i class="fas fa-key"></i> <!-- Icon khóa -->
+          </mat-icon>
+        </div>
+      </td>
+    </ng-container>
+
+    
+    <tr mat-header-row *matHeaderRowDef="['id', 'user', 'username', 'password', 'phone', 'status', 'createdOn' ,'action']"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['id', 'user', 'username', 'password', 'phone', 'status', 'createdOn' , 'action']"></tr>
+  </table>
+
+  <!-- Pagination Controls -->
+  <mat-paginator [pageSize]="pageSize" [length]="users.length" [pageSizeOptions]="[10]"></mat-paginator>
+</div>
+
+<!-- Lock Confirmation Dialog -->
+<ng-template #lockDialog let-user="user">
+  <div class="dialog-content">
+    <div class="dialog-lock-icon">
+      <mat-icon>error_outline</mat-icon>
+    </div>
+    <h3>Bạn có chắc muốn xóa?</h3>
+    <div class="dialog-buttons">
+      <button mat-button (click)="closeDialog()">Cancel</button>
+      <button mat-button color="warn" (click)="confirmLock()">Confirm</button>
+    </div>
+  </div>
+</ng-template>

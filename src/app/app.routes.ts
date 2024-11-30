@@ -11,6 +11,14 @@ import { userAuthGuard } from './guards/user-auth.guard';
 import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
 import { AddRestaurantComponent } from './components/restaurant/add-restaurant/add-restaurant.component';
 import { EditRestaurantComponent } from './components/restaurant/edit-restaurant/edit-restaurant.component';
+import { AdminComponent } from './components/admin/admin.component';
+import { UserManagementComponent } from './components/admin/user-management/user-management.component';
+import { RestaurantManagementComponent } from './components/admin/restaurant-management/restaurant-management.component';
+
+import { CategoryComponent } from './components/admin/category/category.component';
+import { DistrictComponent } from './components/admin/district/district.component';
+import { ProvinceComponent } from './components/admin/province/province.component';
+import { AdminDashboardComponent } from './components/admin/admin-dashboard/admin-dashboard.component';
 
 export const routes: Routes = [
     {   path: '', 
@@ -27,5 +35,18 @@ export const routes: Routes = [
             { path: 'edit-restaurant', component: EditRestaurantComponent, canActivate: [userAuthGuard]}
         ]},
     {   path: 'login', component: LoginComponent},
-    {   path: 'signup', component: SignupComponent}
+    {   path: 'signup', component: SignupComponent},
+    { 
+        path: 'admin', 
+        component: AdminComponent, 
+        children:[
+            { path: 'user-management', component: UserManagementComponent },
+            { path: 'district', component: DistrictComponent },
+            { path: 'province', component: ProvinceComponent },
+            { path: 'restaurant-management', component: RestaurantManagementComponent },
+            { path: 'category', component: CategoryComponent },
+            { path: 'dashboard', component: AdminDashboardComponent },
+            { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+        ]
+    }
 ];
