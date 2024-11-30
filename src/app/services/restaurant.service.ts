@@ -80,4 +80,8 @@ export class RestaurantService {
   createRestaurant(userId: number, formData : FormData): Observable<{message : string}>{
     return this.http.post<{message : string}>(`${this.apiUrl}Restaurant/CreateRestaurant/${userId}`, formData);
   }
+
+  requestAcceptRestaurant(resId : number, sentRes : SentRestaurant): Observable<{message : string}>{
+    return this.http.put<{message : string}>(`${this.apiUrl}Restaurant/RequestAcceptRestaurant/${resId}`, sentRes);
+  }
 }

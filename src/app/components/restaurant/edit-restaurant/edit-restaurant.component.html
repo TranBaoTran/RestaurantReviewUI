@@ -8,7 +8,7 @@
         <h1>Chỉnh Sửa Nhà Hàng</h1>
     </div>
     <div class="row ">
-        <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm()">
+        <form nz-form [formGroup]="validateForm">
             <nz-form-item>
                 <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="name">Tên Nhà Hàng</nz-form-label>
                 <nz-form-control [nzSm]=" 14" [nzXs]="24" nzErrorTip="Vui lòng nhập tên nhà hàng!">
@@ -145,10 +145,10 @@
                         <div nz-typography nzType="danger">Nhà hàng của bạn đang được chờ duyệt.</div>
                     }
                     @else if (restaurant.status == "unaccepted") {
-                        <button nz-button nzType="primary" style="margin-right: 5px;">Gửi Xét Duyệt Lại</button>
+                        <button nz-button nzType="primary" style="margin-right: 5px;" (click)="clickReSendAcceptRes()">Gửi Xét Duyệt Lại</button>
                     }
                     @else {
-                        <button nz-button nzType="primary" style="margin-right: 5px;">Lưu Lại Thông Tin</button>
+                        <button nz-button nzType="primary" style="margin-right: 5px;" (click)="submitForm()">Lưu Lại Thông Tin</button>
                         <button (click)="goToDetailRes(this.restaurant.id)" nz-button nzType="dashed" style="margin-right: 5px;">Quay về nhà
                             hàng</button>
                         <button nz-button nzType="primary" nzDanger (click)="delRestaurant()">Xoá Nhà Hàng</button>

@@ -166,6 +166,51 @@ export class EditRestaurantComponent implements OnDestroy,OnInit {
     }
   }
 
+  clickReSendAcceptRes(): void{
+    if (this.fileList.length <= 0){
+      window.alert("Nhà hàng phải có ít nhất 1 hình ảnh.");
+      return;  
+    }
+
+    if (this.validateForm.valid) {
+      this.isLoading = true;
+      const sentRes : SentRestaurant = {
+        name : this.validateForm.value['name'],
+        address : this.validateForm.value['address'],
+        openedTime : this.formatDateToString(this.validateForm.value['openTime']),
+        closedTime : this.formatDateToString(this.validateForm.value['closeTime']),
+        lowestCost : this.validateForm.value['lowPrice'],
+        highestCost : this.validateForm.value['highPrice'],
+        phone : this.validateForm.value['phoneNumber'],
+        website : this.validateForm.value['website'],
+        districtId : this.validateForm.value['district'],
+        catagoryId: this.validateForm.value['category'].map((cat: any) => cat)
+      }
+      console.log(sentRes);
+      this.restaurantService.requestAcceptRestaurant(this.restaurant.id, sentRes).subscribe({
+        next : (data : {message : string}) => {
+          if(data){
+            this.isLoading = false;
+            window.alert(data.message);
+            window.location.reload();
+          }
+        },
+        error : (error) => {
+          window.alert("Gửi xét duyệt thành công.");
+          console.error('Error : '+ error.message);
+          this.isLoading = false;
+        }
+      });
+    } else {
+      Object.values(this.validateForm.controls).forEach(control => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+    }
+  }
+
   formatDateToString(date: Date | null): string {
     if (!date) return '';
     const localDate = new Date(date);
