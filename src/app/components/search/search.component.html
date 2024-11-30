@@ -37,8 +37,10 @@
                             <span class="ps-5 text-danger">Đang đóng cửa</span>
                         }
                     </div>
-                    <div class="mt-1 mb-1 spec-1" *ngFor="let cate of res.category">
-                        <span class="dot"></span><a class="category-link" (click)="searchByCate(cate.id)">{{cate.name}}</a>
+                    <div class="mt-1 mb-1 spec-1">
+                        @for(cate of res.category; track cate) {
+                            <span class="dot"></span><a class="category-link" (click)="searchByCate(cate.id)">{{cate.name}}</a>
+                        }
                     </div>
                     <div class="mt-1 mb-1 spec-1"><span>{{res.address}}</span><span *ngIf="getDistrictAndProvinceName(res.districtId, provinces) as location">
                         , Quận {{ location.districtName }}, Thành phố {{ location.provinceName }}
