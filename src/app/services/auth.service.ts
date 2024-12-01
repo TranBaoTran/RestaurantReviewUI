@@ -5,7 +5,7 @@ import { SecureStorageService } from './secure-storage.service';
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly secretKey = 'your-secret-key';
+  private userRole: string = '';
 
   constructor(private secureStorageService: SecureStorageService) { }
 
@@ -19,4 +19,8 @@ export class AuthService {
     const roleId = this.secureStorageService.getRole();
     return roleId === 'AD';
   }
+
+  getRole(): string {
+    return this.userRole;
+  }  
 }
