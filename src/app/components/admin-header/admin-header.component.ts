@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Restaurant } from '../../models/admin/restaurant.model';
 import { Router, RouterModule } from '@angular/router';
 import { RestaurantService } from '../../services/admin/restaurant.service';
+import { SecureStorageService } from '../../services/secure-storage.service';
 
 @Component({
   selector: 'app-admin-header',
@@ -16,7 +17,8 @@ export class AdminHeaderComponent implements OnInit {
   waitingRestaurantsCount: number = 0;
 
 
-  constructor(private restaurantService: RestaurantService, private router: Router) { }
+  constructor(private restaurantService: RestaurantService, private router: Router, 
+      private secureStorageService: SecureStorageService) { }
 
   ngOnInit(): void {
     // this.getWaitingRestaurants();
@@ -48,5 +50,10 @@ export class AdminHeaderComponent implements OnInit {
 
   navigateToRestaurantManagement() {
     this.router.navigate(['/admin/restaurant-management']);
+  }
+
+  logOut(): void {
+    this.secureStorageService.clearStorage();
+    this.router.navigate(['/']);
   }
 }
