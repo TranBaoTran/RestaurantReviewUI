@@ -10,6 +10,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
 import { Category } from '../../../models/admin/category.model';
 import { CategoryService } from '../../../services/admin/category.service';
+import { RestaurantService } from '../../../services/restaurant.service';
 
 @Component({
   selector: 'app-category',
@@ -48,29 +49,27 @@ export class CategoryComponent implements AfterViewInit{
   @ViewChild(MatSort) sort!: MatSort; 
   @ViewChild('lockDialog') lockDialog!: any;
 
-  constructor(private categoryService: CategoryService, private dialog: MatDialog) {}
+  constructor(private categoryService: CategoryService, private dialog: MatDialog, private restaurantService : RestaurantService) {}
 
   ngOnInit(): void {
-    // this.categorieservice.getDistricts().subscribe((districts: District[]) => {
-    //   this.districts = districts;
-    //   this.dataSource.data = districts;  // Set the data for the table
-    //   console.log('Dữ liệu người dùng:', this.districts);
-    // });
-    // this.selectedStatus = true;
-    this.categories = [
-      { id: 1, name: 'Hải sản', isActive: true },
-      { id: 2, name: 'Bình dân', isActive: true },
-      { id: 3, name: 'Món Nhật', isActive: true },
-      { id: 4, name: 'Ăn nhẹ/Tráng miệng', isActive: true },
-      { id: 5, name: 'Đặc sản', isActive: true },
-      { id: 6, name: 'Buffet', isActive: true },
-      { id: 7, name: 'Quán nhậu', isActive: true },
-      { id: 8, name: 'Tiệc tùng', isActive: true },
-      { id: 9, name: 'Ăn chay', isActive: true },
-      { id: 10, name: 'Sang trọng', isActive: true },
-      { id: 11, name: 'Món Hàn', isActive: true },
-    ];
-    this.dataSource.data = this.categories;
+    this.getCategories();
+  }
+
+  getCategories(): void{
+    this.restaurantService.getCategories().subscribe({
+      next: (data : Category[]) => {
+        if(data){
+          this.categories = data;
+          this.dataSource.data = this.categories;
+        }    
+      }, 
+      error: (error) => {
+        console.error('Error fetching categories:', error);
+        window.alert('An error occurred while fetching the categories.');
+      },complete: () => {
+        console.log('getCategories request completed.');
+      },
+    })
   }
 
   ngAfterViewInit() {
@@ -88,11 +87,10 @@ export class CategoryComponent implements AfterViewInit{
   openEditForm(categoryId: number): void {
     const category = this.categories.find((d) => d.id === categoryId);
     if (category) {
-    // Gán giá trị của category được chọn vào editedCategory
     this.editedCategory = {
       name: category.name,
     };
-    this.editStatus = true; // Bật trạng thái chỉnh sửa
+      this.editStatus = true; 
     }
   }
 

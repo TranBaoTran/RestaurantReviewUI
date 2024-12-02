@@ -33,9 +33,11 @@
                     Đang đóng cửa</span>
                 }
             </div>
-            <div class="mt-1 mb-1 spec-1 h3" *ngFor="let cate of resCate">
-                <a class="category-link badge rounded-pill badge-primary" style="cursor: pointer;"
+            <div class="mt-1 mb-1 spec-1 h3">
+                @for (cate of resCate; track cate) {
+                    <a class="category-link badge rounded-pill badge-primary me-3" style="cursor: pointer;"
                     (click)="goToSearch(cate.id)">{{cate.name}}</a>
+                }            
             </div>
             <div class=" d-flex flex-row flex-wrap">
                 <div class="mr-2">
@@ -48,17 +50,17 @@
                 <div class="ms-3 border-start ps-3">
                     <i class="fa fa-phone
                         "></i>
-                    {{restaurant.phone || "Phone"}}
+                    {{restaurant.phone || ""}}
                 </div>
                 <div class="ms-3 border-start ps-3">
                     <i class="fa fa-laptop
                         "></i>
-                    {{restaurant.website || "Website"}}
+                    {{restaurant.website || ""}}
                 </div>
                 <div class="ms-3 border-start ps-3">
                     <i class="fa fa-usd card-text-icon"></i>
-                    {{restaurant.lowestCost || "100k"}}đ -
-                    {{restaurant.highestCost ||"200k"}}đ
+                    {{restaurant.lowestCost || ""}}đ -
+                    {{restaurant.highestCost ||""}}đ
                 </div>
 
             </div>
@@ -145,7 +147,7 @@
                     </div>
                     <div class="d-flex flex-row justify-content-between">
                         <h5 class="">
-                            Không Giang
+                            Không Gian
                         </h5>
                         <div class="">
                             <app-rating-star [rating]="restaurant.averageRatings.space"
@@ -162,22 +164,22 @@
 
                     <h5 class="card-text ">
                         <i class="fa fa-cutlery card-text-icon"></i>
-                        <div class="card-text-item">{{restaurant.name || "Nha Hang"}}</div>
+                        <div class="card-text-item">{{restaurant.name || ""}}</div>
                     </h5>
                     <h5 class="card-text ">
                         <i class="fa fa-clock-o card-text-icon"></i>
-                        <div class="card-text-item">{{restaurant.openedTime || "7h00"}} -
+                        <div class="card-text-item">{{restaurant.openedTime || ""}} -
                             {{restaurant.closedTime ||
-                            "24h00"}}</div>
+                            ""}}</div>
                     </h5>
                     <h5 class="card-text ">
                         <i class="fa fa-usd card-text-icon"></i>
-                        <div class="card-text-item">{{restaurant.lowestCost|| "100k"}}đ -
+                        <div class="card-text-item">{{restaurant.lowestCost|| ""}}đ -
                             {{restaurant.highestCost ||"200k"}}đ</div>
                     </h5>
                     <h5 class="card-text ">
                         <i class="fa fa-laptop card-text-icon"></i>
-                        <div class="card-text-item">{{restaurant.website || "fit.sgu.vn"}}</div>
+                        <div class="card-text-item">{{restaurant.website || ""}}</div>
                     </h5>
                 </div>
             </div>
@@ -196,14 +198,14 @@
                     </h5>
                     <h5 class="card-text">
                         <i class="fa fa-map-marker card-text-icon"></i>
-                        <div class="card-text-item">{{restaurant.address || "Dia Chi Cua Nha Hang"}} <span
+                        <div class="card-text-item">{{restaurant.address || ""}} <span
                                 *ngIf="getDistrictAndProvinceName(restaurant.districtId, Provinces) as location">
                                 , Quận {{ location.districtName }}, Thành phố {{ location.provinceName }}
                             </span></div>
                     </h5>
                     <h5 class="card-text">
                         <i class="fa fa-phone card-text-icon"></i>
-                        <div class="card-text-item">{{restaurant.phone || "090909090909"}}</div>
+                        <div class="card-text-item">{{restaurant.phone || ""}}</div>
                     </h5>
                 </div>
             </div>

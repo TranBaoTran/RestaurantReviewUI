@@ -196,7 +196,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Người Dùng </th>
       <td mat-cell *matCellDef="let user">
         <div class="user-info">
-          <img [src]="user.avatar" alt="avatar" class="avatar">
+          <img [src]="user.avatarPath" alt="avatar" class="avatar">
           <div class="user-details">
             <div class="user-name">{{ user.name }}</div>
             <div class="user-email">{{ user.email }}</div>
@@ -208,13 +208,6 @@
     <ng-container matColumnDef="username">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Tài Khoản </th>
       <td mat-cell *matCellDef="let user"> {{ user.username }} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="password">
-      <th mat-header-cell *matHeaderCellDef> Mật Khẩu </th>
-      <td mat-cell *matCellDef="let user">
-        {{ user.password | slice:0:30 }} 
-      </td>
     </ng-container>
     
     <ng-container matColumnDef="phone">
@@ -245,8 +238,10 @@
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let user">
         <div class="action-buttons">
-          <mat-icon class="action-icon edit-icon" (click)="openEditForm(user.id)">edit</mat-icon>
-    
+          @if (user.roleId == "AD") {
+            <mat-icon class="action-icon edit-icon" (click)="openEditForm(user.id)">edit</mat-icon>
+          }
+         
           <!-- Lock/Unlock Icon -->
           <mat-icon 
             class="action-icon" 
@@ -267,8 +262,8 @@
     </ng-container>
 
     
-    <tr mat-header-row *matHeaderRowDef="['id', 'user', 'username', 'password', 'phone', 'status', 'createdOn' ,'action']"></tr>
-    <tr mat-row *matRowDef="let row; columns: ['id', 'user', 'username', 'password', 'phone', 'status', 'createdOn' , 'action']"></tr>
+    <tr mat-header-row *matHeaderRowDef="['id', 'user', 'username', 'phone', 'status', 'createdOn' ,'action']"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['id', 'user', 'username', 'phone', 'status', 'createdOn' , 'action']"></tr>
   </table>
 
   <!-- Pagination Controls -->

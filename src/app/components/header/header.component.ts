@@ -113,10 +113,6 @@ export class HeaderComponent implements OnInit, OnChanges{
   }
 
   getCategories(){
-    this.restaurantService.getCategories().subscribe(data => {
-      this.categories = data;
-    })
-
     this.restaurantService.getCategories().subscribe({
       next: (data : Category[]) => {
         if(data){
@@ -218,8 +214,15 @@ export class HeaderComponent implements OnInit, OnChanges{
         }
       },
       error: (error) => {
-        console.error('Error fetching user restaurant:', error);
-        window.alert('An error occurred while fetching user restaurant.');
+        if (error.status === 401) {
+          window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+          this.secureStorageService.clearStorage();
+          google.accounts.id.disableAutoSelect();
+          this.router.navigate(['/login']);
+        } else {
+          console.error('Error fetching user restaurant:', error);
+          window.alert('An error occurred while fetching user restaurant.');
+        }   
       }
     })
   }
