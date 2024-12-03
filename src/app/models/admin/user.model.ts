@@ -7,7 +7,8 @@ export interface User {
   phone: string;
   isActive: boolean;
   createdOn: Date;
-  avatar: string;
+  avatarPath: string;
+  publicAvatarId: string;
   roleId: string;
 }
 

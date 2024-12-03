@@ -38,11 +38,13 @@ export class UserManagementComponent implements AfterViewInit {
     phone: '',
     isActive: true, 
     createdOn: new Date(), 
-    avatar: '',
+    avatarPath: '',
+    publicAvatarId: 'default_avatar',
     roleId: 'AD',
   };
 
   selectedUserId?: number  | null = null;
+  avatarFile: File | null = null;
 
   //filter
   isDropdownVisible = false;
@@ -95,7 +97,7 @@ export class UserManagementComponent implements AfterViewInit {
     this.userService.getUserById(userId).subscribe(
       (user: User | null) => {
         if (user) {
-          this.editedUser = user;
+          this.newUser = user;
           console.log('User data for editing:', user);
         } else {
           window.alert('User not found or inactive.');
@@ -124,8 +126,9 @@ export class UserManagementComponent implements AfterViewInit {
       phone: '',
       isActive: true, 
       createdOn: new Date(), 
-      avatar: '',
-      roleId: 'AD',
+      avatarPath: '',
+      publicAvatarId: 'default_avatar',
+      roleId: 'AD'
     };
   }
 
@@ -281,7 +284,7 @@ export class UserManagementComponent implements AfterViewInit {
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
-      this.newUser.avatar = file.name; // Hoặc có thể lưu URL nếu bạn lưu ảnh lên server
+      this.avatarFile = file; // Save the selected file
     }
   }
 
@@ -290,37 +293,62 @@ export class UserManagementComponent implements AfterViewInit {
     // Kiểm tra tính hợp lệ của email
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!this.newUser.email || !emailPattern.test(this.newUser.email)) {
+      alert('Invalid email address!');
       return;
     }
   
     // Kiểm tra tính hợp lệ của số điện thoại
     const phonePattern = /^(03|05|07|08|09)[0-9]{8}$/;
     if (!this.newUser.phone || !phonePattern.test(this.newUser.phone)) {
-
+      alert('Invalid phone number!');
       return;
     }
   
     // Kiểm tra nếu mật khẩu hợp lệ
     if (!this.newUser.password || this.newUser.password.length < 6) {
-      // alert('Password must be at least 6 characters long!');
+      alert('Password must be at least 6 characters long!');
       return;
     }
   
-    // Thiết lập role của người dùng
-    this.newUser.roleId = "AD"; // Hoặc có thể thay đổi tùy theo yêu cầu
-  
-    // Gọi API để tạo người dùng mới
-    this.userService.createUser(this.newUser).subscribe(
-      response => {
-        alert('User created successfully!');
-        this.goBack();
-      },
-      error => {
-        console.error('Error creating user:', error);
-        alert('Error creating user!');
-      }
-    );
+    // Thiết lập role của người dùng (có thể thay đổi nếu cần)
+    this.newUser.roleId = 'AD'; // Default role ID for admin, adjust as needed
+    console.log(this.editStatus);
+    
+    // Kiểm tra nếu đang tạo người dùng mới
+    if (this.addStatus) {
+      console.log(this.newUser);
+      console.log(this.avatarFile);
+      
+      // Gọi API để tạo người dùng mới
+      this.userService.createUser(this.newUser, this.avatarFile).subscribe(
+        response => {
+          alert('User created successfully!');
+          this.goBack();
+          this.loadUsers();
+        },
+        error => {
+          console.error('Error creating user:', error);
+          alert('Error creating user!');
+        }
+      );
+    } else if (this.editStatus) {
+      console.log("hello");
+      
+      // Gọi API để cập nhật người dùng
+      this.userService.updateUser(this.newUser.id, this.newUser, this.avatarFile).subscribe(
+        response => {
+          alert('User updated successfully!');
+          this.goBack();
+          this.loadUsers();
+        },
+        error => {
+          console.error('Error updating user:', error);
+          alert('Error updating user!');
+        }
+      );
+    }
   }
+  
 
   // xem có change trong input thì xóa blur nút save
   onInputChange() {
@@ -334,30 +362,26 @@ export class UserManagementComponent implements AfterViewInit {
   }
 
 
-  openDialog(userId: number): void {
-    if (!userId) {
-      console.error("Invalid user ID:", userId);
-      return;
-    }
-    this.selectedUserId = userId;
-    this.dialog.open(this.lockDialog);
-
+  openLockDialog(user: any): void {
+    const dialogRef = this.dialog.open(this.lockDialog, {
+      data: user, // Truyền dữ liệu người dùng vào
+      width: '300px',
+    });
+  
+    // Khi dialog đóng, nhận kết quả trả về (true/false)
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        if (user.isActive) {
+          console.log('User confirmed lock action:', user.id);
+          this.lockUser(user.id); // Gọi hàm khóa nếu người dùng đang active
+        } else {
+          console.log('User confirmed unlock action:', user.id);
+          this.unlockUser(user.id); // Gọi hàm mở khóa nếu người dùng đang không active
+        }
+      } else {
+        console.log('User cancelled action:', user.id);
+      }
+    });
   }
 
-  closeDialog(): void {
-    this.dialog.closeAll();
-    this.selectedUserId = null;
-  }
-
-  confirmLock(): void{
-    if (this.selectedUserId !== null && this.selectedUserId !== undefined) { 
-      const userId = this.selectedUserId;
-      this.userService.lockUser(userId);
-      console.log(userId)
-      this.closeDialog();
-
-
-      // cần LOAD LẠI TABLE
-    }
-  }
 }

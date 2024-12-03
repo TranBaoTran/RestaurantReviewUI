@@ -79,7 +79,31 @@ export class UserService {
     }
 
     // Gọi API tạo người dùng
-    createUser(user: User): Observable<any> {
-        return this.http.post<any>(this.apiUrlUser, user);
+    createUser(user: User, avatarFile: File | null): Observable<any> {
+        const formData = new FormData();
+        formData.append('name', user.name);
+        formData.append('email', user.email);
+        formData.append('username', user.username);
+        formData.append('phone', user.phone);
+        formData.append('password', user.password);
+        if (avatarFile) {
+          formData.append('avatarFile', avatarFile, avatarFile.name);
+        }
+        const apiUrlUser = `${this.apiUrlUser}/createWithAvatar`;
+        return this.http.post(apiUrlUser, formData);
+      }
+
+    updateUser(id: number, user: User, avatarFile: File | null): Observable<any> {
+        const formData = new FormData();
+        formData.append('name', user.name);
+        formData.append('email', user.email);
+        formData.append('username', user.username);
+        formData.append('phone', user.phone);
+        formData.append('password', user.password);
+        if (avatarFile) {
+            formData.append('avatarFile', avatarFile, avatarFile.name);
+        }
+
+        return this.http.put(`${this.apiUrlUser}/${id}`, formData);
     }
 }
