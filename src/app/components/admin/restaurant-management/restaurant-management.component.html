@@ -28,20 +28,21 @@
             <!-- search box -->
             <div class="search-waiting">
                 <div class="search-waiting-container">
-                    <input class="search-waiting-input" placeholder="Search..." type="text">
+                    <input class="search-waiting-input" placeholder="Search..." type="text" [(ngModel)]="searchTerm"
+                    (ngModelChange)="onSearchWaiting()">
                     <i class="fa fa-search search-icon"></i>
                 </div>
             </div>
 
             <!-- Category Filter Dropdown -->
             <mat-form-field appearance="fill">
-                <mat-label>Thể Loại</mat-label>
-                <mat-select multiple [(value)]="selectedCategories" placeholder="Select categories">
-                    <mat-option *ngFor="let category of categories" [value]="category.id">
-                        {{ category.name }}
-                    </mat-option>
+                <mat-label>Thể loại</mat-label>
+                <mat-select multiple [(value)]="selectedCategoriesId" (selectionChange)="onCategoryChange()">
+                  <mat-option *ngFor="let category of categories" [value]="category.id">
+                    {{ category.name }}
+                  </mat-option>
                 </mat-select>
-            </mat-form-field>
+              </mat-form-field>
         </div>
 
         <!-- waiting restaurant -->
@@ -51,12 +52,13 @@
                 <!-- Checkbox Column -->
                 <ng-container matColumnDef="checkbox">
                     <th mat-header-cell *matHeaderCellDef>
-                        <input type="checkbox" (change)="toggleSelectAll($event)" [checked]="isAllSelected()">
+                      <input type="checkbox" (change)="toggleSelectAll($event)" [checked]="isAllSelected()">
                     </th>
-                    <td mat-cell *matCellDef="let waitingRestaurants">
-                        <input type="checkbox" [(ngModel)]="waitingRestaurants.selected">
+                    <td mat-cell *matCellDef="let waitingRestaurant">
+                      <input type="checkbox" [(ngModel)]="waitingRestaurant.selected">
                     </td>
-                </ng-container>
+                  </ng-container>
+                  
 
                 <ng-container matColumnDef="id">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
@@ -65,7 +67,7 @@
 
                 <ng-container matColumnDef="userId">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header> User ID </th>
-                    <td mat-cell *matCellDef="let waitingRestaurants"> {{ waitingRestaurants . userID }} </td>
+                    <td mat-cell *matCellDef="let waitingRestaurants"> {{ waitingRestaurants . userId }} </td>
                 </ng-container>
 
                 <ng-container matColumnDef="name">
@@ -73,9 +75,11 @@
                     <td mat-cell *matCellDef="let waitingRestaurants"> {{ waitingRestaurants . name }} </td>
                 </ng-container>
 
-                <ng-container matColumnDef="category">
+                <ng-container matColumnDef="categoryNames">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Thể Loại </th>
-                    <td mat-cell *matCellDef="let waitingRestaurants"> {{ waitingRestaurants . category }} </td>
+                    <td mat-cell *matCellDef="let waitingRestaurants">
+                        {{ waitingRestaurants.categoryNames?.length ? waitingRestaurants.categoryNames.join(', ') : 'No Categories' }}
+                      </td>                      
                 </ng-container>
 
                 <ng-container matColumnDef="detail">
@@ -88,8 +92,8 @@
                     </td>
                 </ng-container>
 
-                <tr mat-header-row *matHeaderRowDef="['checkbox', 'id', 'userId', 'name', 'category', 'detail']"></tr>
-                <tr mat-row *matRowDef="let row; columns: ['checkbox', 'id', 'userId', 'name', 'category', 'detail'];"
+                <tr mat-header-row *matHeaderRowDef="['checkbox', 'id', 'userId', 'name', 'categoryNames', 'detail']"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['checkbox', 'id', 'userId', 'name', 'categoryNames', 'detail'];"
                     (click)="onRowClick(row)"></tr>
             </table>
         </div>
@@ -99,7 +103,8 @@
             <h4>Chi Tiết Nhà Hàng</h4>
             <p><strong>ID:</strong> {{ selectedWaitingRestaurant . id }}</p>
             <p><strong>Tên:</strong> {{ selectedWaitingRestaurant . name }}</p>
-            <p><strong>Thể Loại:</strong> {{ selectedWaitingRestaurant . category }}</p>
+            <p><strong>Thể Loại:</strong> {{ selectedWaitingRestaurant.categoryNames?.length ? selectedWaitingRestaurant.categoryNames.join(', ') : 'No Categories' }}
+            </p>
             <p><strong>Địa Chỉ:</strong> {{ selectedWaitingRestaurant . address }} {{ selectedWaitingRestaurant . district }}</p>
             <p><strong>Số Điện Thoại:</strong> {{ selectedWaitingRestaurant . phone }}</p>
             <p><strong>Giờ Mở Cửa:</strong> {{ selectedWaitingRestaurant . openedTime }}</p>
@@ -143,7 +148,7 @@
         <!-- District Column -->
         <ng-container matColumnDef="district">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Quận / Huyện </th>
-            <td mat-cell *matCellDef="let restaurant"> {{ getDistrictName(restaurant . districtID) }} </td>
+            <td mat-cell *matCellDef="let restaurant"> {{ restaurant.districtName }} </td>
         </ng-container>
 
         <!-- Opened Time Column -->

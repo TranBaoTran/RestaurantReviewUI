@@ -3,6 +3,7 @@ export interface Restaurant {
     name: string
     address: string
     districtId: number
+    districtName: string
     openedTime: string
     closedTime: string
     lowestCost: number
@@ -11,4 +12,6 @@ export interface Restaurant {
     website: string
     userId: number
     status: string
+    categoryNames: string[]
+    selected?: boolean; 
 }

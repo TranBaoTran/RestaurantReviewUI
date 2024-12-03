@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, of } from 'rxjs';
 import { Restaurant } from '../../models/admin/restaurant.model';
@@ -15,7 +15,11 @@ export class RestaurantService {
 
     // Restaurant
     getRestaurants(): Observable<any> {
-    return this.http.get<any>(this.apiUrlRestaurant);
+        return this.http.get<any>(`${this.apiUrlRestaurant}/admin`);
+    }
+
+    getWaitingRestaurants(): Observable<any> {
+        return this.http.get<any>(`${this.apiUrlRestaurant}/admin/waiting`);
     }
 
     getRestaurantById(restaurantId: number): Observable<Restaurant | null> {
@@ -47,24 +51,38 @@ export class RestaurantService {
         );
     }
 
+    acceptRestaurant(id: number) {
+        return this.http.put(`${this.apiUrlRestaurant}/${id}/accept`, {});        
+    }
+
+    rejectRestaurant(id: number) {
+        return this.http.put(`${this.apiUrlRestaurant}/${id}/reject`, {});        
+    }
+
+    deleteRestaurant(id: number) {
+        return this.http.post(`${this.apiUrlRestaurant}/DeleteRestaurant/${id}`, {});        
+    }
+
     // Phương thức tìm kiếm nhà hàng
-    searchRestaurants(searchTerm: string): Observable<Restaurant[]> {
-        return this.http.get<Restaurant[]>(`${this.apiUrlRestaurant}/search?searchTerm=${searchTerm}`);
-    }
-
-
-    private apiUrlDistrict = 'http://localhost:5043/District';
-getDistrictById(districtId: number): Observable<District | null> {
-    return this.http.get<District>(`${this.apiUrlDistrict}/${districtId}`).pipe(
-        catchError(error => {
-        if (error.status === 404) {
-            // Handle not found (e.g., return null or show an alert)
-            return of(null);
-        } else {
-            // Handle other potential errors
-            throw error;
+    searchRestaurantsCombined(searchTerm: string, categoryIds: number[]): Observable<any[]> {
+        let params = new HttpParams();
+      
+        if (searchTerm) {
+          params = params.set('searchTerm', searchTerm);
         }
-        })
-    );
+      
+        if (categoryIds && categoryIds.length > 0) {
+          categoryIds.forEach((id) => {
+            params = params.append('categoryIds', id.toString());
+          });
+        }
+
+        return this.http.get<any[]>(`${this.apiUrlRestaurant}/searchCombined`, { params });
+      }      
+    
+    searchRestaurants(query: string): Observable<Restaurant[]> {
+        const params = new HttpParams().set('query', query);
+        return this.http.get<Restaurant[]>(`${this.apiUrlRestaurant}/search`, { params });
     }
+
 }

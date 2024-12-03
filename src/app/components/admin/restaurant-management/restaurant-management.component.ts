@@ -10,6 +10,8 @@ import { Observable } from 'rxjs';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { RestaurantService } from '../../../services/admin/restaurant.service';
 import { MatDialog } from '@angular/material/dialog';
+import { CategoryService } from '../../../services/admin/category.service';
+import { Category } from '../../../models/admin/category.model';
 
 @Component({
   selector: 'app-restaurant-management',
@@ -29,22 +31,18 @@ export class RestaurantManagementComponent implements AfterViewInit{
 
   // danh sách waiting restaurant
   waitingRestaurantsDataSource = new MatTableDataSource<any>();
-  waitingRestaurants: any[] = [];
+  waitingRestaurants: Restaurant[] = [];
   waitingRestaurantsCount: number = 0;
   isWaitingPopupVisible: boolean = false;
+  selectedRestaurants: number[] = []; // To store selected IDs
 
-  // dropdown list multiple selections
-  categories = [
-    { id: '1', name: 'Italian' },
-    { id: '2', name: 'Japanese' },
-    { id: '3', name: 'Chinese' },
-    { id: '4', name: 'Mexican' }
-  ];
   selectedCategories: string[] = [];  // Lưu các giá trị đã chọn từ dropdown
+  selectedCategoriesId: number[] = [];  // Lưu các giá trị đã chọn từ dropdown
 
   // phân trang
   dataSource = new MatTableDataSource<Restaurant>([]); 
   restaurants: Restaurant[] = [];
+  categories: Category[] = [];
   pageSize = 10;
   displayedColumns: string[] = ['id', 'name', 'address', 'district', 'openedTime', 'closedTime', 'lowestCost', 'highestCost', 'phone', 'website', 'userId', 'action'];
 
@@ -52,44 +50,21 @@ export class RestaurantManagementComponent implements AfterViewInit{
   selectedWaitingRestaurant: any = null;
 
   // dialog confirm
-  deleteRestaurantId: number | null = null;
+  deleteRestaurantId: number = -1;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort; // sort
   @ViewChild(MatSort) waitingRestaurantsSort!: MatSort; //waiting table
   @ViewChild('lockDialog') lockDialog!: any;
 
-  constructor(private restaurantService: RestaurantService, private dialog: MatDialog) {}
+  constructor(private restaurantService: RestaurantService, private categoryService: CategoryService, private dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.restaurantService.getRestaurants().subscribe((restaurants: Restaurant[]) => {
-      this.restaurants = restaurants;
-      this.dataSource.data = this.restaurants.filter(
-        (restaurant) => restaurant.status === 'accepted'
-      ); // lấy accepted restaurant
-
-      this.waitingRestaurants = [
-        { id: 1, userID: 101, name: 'Restaurant A', category: 'Italian', district: 'District 1', address: '123 Main St', phone: '123-456-7890', openedTime: '10:00 AM', closedTime: '10:00 PM' },
-        { id: 2, userID: 102, name: 'Restaurant B', category: 'Chinese', district: 'District 2', address: '456 Oak Rd', phone: '987-654-3210', openedTime: '11:00 AM', closedTime: '11:00 PM' },
-        { id: 3, userID: 103, name: 'Restaurant C', category: 'Indian', district: 'District 3', address: '789 Pine Ave', phone: '654-321-9870', openedTime: '9:00 AM', closedTime: '9:00 PM' },
-        { id: 4, userID: 104, name: 'Restaurant D', category: 'Thai', district: 'District 4', address: '321 Elm St', phone: '321-654-9870', openedTime: '8:00 AM', closedTime: '8:00 PM' },
-        { id: 5, userID: 105, name: 'Restaurant E', category: 'Mexican', district: 'District 5', address: '654 Birch Rd', phone: '555-234-5678', openedTime: '10:00 AM', closedTime: '11:00 PM' },
-        { id: 6, userID: 106, name: 'Restaurant F', category: 'Japanese', district: 'District 6', address: '987 Cedar St', phone: '777-888-9999', openedTime: '12:00 PM', closedTime: '12:00 AM' },
-        { id: 7, userID: 107, name: 'Restaurant G', category: 'French', district: 'District 7', address: '123 Maple Dr', phone: '444-555-6666', openedTime: '7:00 AM', closedTime: '7:00 PM' },
-        { id: 8, userID: 108, name: 'Restaurant H', category: 'Vietnamese', district: 'District 8', address: '258 Oak St', phone: '888-999-1111', openedTime: '9:00 AM', closedTime: '10:00 PM' },
-        { id: 9, userID: 109, name: 'Restaurant I', category: 'American', district: 'District 9', address: '369 Pine St', phone: '333-444-5555', openedTime: '6:00 AM', closedTime: '9:00 PM' },
-        { id: 10, userID: 110, name: 'Restaurant J', category: 'Mediterranean', district: 'District 10', address: '147 Walnut Rd', phone: '222-333-4444', openedTime: '10:00 AM', closedTime: '10:00 PM' }
-      ];
-      
-      this.waitingRestaurantsCount = this.waitingRestaurants.length;
-      this.waitingRestaurantsDataSource.data = this.waitingRestaurants;
-
-      // Lấy districtName cho từng nhà hàng sau khi nhận dữ liệu từ API
-      this.restaurants.forEach(restaurant => {
-        this.getDistrictName(restaurant.districtId).subscribe((districtName) => {
-          this.districtNames[restaurant.id] = districtName;
-        });
-      });
+      this.loadRestaurants();
+      this.loadWaitingRes();      
+      this.getCateogry();
+      this.searchRestaurants();
     });
   }
 
@@ -108,18 +83,13 @@ export class RestaurantManagementComponent implements AfterViewInit{
     });
   }
 
-  // có gì coi getDistrict
-  getDistrictName(districtId: number): Observable<string> {
-    return new Observable(observer => {
-      this.restaurantService.getDistrictById(districtId).subscribe((district) => {
-        if (district) {
-          observer.next(district.name);  // Cập nhật districtName với tên của khu vực
-        } else {
-          observer.next('District not found');  // Xử lý khi không tìm thấy khu vực
-        }
-        observer.complete();
-      });
-    });
+
+  getCateogry(): void{
+    this.categoryService.getCategories().subscribe((categories: Category[]) => {
+      // Filter restaurants by status 'waiting'
+      this.categories = categories;
+      console.log('Waiting restaurants:', this.categories);
+    });  
   }
 
   updatePaginatedRestaurant(pageIndex: number): void {
@@ -149,29 +119,79 @@ export class RestaurantManagementComponent implements AfterViewInit{
   }
   
   // Hàm gọi API để tìm kiếm 
-  onSearch(): void {
-    if (this.searchTerm.trim() !== '') {
+  searchRestaurants(): void {
+    if (this.searchTerm.trim().length > 0) {
       this.restaurantService.searchRestaurants(this.searchTerm).subscribe(
-        (restaurants: Restaurant[]) => {
-          this.restaurants = restaurants;
-          this.dataSource.data = this.restaurants; // Cập nhật dữ liệu cho bảng
+        (restaurants) => {
+          const filteredRess = restaurants.filter(res => 
+            res.status === 'accpected'
+          );
+          this.restaurants = filteredRess; // Store the restaurants directly
+          this.dataSource.data = restaurants;  // Update the table with fetched data
         },
         (error) => {
-          console.error('Error searching restaurantS:', error);
+          console.error('Error fetching restaurants:', error);
         }
       );
     } else {
-      // Nếu không có từ khóa tìm kiếm, làm mới bảng (chạy lại tìm kiếm với từ khóa rỗng)
-      this.restaurantService.getRestaurants().subscribe(
-        (restaurants: Restaurant[]) => {
-          this.restaurants = restaurants;
-          this.dataSource.data = this.restaurants; // Cập nhật dữ liệu cho bảng
+      this.loadRestaurants();
+    }
+    console.log(this.restaurants);
+  }
+  
+  searchWaitingRestaurants(): void {
+    if (this.searchTerm.trim().length > 0) {
+      this.restaurantService.searchRestaurants(this.searchTerm).subscribe(
+        (restaurants) => {
+          const filteredRess = restaurants.filter(res => 
+            res.status === 'waiting'
+          );
+          this.waitingRestaurants = filteredRess; // Store the restaurants directly
+          this.waitingRestaurantsDataSource.data = restaurants;  // Update the table with fetched data
         },
         (error) => {
-          console.error('Error fetching restaurantS:', error);
+          console.error('Error fetching restaurants:', error);
         }
       );
+    } else {
+      this.loadWaitingRes();
     }
+    console.log(this.restaurants);
+  }
+
+  searchWaitingRestaurantsCombined(): void {
+    const searchTerm = this.searchTerm.trim();
+    const categoryIds = this.selectedCategoriesId;
+  
+    // Gọi API nếu có ít nhất một tiêu chí tìm kiếm
+    if (searchTerm || (categoryIds && categoryIds.length > 0)) {
+      this.restaurantService.searchRestaurantsCombined(searchTerm, categoryIds).subscribe(
+        (restaurants) => {
+          this.waitingRestaurants = restaurants; // Lưu danh sách nhà hàng
+          this.waitingRestaurantsDataSource.data = restaurants; // Cập nhật table
+        },
+        (error) => {
+          console.error('Error fetching restaurants:', error);
+        }
+      );
+    } else {
+      console.warn('No search term or categories selected.');
+      this.loadWaitingRes(); // Tải toàn bộ dữ liệu nếu không có tiêu chí
+    }
+    console.log({ searchTerm, categoryIds });
+  }
+  
+  
+
+  onSearchWaiting(): void {
+    this.searchWaitingRestaurantsCombined();
+  }
+  onSearch(): void {
+    this.searchRestaurants();
+  }
+
+  onCategoryChange(): void {
+    this.searchWaitingRestaurantsCombined();
   }
 
   // Hàm gọi API để lấy tất cả người dùng
@@ -191,21 +211,70 @@ export class RestaurantManagementComponent implements AfterViewInit{
     
   }
 
+ loadWaitingRes(): void {
+  this.restaurantService.getWaitingRestaurants().subscribe(
+    (waitingRestaurants: Restaurant[]) => {
+      this.waitingRestaurants = waitingRestaurants;
+      this.waitingRestaurantsDataSource.data = this.waitingRestaurants;
+      this.waitingRestaurantsCount = this.waitingRestaurants.length;
+      console.log("aaaaaaaa",this.waitingRestaurants);
+      
+    },
+    (error) => {
+      console.error('Error fetching restaurantS:', error);
+    }
+  );
+ }
+
   openWaitingPopup(): void {
     // this.getWaitingRestaurants(); 
     this.isWaitingPopupVisible = true; 
+    this.loadWaitingRes();
   }
 
-  onAccept(): void {
-    const accepted = this.waitingRestaurants.filter((restaurant) => restaurant.selected);
-    console.log('Accepted Restaurants:', accepted);
-    // Xử lý logic thêm tại đây
+  onAccept() {
+    // Lọc ra tất cả các nhà hàng đã được chọn
+    const selectedRestaurantIds = this.waitingRestaurants
+      .filter(restaurant => restaurant.selected)  // Chỉ lấy nhà hàng có selected = true
+      .map(restaurant => restaurant.id);  // Lấy ra ID của các nhà hàng đã chọn
+  
+    // Gọi API để chấp nhận từng nhà hàng
+    selectedRestaurantIds.forEach(id => {
+      this.restaurantService.acceptRestaurant(id).subscribe(
+        () => {
+          console.log(`Restaurant with ID ${id} accepted`);
+          this.loadWaitingRes();
+          this.loadRestaurants();
+          // this.closeWaitingPopup();
+        },
+        error => {
+          console.error('Error accepting restaurant', error);
+        }
+      );
+    });
   }
   
+  
+  
   onReject(): void {
-    const rejected = this.waitingRestaurants.filter((restaurant) => restaurant.selected);
-    console.log('Rejected Restaurants:', rejected);
-    // Xử lý logic thêm tại đây
+    const selectedRestaurantIds = this.waitingRestaurants
+      .filter(restaurant => restaurant.selected)  // Chỉ lấy nhà hàng có selected = true
+      .map(restaurant => restaurant.id);  // Lấy ra ID của các nhà hàng đã chọn
+  
+    // Gọi API để chấp nhận từng nhà hàng
+    selectedRestaurantIds.forEach(id => {
+      this.restaurantService.rejectRestaurant(id).subscribe(
+        () => {
+          console.log(`Restaurant with ID ${id} rejected`);
+          this.loadWaitingRes();
+          this.loadRestaurants();
+          // this.closeWaitingPopup();
+        },
+        error => {
+          console.error('Error accepting restaurant', error);
+        }
+      );
+    });
   }
   
   closeWaitingPopup(): void {
@@ -213,6 +282,8 @@ export class RestaurantManagementComponent implements AfterViewInit{
     const data = this.waitingRestaurantsDataSource.data;
 
     // Đặt tất cả các checkbox về unchecked
+    console.log("abc",data);
+    
     data.forEach((restaurant: any) => {
       restaurant.selected = false;
     });
@@ -220,12 +291,15 @@ export class RestaurantManagementComponent implements AfterViewInit{
     // Gán lại mảng dữ liệu đã cập nhật cho MatTableDataSource
     this.waitingRestaurantsDataSource.data = data;
     this.selectedCategories = [];
+    this.selectedCategoriesId = [];
     this.isWaitingPopupVisible = false; 
   }
 
   toggleSelectAll(event: any): void {
-    const checked = event.target.checked;
-    this.waitingRestaurants.forEach((restaurant) => (restaurant.selected = checked));
+    const isChecked = event.target.checked;
+    this.waitingRestaurants.forEach((restaurant) => {
+      restaurant.selected = isChecked;
+    });
   }
 
    // Hàm xử lý click vào dòng
@@ -240,7 +314,7 @@ export class RestaurantManagementComponent implements AfterViewInit{
 
   // Hàm kiểm tra xem tất cả các hàng đã được chọn chưa
   isAllSelected(): boolean {
-    return this.waitingRestaurantsDataSource.data.every(item => item.selected);
+    return this.waitingRestaurants.every((restaurant) => restaurant.selected);
   }
 
   onDetailClick(detailRestaurant : any): void{
@@ -252,9 +326,9 @@ export class RestaurantManagementComponent implements AfterViewInit{
     this.selectedWaitingRestaurant = null;
   }
 
-  openDeleteDialog(provinceId: number): void {
-    if (provinceId) {
-      this.deleteRestaurantId = provinceId;
+  openDeleteDialog(resId: number): void {
+    if (resId) {
+      this.deleteRestaurantId = resId;
       this.dialog.open(this.lockDialog);
     }
   }
@@ -264,13 +338,16 @@ export class RestaurantManagementComponent implements AfterViewInit{
   }
 
   confirmDelete(): void{
-    if (this.deleteRestaurantId !== null && this.deleteRestaurantId !== undefined) { 
-      const provinceId = this.deleteRestaurantId;
-
-      console.log(provinceId)
-      this.closeDialog();
-
-      // cần LOAD LẠI TABLE
-    }
+    this.restaurantService.deleteRestaurant(this.deleteRestaurantId).subscribe(
+      () => {
+        console.log(`Restaurant with ID ${this.deleteRestaurantId} deleted`);
+        this.loadWaitingRes();
+        this.loadRestaurants();
+        // this.closeWaitingPopup();
+      },
+      error => {
+        console.error('Error deleting restaurant', error);
+      }
+    );
   }
 }
