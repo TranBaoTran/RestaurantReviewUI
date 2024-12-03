@@ -51,27 +51,10 @@ export class CategoryComponent implements AfterViewInit{
   constructor(private categoryService: CategoryService, private dialog: MatDialog) {}
 
   ngOnInit(): void {
-    // this.categorieservice.getDistricts().subscribe((districts: District[]) => {
-    //   this.districts = districts;
-    //   this.dataSource.data = districts;  // Set the data for the table
-    //   console.log('Dữ liệu người dùng:', this.districts);
-    // });
-    // this.selectedStatus = true;
-    this.categories = [
-      { id: 1, name: 'Hải sản', isActive: true },
-      { id: 2, name: 'Bình dân', isActive: true },
-      { id: 3, name: 'Món Nhật', isActive: true },
-      { id: 4, name: 'Ăn nhẹ/Tráng miệng', isActive: true },
-      { id: 5, name: 'Đặc sản', isActive: true },
-      { id: 6, name: 'Buffet', isActive: true },
-      { id: 7, name: 'Quán nhậu', isActive: true },
-      { id: 8, name: 'Tiệc tùng', isActive: true },
-      { id: 9, name: 'Ăn chay', isActive: true },
-      { id: 10, name: 'Sang trọng', isActive: true },
-      { id: 11, name: 'Món Hàn', isActive: true },
-    ];
-    this.dataSource.data = this.categories;
+    this.loadData();
+    this.onSearch();
   }
+  
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;  // Bind paginator to the table
@@ -86,28 +69,28 @@ export class CategoryComponent implements AfterViewInit{
 
   // Mở form chỉnh sửa người dùng
   openEditForm(categoryId: number): void {
-    const category = this.categories.find((d) => d.id === categoryId);
+    const category = this.categories.find((c) => c.id === categoryId);
     if (category) {
-    // Gán giá trị của category được chọn vào editedCategory
-    this.editedCategory = {
-      name: category.name,
-    };
-    this.editStatus = true; // Bật trạng thái chỉnh sửa
+      this.editedCategory = { ...category }; // Copy đối tượng để không thay đổi dữ liệu gốc
+      console.log("Editing category:", this.editedCategory); // Kiểm tra xem có id hay không
+      this.editStatus = true; // Bật trạng thái chỉnh sửa
+    } else {
+      console.error(`Category with ID ${categoryId} not found.`);
     }
   }
+  
 
   // Close edit form
   goBack(): void {
     this.editStatus = false;
     this.editedCategory = null;
   }
-
+  
   closeAddForm(): void {
-    this.new = {
-      name: '',
-    };
     this.addStatus = false;
+    this.new = { name: '' };
   }
+  
   
 
   // Tìm kiếm người dùng theo tên
@@ -121,51 +104,92 @@ export class CategoryComponent implements AfterViewInit{
 
   // Hàm gọi API để tìm kiếm 
   onSearch(): void {
-    // if (this.searchTerm.trim() !== '') {
-    //   this.categorieservice.searchcategories(this.searchTerm).subscribe(
-    //     (categories: Province[]) => {
-    //       this.categories = categories;
-    //       this.dataSource.data = this.categories; // Cập nhật dữ liệu cho bảng
-    //     },
-    //     (error) => {
-    //       console.error('Error searching categories:', error);
-    //     }
-    //   );
-    // } else {
-    //   // Nếu không có từ khóa tìm kiếm, làm mới bảng (chạy lại tìm kiếm với từ khóa rỗng)
-    //   this.categorieservice.getcategories().subscribe(
-    //     (categories: Province[]) => {
-    //       this.categories = categories;
-    //       this.dataSource.data = this.categories; // Cập nhật dữ liệu cho bảng
-    //     },
-    //     (error) => {
-    //       console.error('Error fetching categories:', error);
-    //     }
-    //   );
-    // }
+    console.log(this.searchTerm);
+    
+    if (this.searchTerm.trim() !== '') {
+      this.categoryService.searchCategories(this.searchTerm).subscribe(
+        (categories: Category[]) => {
+          console.log('Search results:', categories);
+          this.categories = categories;
+          this.dataSource.data = categories;
+        },
+        error => {
+          console.error('Error searching categories:', error);
+        }
+      );
+    } else {
+      this.loadData(); // Nếu không nhập từ khóa, tải lại tất cả dữ liệu
+    }
   }
+  
 
   // Hàm gọi API để lấy tất cả người dùng
-  loadProvince(): void {
-    // this.categorieservice.getDistricts().subscribe(
-    //   (districts: District[]) => {
-    //     this.districts = districts;
-    //     this.dataSource.data = this.districts;
-    //   },
-    //   (error) => {
-    //     console.error('Error fetching districts:', error);
-    //   }
-    // );
+  loadData(): void {
+    this.categoryService.getCategories().subscribe(
+      (categories: Category[]) => {
+        console.log('Categories loaded:', categories);
+        this.categories = categories;
+        this.dataSource.data = categories; // Cập nhật dữ liệu cho bảng
+      },
+      error => {
+        console.error('Error loading categories:', error);
+      }
+    );
   }
+  
 
   openAddForm(){
     this.addStatus = true;
   }
 
-  onSave(){
-    console.log('Saved District:', this.editedCategory);
-    // Thực hiện lưu thông tin ở đây
+  onSave(): void {
+    if (this.editStatus) {
+      console.log(this.editedCategory.id);
+      // Nếu đang trong chế độ chỉnh sửa, gọi API update
+      const updatedCategory: Category = {
+        id: this.editedCategory.id,
+        name: this.editedCategory.name,
+        isActive: true // Hoặc trạng thái khác tùy theo logic của bạn
+      };
+  
+      this.categoryService.updateCategory(updatedCategory.id, updatedCategory).subscribe(
+        () => {
+          console.log('Category updated successfully:', updatedCategory);
+          // Cập nhật dữ liệu trên giao diện
+          const index = this.categories.findIndex(cat => cat.id === updatedCategory.id);
+          if (index !== -1) {
+            this.categories[index] = updatedCategory;
+          }
+          this.dataSource.data = this.categories;
+          this.goBack(); // Đóng form chỉnh sửa
+        },
+        error => {
+          console.error('Error updating category:', error);
+        }
+      );
+    } else if (this.addStatus) {
+      // Nếu đang trong chế độ thêm mới, gọi API create
+      const newCategory: Category = {
+        id: 0, // Backend sẽ tự tạo ID
+        name: this.new.name,
+        isActive: true
+      };
+  
+      this.categoryService.createCategory(newCategory).subscribe(
+        (createdCategory: Category) => {
+          console.log('Category created successfully:', createdCategory);
+          // Thêm dữ liệu vào danh sách hiện tại
+          this.categories.push(createdCategory);
+          this.dataSource.data = this.categories;
+          this.closeAddForm(); // Đóng form thêm mới
+        },
+        error => {
+          console.error('Error creating category:', error);
+        }
+      );
+    }
   }
+  
 
   // Method to open the lock dialog for a specific district
   openDeleteDialog(categoryId: number): void {
@@ -179,14 +203,23 @@ export class CategoryComponent implements AfterViewInit{
     this.dialog.closeAll(); 
   }
 
-  confirmDelete(): void{
-    if (this.deletecategoryId !== null && this.deletecategoryId !== undefined) { 
+  confirmDelete(): void {
+    if (this.deletecategoryId !== null && this.deletecategoryId !== undefined) {
       const categoryId = this.deletecategoryId;
-
-      console.log(categoryId)
-      this.closeDialog();
-
-      // cần LOAD LẠI TABLE
+  
+      this.categoryService.deleteCategory(categoryId).subscribe(
+        () => {
+          console.log(`Category with ID ${categoryId} deleted successfully.`);
+          // Xóa dữ liệu khỏi danh sách
+          this.categories = this.categories.filter(cat => cat.id !== categoryId);
+          this.dataSource.data = this.categories;
+          this.closeDialog(); // Đóng dialog sau khi xóa
+        },
+        error => {
+          console.error('Error deleting category:', error);
+        }
+      );
     }
   }
+  
 }
