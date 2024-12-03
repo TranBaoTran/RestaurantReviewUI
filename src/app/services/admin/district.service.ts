@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
-import { District } from '../../models/admin/district.model';
+import { CreateDistrictDTO, District } from '../../models/admin/district.model';
 
 
 @Injectable({
@@ -12,9 +12,9 @@ export class DistrictService {
 
     constructor(private http: HttpClient) { }
 
-    getDistricts(): Observable<any> {
-        return this.http.get<any>(this.apiUrlDistrict);
-      }
+  getDistricts(): Observable<any> {
+      return this.http.get<any>(this.apiUrlDistrict);
+  }
     
   getDistrictById(districtId: number): Observable<District | null> {
     return this.http.get<District>(`${this.apiUrlDistrict}/${districtId}`).pipe(
@@ -54,8 +54,37 @@ export class DistrictService {
       })
     );
   }
-
-  searchDistricts(searchTerm: string): Observable<District[]> {
-    return this.http.get<District[]>(`${this.apiUrlDistrict}/search?searchTerm=${searchTerm}`);
+  
+  createDistrict(district: CreateDistrictDTO): Observable<CreateDistrictDTO> {
+    return this.http.post<CreateDistrictDTO>(this.apiUrlDistrict, district).pipe(
+      catchError(error => {
+        console.error('Error creating district:', error);
+        throw error;
+      })
+    );
   }
+
+  updateDistrict(districtId: number, district: CreateDistrictDTO): Observable<any> {
+    return this.http.put<any>(`${this.apiUrlDistrict}/${districtId}`, district).pipe(
+      catchError(error => {
+        console.error('Error updating district:', error);
+        throw error;
+      })
+    );
+  }
+
+  deleteDistrict(districtId: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrlDistrict}/${districtId}`).pipe(
+      catchError(error => {
+        console.error('Error deleting district:', error);
+        throw error;
+      })
+    );
+  }
+
+  searchDistricts(query: string): Observable<District[]> {
+    const params = new HttpParams().set('query', query);
+    return this.http.get<District[]>(`${this.apiUrlDistrict}/search`, { params });
+  }
+
 }

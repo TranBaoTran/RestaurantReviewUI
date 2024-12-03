@@ -5,7 +5,7 @@
         <!-- Search Bar -->
         <div class="search-container">
             <i class="fas fa-search search-icon"></i>
-            <input type="text" class="search-input" placeholder="Tìm kiếm..." [(ngModel)]="query"
+            <input type="text" class="search-input" placeholder="Tìm kiếm..." [(ngModel)]="searchTerm"
                 (ngModelChange)="onSearch()">
         </div>
 
@@ -20,117 +20,126 @@
 <div class="table-container">
     <div class="table-header">Quận / Huyện</div>
 
-    <!-- Add District Form -->
-    <div *ngIf="addStatus" class="edit-container">
-        <div class="form-wrapper">
-            <h3 class="form-title">Thêm Quận / Huyện</h3>
-            <div>
-                <form (ngSubmit)="onSave()">
-                    <div class="form-group">
-                        <label for="name">Tên Quận / Huyện</label>
-                        <input [(ngModel)]="newDistrict.name" name="name" id="name" #nameInput="ngModel" required />
-                        <div class="error" *ngIf="nameInput.invalid && nameInput.touched">
-                            Vui lòng nhập tên Quận / Huyện.
-                        </div>
+<!-- Add District Form -->
+<div *ngIf="addStatus" class="edit-container">
+    <div class="form-wrapper">
+        <h3 class="form-title">Thêm Quận / Huyện</h3>
+        <div>
+            <form (ngSubmit)="onSave()">
+                <div class="form-group">
+                    <label for="name">Tên Quận / Huyện</label>
+                    <input [(ngModel)]="newDistrict.name" name="districtName" id="districtName" #districtNameInput="ngModel" required />
+                    <div class="error" *ngIf="districtNameInput.invalid && districtNameInput.touched">
+                        Vui lòng nhập tên Quận / Huyện.
                     </div>
-                    <!-- Chọn Tỉnh -->
-                    <div class="form-group">
-                        <label for="name">Tên Thành Phố / Tỉnh</label>
-                        <mat-form-field appearance="fill" class="custom-form-field">
-                            <mat-label>Chọn Thành Phố / Tỉnh</mat-label>
-                            <mat-select [(ngModel)]="newDistrict.selectedProvince" name="selectedProvince" #provinceInput="ngModel" multiple required>
-                                <mat-option *ngFor="let province of provinces" [value]="province.id">
-                                    {{ province . name }}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                        <div class="error" *ngIf="provinceInput.invalid && provinceInput.touched">
-                            Vui lòng chọn Thành Phố / Tỉnh.
-                        </div>
+                </div>
+                
+
+                <div class="form-group">
+                    <label for="provinces">Tên Tỉnh / Thành Phố</label>
+                    <mat-form-field appearance="fill" class="custom-form-field">
+                        <mat-label>Chọn Tỉnh / Thành Phố</mat-label>
+                        <mat-select [(ngModel)]="newDistrict.provinceId" name="province" #provinceInput="ngModel" required>
+                            <mat-option *ngFor="let province of provinces" [value]="province.id">
+                                {{ province.name }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <div class="error" *ngIf="provinceInput.invalid && provinceInput.touched">
+                        Vui lòng chọn Tỉnh / Thành Phố.
                     </div>
-                    <div class="button-container">
-                        <button type="button" class="cancel" (click)="closeAddForm()">Thoát</button>
-                        <button type="submit" class="save" [disabled]="!provinceInput.valid || !nameInput.valid">Thêm</button>
-                    </div>
-                </form>
-            </div>
+                </div>
+                
+
+                <div class="button-container">
+                    <button type="button" class="cancel" (click)="closeAddForm()">Thoát</button>
+                    <button type="submit" class="save" [disabled]="!provinceInput.valid || !districtNameInput.valid">Thêm</button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
 
-    <!-- Edit District Form -->
+<!-- Edit  -->
     <div *ngIf="editStatus" class="edit-container">
         <div class="form-wrapper">
-            <h3 class="form-title">Chỉnh Sửa Quận / Huyện</h3>
-            <div *ngIf="editedDistrict">
-                <form (ngSubmit)="onSave()">
-                    <div class="form-group">
-                        <label for="name">Tên Quận / Huyện</label>
-                        <input [(ngModel)]="editedDistrict.name" name="name" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="provinces">Tên Thành Phố / Tỉnh</label>
-                        <mat-form-field appearance="fill" class="custom-form-field">
-                            <mat-select [(ngModel)]="editedDistrict.selectedProvinces" name="selectedProvinces"
-                                multiple>
-                                <mat-option *ngFor="let province of provinces" [value]="province.id">
-                                    {{ province . name }}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div class="button-container">
-                        <button type="button" class="cancel" (click)="goBack()">Thoát</button>
-                        <button type="submit" class="save">Lưu</button>
-                    </div>
-                </form>
+        <h3 class="form-title">Chỉnh Sửa Quận / Huyện</h3>
+        <div *ngIf="editedDistrict">
+            <form (ngSubmit)="onSave()">
+                <div class="form-group">
+                    <label for="district">Tên Quận / Huyện</label>
+                    <input [(ngModel)]="editedDistrict.name" name="district" />
+                </div>
+              
+                <div class="form-group">
+                    <label for="provinces">Chọn Tỉnh / Thành Phố </label>
+                    <mat-form-field appearance="fill" class="custom-form-field">
+                        <mat-label>Chọn Quận / Huyện</mat-label>
+                        <mat-select [(ngModel)]="editedDistrict.provinceId" name="provinces" required>
+                            <mat-option *ngFor="let province of provinces" [value]="province.id">
+                                {{ province.name }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>            
+              
+            <div class="button-container">
+                <button type="button" class="cancel" (click)="goBack()">Thoát</button>
+                <button type="submit" class="save">Lưu</button>
             </div>
+            </form>
+        </div>
         </div>
     </div>
 
-    <!-- Data Table -->
-    <table mat-table [dataSource]="districtDataSource" class="mat-elevation-z8 mat-table" matSort matSortActive="id"
-        matSortDisableClear matSortDirection="asc">
-
+    <!--    Data Table -->
+    <table mat-table [dataSource]="districtDataSource" class="mat-elevation-z8 mat-table" matSort matSortActive="id" matSortDisableClear matSortDirection="asc">
+        <!-- ID -->
         <ng-container matColumnDef="id">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-            <td mat-cell *matCellDef="let district"> {{ district . id }} </td>
+            <td mat-cell *matCellDef="let district"> {{ district.id }} </td>
         </ng-container>
 
+        <!-- Tên Quận / Huyện -->
         <ng-container matColumnDef="districtName">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Tên Quận / Huyện </th>
-            <td mat-cell *matCellDef="let district"> {{ district . name }} </td>
+            <td mat-cell *matCellDef="let district"> {{ district.name }} </td>
         </ng-container>
 
+        <!-- Tên Tỉnh / Thành Phố -->
         <ng-container matColumnDef="provinceName">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Tên Thành Phố / Tỉnh</th>
-            <td mat-cell *matCellDef="let district"> {{ district . provinceName }} </td>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Tên Tỉnh / Thành Phố </th>
+            <td mat-cell *matCellDef="let district"> {{ district.province.name }} </td>
         </ng-container>
 
-        <ng-container matColumnDef="restaurants">
-            <th mat-header-cell *matHeaderCellDef> Nhà hàng </th>
-            <td mat-cell *matCellDef="let district">
+        <!-- Số Lượng Nhà Hàng -->
+        <ng-container matColumnDef="resCount">
+            <th mat-header-cell *matHeaderCellDef> Tổng Số Nhà Hàng </th>
+            <td mat-cell *matCellDef="let province">
                 <div class="restaurant-info-wrapper">
-                    <div class="restaurant-info" (click)="showRestaurants(district.id)" matTooltip="Show Restaurants">
+                    <div class="restaurant-info" (click)="showRestaurants(province.id)" matTooltip="Show Restaurants">
                         <mat-icon>restaurant</mat-icon>
-                        <span>{{ getRestaurantCount(district . id) }}</span>
+                        <span>{{ province . resCount }}</span>
                     </div>
                 </div>
             </td>
         </ng-container>
 
+        <!-- Hành động -->
         <ng-container matColumnDef="action">
             <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let district">
+            <td mat-cell *matCellDef="let province">
                 <div class="action-buttons">
-                    <mat-icon class="action-icon edit-icon" (click)="openEditForm(district.id)">edit</mat-icon>
-                    <i class="fas fa-trash delete-icon" (click)="openDeleteDialog(district.id)" title="Delete"></i>
+                    <mat-icon class="action-icon edit-icon" (click)="openEditForm(province.id)">edit</mat-icon>
+                    <i class="fas fa-trash delete-icon" (click)="openDeleteDialog(province.id)" title="Delete"></i>
                 </div>
             </td>
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="['id', 'districtName', 'provinceName', 'restaurants', 'action']"></tr>
-        <tr mat-row *matRowDef="let row; columns: ['id', 'districtName', 'provinceName', 'restaurants', 'action']"></tr>
-    </table>
+<!-- Định nghĩa dòng tiêu đề và dữ liệu -->
+    <tr mat-header-row *matHeaderRowDef="['id', 'provinceName', 'districtName', 'resCount', 'action']"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['id', 'provinceName', 'districtName', 'resCount', 'action']"></tr>
+</table>
 
     <!-- Pagination Controls -->
     <mat-paginator [pageSize]="pageSize" [length]="districts.length" [pageSizeOptions]="[10]"></mat-paginator>
