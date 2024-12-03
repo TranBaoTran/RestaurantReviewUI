@@ -26,6 +26,11 @@ export class RestaurantService {
     return this.http.get<Category[]>(this.apiUrl + "Category");
   }
 
+  getAllRestaurant(): Observable<Restaurant[]> {
+    return this.http.get<Restaurant[]>(`${this.apiUrl}Restaurant/GetNotDeletedRestaurant`);
+  }
+
+
   getFamousRestaurantByProvince(id : number): Observable<Restaurant[]> {
     return this.http.get<Restaurant[]>(`${this.apiUrl}RestaurantFilter/FamousRestaurant/${id}`);
   }
@@ -83,5 +88,13 @@ export class RestaurantService {
 
   requestAcceptRestaurant(resId : number, sentRes : SentRestaurant): Observable<{message : string}>{
     return this.http.put<{message : string}>(`${this.apiUrl}Restaurant/RequestAcceptRestaurant/${resId}`, sentRes);
+  }
+
+  acceptRestaurant(resId : number): Observable<{message : string}>{
+    return this.http.post<{message : string}>(`${this.apiUrl}Restaurant/AcceptRestaurant/${resId}`, null);
+  }
+
+  rejectRestaurant(resId : number): Observable<{message : string}>{
+    return this.http.post<{message : string}>(`${this.apiUrl}Restaurant/RejectRestaurant/${resId}`, null);
   }
 }

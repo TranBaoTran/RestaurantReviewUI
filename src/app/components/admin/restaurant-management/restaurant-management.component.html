@@ -6,7 +6,7 @@
         <div class="search-container">
             <i class="fas fa-search search-icon"></i>
             <input type="text" class="search-input" placeholder="Tìm kiếm..." [(ngModel)]="searchTerm"
-                (ngModelChange)="onSearch()">
+                (ngModelChange)="applySearch()">
         </div>
 
         <!-- Waiting Restaurants Button with Count -->
@@ -54,33 +54,28 @@
                     <td mat-cell *matCellDef="let waitingRestaurants"> {{ waitingRestaurants . id }} </td>
                 </ng-container>
 
-                <ng-container matColumnDef="userId">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> User ID </th>
-                    <td mat-cell *matCellDef="let waitingRestaurants"> {{ waitingRestaurants . userID }} </td>
-                </ng-container>
-
                 <ng-container matColumnDef="name">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Nhà Hàng </th>
                     <td mat-cell *matCellDef="let waitingRestaurants"> {{ waitingRestaurants . name }} </td>
                 </ng-container>
 
-                <ng-container matColumnDef="category">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Thể Loại </th>
-                    <td mat-cell *matCellDef="let waitingRestaurants"> {{ waitingRestaurants . category }} </td>
+                <ng-container matColumnDef="address">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Địa chỉ </th>
+                    <td mat-cell *matCellDef="let waitingRestaurants"> {{ waitingRestaurants . address }}, Quận {{ getDistrictAndProvinceName(waitingRestaurants.districtId, province)?.districtName}}, Thành phố {{ getDistrictAndProvinceName(waitingRestaurants.districtId, province)?.provinceName}} </td>
                 </ng-container>
 
                 <ng-container matColumnDef="detail">
                     <th mat-header-cell *matHeaderCellDef> Chi Tiết </th>
                     <td mat-cell *matCellDef="let waitingRestaurants">
-                        <mat-icon (click)="onDetailClick(waitingRestaurants)" class="detail-icon"
+                        <mat-icon (click)="onDetailClick(waitingRestaurants, $event)"  class="detail-icon"
                             aria-label="Detail icon">
                             info
                         </mat-icon>
                     </td>
                 </ng-container>
 
-                <tr mat-header-row *matHeaderRowDef="['checkbox', 'id', 'userId', 'name', 'category', 'detail']"></tr>
-                <tr mat-row *matRowDef="let row; columns: ['checkbox', 'id', 'userId', 'name', 'category', 'detail'];"
+                <tr mat-header-row *matHeaderRowDef="['checkbox', 'id', 'name', 'address','detail']"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['checkbox', 'id', 'name', 'address', 'detail'];"
                     (click)="onRowClick(row)"></tr>
             </table>
         </div>
@@ -90,13 +85,35 @@
             <h4>Chi Tiết Nhà Hàng</h4>
             <p><strong>ID:</strong> {{ selectedWaitingRestaurant . id }}</p>
             <p><strong>Tên:</strong> {{ selectedWaitingRestaurant . name }}</p>
-            <p><strong>Thể Loại:</strong> {{ selectedWaitingRestaurant . category }}</p>
-            <p><strong>Địa Chỉ:</strong> {{ selectedWaitingRestaurant . address }} {{ selectedWaitingRestaurant . district }}</p>
+            <p><strong>Thể Loại:</strong>
+                @for (item of selectedWaitingRestaurant.category; track item) {
+                    {{item.name}}
+                }
+            </p>
+            <p><strong>Địa Chỉ:</strong> {{ selectedWaitingRestaurant . address }}, Quận {{ getDistrictAndProvinceName(selectedWaitingRestaurant.districtId, province)?.districtName}}, Thành phố {{ getDistrictAndProvinceName(selectedWaitingRestaurant.districtId, province)?.provinceName}}</p>
             <p><strong>Số Điện Thoại:</strong> {{ selectedWaitingRestaurant . phone }}</p>
-            <p><strong>Giờ Mở Cửa:</strong> {{ selectedWaitingRestaurant . openedTime }}</p>
-            <p><strong>Giờ Đóng Cửa:</strong> {{ selectedWaitingRestaurant . closedTime }}</p>
+            <p><strong>Giờ Hoạt Động:</strong> {{ selectedWaitingRestaurant . openedTime }} - {{ selectedWaitingRestaurant . closedTime }}</p>
+            <p><strong>Giá Tiền:</strong> 
+                {{ selectedWaitingRestaurant.lowestCost | currencyFormat}} - {{ selectedWaitingRestaurant.highestCost | currencyFormat}}
+            </p>
+            <p><strong>Hình ảnh:</strong></p>
+                <div class="image-boxes">
+                    <ng-container *ngFor="let image of selectedWaitingRestaurant.image">
+                        <div class="image-box">
+                          <img [src]="image.imgPath" alt="Restaurant Image" class="image-thumbnail" (click)="openImage(image.imgPath)"/>
+                        </div>
+                    </ng-container> 
+                </div>
+            
             <button class="close-detail" (click)="closeDetailBox()">Close</button>
         </div>
+
+        <div class="image-modal" *ngIf="selectedImageUrl">
+            <div class="modal-content">
+              <span class="close" (click)="closeModal()">×</span>
+              <img [src]="selectedImageUrl" alt="Large Image" class="modal-image" />
+            </div>
+          </div>
 
         <!-- Action Buttons -->
         <div class="popup-actions">
@@ -134,7 +151,7 @@
         <!-- District Column -->
         <ng-container matColumnDef="district">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Quận / Huyện </th>
-            <td mat-cell *matCellDef="let restaurant"> {{ getDistrictName(restaurant . districtID) }} </td>
+            <td mat-cell *matCellDef="let restaurant"> {{ getDistrictAndProvinceName(restaurant.districtId, province)?.districtName}},  {{ getDistrictAndProvinceName(restaurant.districtId, province)?.provinceName}}</td>
         </ng-container>
 
         <!-- Phone Column -->
@@ -143,10 +160,28 @@
             <td mat-cell *matCellDef="let restaurant"> {{ restaurant . phone }} </td>
         </ng-container>
 
+        <!-- Phone Column -->
+        <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef> Tình trạng </th>
+            <td mat-cell *matCellDef="let restaurant">
+                <span 
+                    [ngClass]="{
+                        'badge-success': restaurant.status === 'accepted',
+                        'badge-warning': restaurant.status === 'waiting',
+                        'badge-danger': restaurant.status === 'unaccepted'
+                    }" 
+                    class="badge rounded-pill d-inline">
+                    {{restaurant.status}}
+                </span>
+            </td>
+        </ng-container>
+
         <!-- User ID Column -->
         <ng-container matColumnDef="direct">
             <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let restaurant"><a [routerLink]="['/restaurants', restaurant.id]">Tới nhà hàng</a></td>
+            <td mat-cell *matCellDef="let restaurant">
+                <a *ngIf="restaurant.status == 'accepted'" [routerLink]="['/restaurants', restaurant.id]">Tới nhà hàng</a>
+            </td>
         </ng-container>
 
         <!-- Action Column -->
