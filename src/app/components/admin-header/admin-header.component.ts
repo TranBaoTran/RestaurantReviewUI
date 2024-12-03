@@ -18,42 +18,41 @@ export class AdminHeaderComponent implements OnInit {
 
 
   constructor(private restaurantService: RestaurantService, private router: Router, 
-      private secureStorageService: SecureStorageService) { }
-
+    private secureStorageService: SecureStorageService) { }
   ngOnInit(): void {
     // this.getWaitingRestaurants();
 
-    this.waitingRestaurants = [
-      { id: 1, userId: 101, name: 'Restaurant A', category: 'Italian', district: 'District 1' },
-      { id: 2, userId: 102, name: 'Restaurant B', category: 'Chinese', district: 'District 2' },
-      { id: 3, userId: 103, name: 'Restaurant C', category: 'Indian', district: 'District 3' },
-      { id: 4, userId: 104, name: 'Restaurant D', category: 'Thai', district: 'District 4' },
-    ];
-    
-    this.waitingRestaurantsCount = this.waitingRestaurants.length;
-
-    this.waitingRestaurantsCount = this.waitingRestaurants.length;
+    // this.waitingRestaurants = [
+    //   { id: 1, userId: 101, name: 'Restaurant A', category: 'Italian', district: 'District 1' },
+    //   { id: 2, userId: 102, name: 'Restaurant B', category: 'Chinese', district: 'District 2' },
+    //   { id: 3, userId: 103, name: 'Restaurant C', category: 'Indian', district: 'District 3' },
+    //   { id: 4, userId: 104, name: 'Restaurant D', category: 'Thai', district: 'District 4' },
+    // ];
+    this.getWaitingRestaurants();
 
   }
-
   getWaitingRestaurants(): void {
-    this.restaurantService.getRestaurants().subscribe(
-      (data: Restaurant[]) => {  // Khai báo kiểu cho data trả về từ API
-        this.waitingRestaurants = data.filter((restaurant: Restaurant) => restaurant.status === 'waiting');
-        this.waitingRestaurantsCount = this.waitingRestaurants.length;  
+    this.restaurantService.getWaitingRestaurants().subscribe(
+      (waitingRestaurants: Restaurant[]) => {
+        this.waitingRestaurants = waitingRestaurants;
+        this.waitingRestaurantsCount = this.waitingRestaurants.length;
+        console.log("aaaaaaaa",this.waitingRestaurants);
+        
       },
       (error) => {
-        console.error('Lỗi khi lấy dữ liệu nhà hàng:', error);
+        console.error('Error fetching restaurantS:', error);
       }
     );
-  }
+   }
 
-  navigateToRestaurantManagement() {
+
+   navigateToRestaurantManagement() {
     this.router.navigate(['/admin/restaurant-management']);
   }
-
+  
   logOut(): void {
     this.secureStorageService.clearStorage();
     this.router.navigate(['/']);
   }
+
 }
