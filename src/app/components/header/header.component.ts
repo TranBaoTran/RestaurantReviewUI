@@ -43,6 +43,9 @@ export class HeaderComponent implements OnInit, OnChanges{
   filteredOptions: Restaurant[] = [];
   private searchSubject = new Subject<string>();
 
+  // admin
+  isAdmin: boolean = false;
+
   constructor(private restaurantService: RestaurantService, private userService : UserService, private secureStorageService : SecureStorageService, private searchService : SearchService, private router : Router) {};
 
   ngOnInit(): void {
@@ -64,7 +67,9 @@ export class HeaderComponent implements OnInit, OnChanges{
         complete: () => {
           console.log('getUserById request completed.');
         },
-      });      
+      });
+      const role = this.secureStorageService.getRole();
+      this.isAdmin = role === 'AD'; 
     }
 
     this.searchSubject.pipe(

@@ -19,6 +19,7 @@ import { CategoryComponent } from './components/admin/category/category.componen
 import { DistrictComponent } from './components/admin/district/district.component';
 import { ProvinceComponent } from './components/admin/province/province.component';
 import { AdminDashboardComponent } from './components/admin/admin-dashboard/admin-dashboard.component';
+import { adminAuthGuard } from './guards/admin-auth.guard';
 
 export const routes: Routes = [
     {   path: '', 
@@ -39,6 +40,7 @@ export const routes: Routes = [
     { 
         path: 'admin', 
         component: AdminComponent, 
+        canActivate: [adminAuthGuard], 
         children:[
             { path: 'user-management', component: UserManagementComponent },
             { path: 'district', component: DistrictComponent },

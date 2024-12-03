@@ -33,15 +33,6 @@
                 </div>
             </div>
 
-            <!-- Category Filter Dropdown -->
-            <mat-form-field appearance="fill">
-                <mat-label>Thể Loại</mat-label>
-                <mat-select multiple [(value)]="selectedCategories" placeholder="Select categories">
-                    <mat-option *ngFor="let category of categories" [value]="category.id">
-                        {{ category.name }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
         </div>
 
         <!-- waiting restaurant -->
@@ -146,46 +137,16 @@
             <td mat-cell *matCellDef="let restaurant"> {{ getDistrictName(restaurant . districtID) }} </td>
         </ng-container>
 
-        <!-- Opened Time Column -->
-        <ng-container matColumnDef="openedTime">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Giờ mở cửa </th>
-            <td mat-cell *matCellDef="let restaurant"> {{ restaurant . openedTime }} </td>
-        </ng-container>
-
-        <!-- Closed Time Column -->
-        <ng-container matColumnDef="closedTime">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Giờ đóng cửa </th>
-            <td mat-cell *matCellDef="let restaurant"> {{ restaurant . closedTime }} </td>
-        </ng-container>
-
-        <!-- Lowest Cost Column -->
-        <ng-container matColumnDef="lowestCost">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Giá Thấp Nhất </th>
-            <td mat-cell *matCellDef="let restaurant"> {{ restaurant . lowestCost }} </td>
-        </ng-container>
-
-        <!-- Highest Cost Column -->
-        <ng-container matColumnDef="highestCost">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Giá Cao Nhất </th>
-            <td mat-cell *matCellDef="let restaurant"> {{ restaurant . highestCost }} </td>
-        </ng-container>
-
         <!-- Phone Column -->
         <ng-container matColumnDef="phone">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Số Điện Thoại </th>
             <td mat-cell *matCellDef="let restaurant"> {{ restaurant . phone }} </td>
         </ng-container>
 
-        <!-- Website Column -->
-        <ng-container matColumnDef="website">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Website </th>
-            <td mat-cell *matCellDef="let restaurant"> {{ restaurant . website }} </td>
-        </ng-container>
-
         <!-- User ID Column -->
-        <ng-container matColumnDef="userId">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>User ID</th>
-            <td mat-cell *matCellDef="let restaurant"> {{ restaurant . userId }} </td>
+        <ng-container matColumnDef="direct">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let restaurant"><a [routerLink]="['/restaurants', restaurant.id]">Tới nhà hàng</a></td>
         </ng-container>
 
         <!-- Action Column -->

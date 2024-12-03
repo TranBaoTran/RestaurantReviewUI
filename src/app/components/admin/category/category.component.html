@@ -5,13 +5,13 @@
         <!-- Search Bar -->
         <div class="search-container">
             <i class="fas fa-search search-icon"></i>
-            <input type="text" class="search-input" placeholder="Tìm kiếm..." [(ngModel)]="query"
-                (ngModelChange)="onSearch()">
+            <input type="text" class="search-input" placeholder="Tìm kiếm..." [(ngModel)]="searchTerm"
+                (ngModelChange)="applySearch()">
         </div>
 
         <!-- Add Button " -->
         <button class="add-button" (click)="openAddForm()">
-            <i class="fas fa-plus"></i>Thêm Loại Nhà Hàng
+            <i class="fas fa-plus"></i>Thêm Thể Loại Nhà Hàng
         </button>
     </div>
 </div>
@@ -44,7 +44,7 @@
         <div class="form-wrapper">
             <h3 class="form-title">Chỉnh Sửa Thể Loại Nhà Hàng</h3>
             <div *ngIf="editedCategory">
-                <form (ngSubmit)="onSave()">
+                <form (ngSubmit)="updateCategory()">
                     <div class="form-group">
                         <label for="name">Tên Thể Loại Nhà Hàng</label>
                         <input [(ngModel)]="editedCategory.name" name="name" required />

@@ -36,7 +36,7 @@
                         </i>
                         {{ Review.downVotes }}
                       </a> 
-                    <a *ngIf="userid == Review.userId" class="link-muted me-2 text-danger" (click)="deleteReview()"><i class="fa fa-trash ms-3"></i></a>
+                    <a *ngIf="userid == Review.userId || isAdmin" class="link-muted me-2 text-danger" (click)="deleteReview()"><i class="fa fa-trash ms-3"></i></a>
                 </div>
             </div>
             <div class="ps-1 border-top pt-2">

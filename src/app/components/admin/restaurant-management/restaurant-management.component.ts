@@ -10,11 +10,12 @@ import { Observable } from 'rxjs';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { RestaurantService } from '../../../services/admin/restaurant.service';
 import { MatDialog } from '@angular/material/dialog';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-restaurant-management',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatPaginatorModule, MatIcon, MatSelectModule, FormsModule, MatSortModule],
+  imports: [CommonModule, MatTableModule, MatPaginatorModule, MatIcon, MatSelectModule, FormsModule, MatSortModule, RouterModule],
   templateUrl: './restaurant-management.component.html',
   styleUrl: './restaurant-management.component.css'
 })
@@ -33,20 +34,11 @@ export class RestaurantManagementComponent implements AfterViewInit{
   waitingRestaurantsCount: number = 0;
   isWaitingPopupVisible: boolean = false;
 
-  // dropdown list multiple selections
-  categories = [
-    { id: '1', name: 'Italian' },
-    { id: '2', name: 'Japanese' },
-    { id: '3', name: 'Chinese' },
-    { id: '4', name: 'Mexican' }
-  ];
-  selectedCategories: string[] = [];  // Lưu các giá trị đã chọn từ dropdown
-
   // phân trang
   dataSource = new MatTableDataSource<Restaurant>([]); 
   restaurants: Restaurant[] = [];
   pageSize = 10;
-  displayedColumns: string[] = ['id', 'name', 'address', 'district', 'openedTime', 'closedTime', 'lowestCost', 'highestCost', 'phone', 'website', 'userId', 'action'];
+  displayedColumns: string[] = ['id', 'name', 'address', 'district', 'phone', 'direct', 'action'];
 
   // chi tiết
   selectedWaitingRestaurant: any = null;
@@ -219,7 +211,6 @@ export class RestaurantManagementComponent implements AfterViewInit{
 
     // Gán lại mảng dữ liệu đã cập nhật cho MatTableDataSource
     this.waitingRestaurantsDataSource.data = data;
-    this.selectedCategories = [];
     this.isWaitingPopupVisible = false; 
   }
 

@@ -78,7 +78,11 @@ export class LoginComponent implements OnInit {
           this.secureStorageService.setToken(data.token);
           this.secureStorageService.setUserId(decodedToken.UserId);
           this.secureStorageService.setRole(decodedToken.RoleId);
-          this.router.navigate(['']);
+          if(decodedToken.UserId == "AD"){
+            this.router.navigate(['/admin/dashboard']);
+          }else{
+            this.router.navigate(['']);
+          }         
         } else {
           window.alert("Login Error: Missing token.");
         }

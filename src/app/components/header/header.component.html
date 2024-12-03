@@ -125,6 +125,9 @@
             </ul>
           </li>
         </ul>
+        <button *ngIf="isAdmin" class="btn btn-outline-primary" type="button" [routerLink]="'admin'">
+          Admin
+        </button>
       }
     </div>
 

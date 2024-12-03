@@ -9,6 +9,7 @@ import { SecureStorageService } from '../../../services/secure-storage.service';
 import { CommonModule } from '@angular/common';
 import { ReviewService } from '../../../services/review.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-review-card',
@@ -27,10 +28,12 @@ export class ReviewCardComponent implements OnInit{
   day: number = 0;
   userid : number = -1;
 
+  // Admin
+  isAdmin: boolean = false;
 
-  constructor( private userService : UserService, private secureStorageService : SecureStorageService, private reviewService : ReviewService, private router : Router){
-    
-  }
+
+  constructor( private userService : UserService, private secureStorageService : SecureStorageService, 
+    private reviewService : ReviewService, private router : Router, private authService: AuthService){}
 
   ngOnInit(): void {
     this.loadUserInfo(this.Review.userId);
@@ -39,6 +42,10 @@ export class ReviewCardComponent implements OnInit{
       const storedUserId = Number(this.secureStorageService.getUserId());
       this.userid = storedUserId;
     }
+    this.isAdmin = this.authService.isAdmin();
+
+    const role = this.secureStorageService.getRole();
+    this.isAdmin = role === 'AD';
   }
 
   loadUserInfo(userId : number){

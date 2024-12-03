@@ -16,37 +16,19 @@ export class CategoryService {
         return this.http.get<any>(this.apiUrl);
     }
     
-    getCategoryId(categoryId: number): Observable<Category | null> {
-        return this.http.get<Category>(`${this.apiUrl}/${categoryId}`).pipe(
-        catchError(error => {
-            if (error.status === 404) {
-            // Handle not found (e.g., return null or show an alert)
-            return of(null);
-            } else {
-            // Handle other potential errors
-            throw error;
-            }
-        })
-        );
+    getCategoryId(categoryId: number): Observable<Category> {
+        return this.http.get<Category>(`${this.apiUrl}/${categoryId}`);
     }
 
-
-    // Khóa tài khoản người dùng
-    lockCategory(categoryId: number): Observable<any> {
-        return this.http.put<any>(`${this.apiUrl}/lock/${categoryId}`, null).pipe(
-        catchError(error => {
-            // Xử lý lỗi nếu có
-            if (error.status === 404) {
-            console.error('User not found');
-            } else if (error.status === 400) {
-            console.error('User is already locked');
-            }
-            return of(null); // Trả về null nếu có lỗi
-        })
-        );
+    createCategory(cate : {name : string ,isActive : true}): Observable<{message : string}> {
+        return this.http.post<{message : string}>(`${this.apiUrl}/CreateCategory`, cate);
     }
 
-    searchCategorys(searchTerm: string): Observable<Category[]> {
-        return this.http.get<Category[]>(`${this.apiUrl}/search?searchTerm=${searchTerm}`);
+    updateCategory(cateId : number, cateName : string): Observable<{message : string}> {
+        return this.http.post<{message : string}>(`${this.apiUrl}/UpdateCategoryName/${cateId}/${cateName}`, null);
+    }
+
+    deleteCategory(cateId : number): Observable<{message : string}> {
+        return this.http.post<{message : string}>(`${this.apiUrl}/DeleteCategory/${cateId}`, null);
     }
 }

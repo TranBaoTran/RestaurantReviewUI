@@ -237,11 +237,7 @@
     <ng-container matColumnDef="action">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let user">
-        <div class="action-buttons">
-          @if (user.roleId == "AD") {
-            <mat-icon class="action-icon edit-icon" (click)="openEditForm(user.id)">edit</mat-icon>
-          }
-         
+        <div class="action-buttons">         
           <!-- Lock/Unlock Icon -->
           <mat-icon 
             class="action-icon" 
