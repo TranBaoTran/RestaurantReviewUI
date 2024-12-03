@@ -13,7 +13,7 @@
                     <ul class="notification-list">
                         <li *ngFor="let restaurant of waitingRestaurants" class="notification-item"
                             (click)="navigateToRestaurantManagement()">
-                            {{ restaurant . name }} Is Waiting For Approving
+                            {{ restaurant . name }} đang chờ được duyệt.
                         </li>
                     </ul>
                 </div>
@@ -26,7 +26,10 @@
             <div class="user-container">
                 <i class="fa-solid fa-user user-icon"></i>
                 <div class="logout-option">
-                    <a (click)="logOut()">Log Out</a>
+                    <ul>
+                        <li [routerLink]="''" class="logout-item">Return Home</li>
+                        <li (click)="logOut()" class="logout-item">Log Out</li>
+                    </ul>
                 </div>
             </div>
         </div>

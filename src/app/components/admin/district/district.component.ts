@@ -11,11 +11,12 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { DistrictService } from '../../../services/admin/district.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ProvinceService } from '../../../services/admin/province.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-district',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatPaginatorModule, MatIcon, MatSelectModule, FormsModule, MatSortModule],
+  imports: [CommonModule, MatTableModule, MatPaginatorModule, MatIcon, MatSelectModule, FormsModule, MatSortModule, RouterModule],
   templateUrl: './district.component.html',
   styleUrl: './district.component.css'
 })
@@ -221,6 +222,7 @@ openEditForm(districtId: number): void {
 showRestaurants(districtId: number): void {
   this.selectedDistrictId = districtId;
   this.selectedDistrictName = this.getDistrictNameById(districtId);
+  this.isRestaurantPopupVisible = true;
   
   // Gọi service để lấy thông tin nhà hàng cho district
   this.getRestaurantsForDistrict(districtId);
