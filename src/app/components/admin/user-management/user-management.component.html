@@ -16,7 +16,7 @@
     
     <!-- Add Button (click)="openAddUserForm()" -->
     <button class="add-button" (click)="openAddUserForm()">
-      <i class="fas fa-plus"></i>Add
+      <i class="fas fa-plus"></i>Thêm Admin
     </button>
   </div>
 </div>
@@ -74,10 +74,10 @@
           </div>
 
           <div class="button-container">
-            <button type="button" class="cancel" (click)="goBack()">Cancel</button>
+            <button type="button" class="cancel" (click)="goBack()">Thoát</button>
             <button type="submit" class="save" [disabled]="!email.valid || !phone.valid || !password.valid || 
               !newUser.email || !newUser.phone || !newUser.username || !newUser.password">
-              Save
+              Lưu
             </button>
           </div>
         </form>
@@ -282,13 +282,28 @@
     <div class="dialog-lock-icon">
       <mat-icon>error_outline</mat-icon>
     </div>
-    <h3>Bạn có chắc muốn xóa?</h3>
+    <h3>Bạn có chắc chắn muốn khóa?</h3>
     <div class="dialog-buttons">
-           <button mat-button (click)="dialogRef.close(false)">Cancel</button>
-           <button mat-button color="warn" (click)="dialogRef.close(true)">
-             {{ user.isActive ? 'Lock' : 'Unlock' }}
-           </button>
-      </div>
+      <button mat-button (click)="dialogRef.close(false)">Thoát</button>
+      <button mat-button color="warn" (click)="dialogRef.close(true)">
+        Xác Nhận
+      </button>
+    </div>
   </div>
 </ng-template>
 
+<!-- Lock Confirmation Dialog -->
+<ng-template #unlockDialog let-user="user" let-dialogRef="dialogRef">
+  <div class="dialog-content">
+    <div class="dialog-lock-icon">
+      <mat-icon>error_outline</mat-icon>
+    </div>
+    <h3>Bạn có chắc chắn muốn mở khóa?</h3>
+    <div class="dialog-buttons">
+      <button mat-button (click)="dialogRef.close(false)">Thoát</button>
+      <button mat-button color="warn" (click)="dialogRef.close(true)">
+        Xác Nhận
+      </button>
+    </div>
+  </div>
+</ng-template>

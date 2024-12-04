@@ -99,6 +99,7 @@
         </div>
 
         <!-- Box Chi Tiết -->
+        <div class="popup-overlay" *ngIf="selectedWaitingRestaurant" (click)="selectedWaitingRestaurant=false"></div>
         <div class="detail-box" *ngIf="selectedWaitingRestaurant">
             <h4>Chi Tiết Nhà Hàng</h4>
             <p><strong>ID:</strong> {{ selectedWaitingRestaurant . id }}</p>
@@ -109,6 +110,12 @@
             <p><strong>Số Điện Thoại:</strong> {{ selectedWaitingRestaurant . phone }}</p>
             <p><strong>Giờ Mở Cửa:</strong> {{ selectedWaitingRestaurant . openedTime }}</p>
             <p><strong>Giờ Đóng Cửa:</strong> {{ selectedWaitingRestaurant . closedTime }}</p>
+            <div class="image-gallery">
+                <h5>Hình Ảnh:</h5>
+                <div class="image-grid">
+                    <img *ngFor="let image of selectedWaitingRestaurant.images" [src]="image" alt="Restaurant Image" />
+                </div>
+            </div>
             <button class="close-detail" (click)="closeDetailBox()">Close</button>
         </div>
 
@@ -223,4 +230,4 @@
         <button mat-button color="warn" (click)="confirmDelete()">Xác Nhận</button>
       </div>
     </div>
-  </ng-template>
+</ng-template>

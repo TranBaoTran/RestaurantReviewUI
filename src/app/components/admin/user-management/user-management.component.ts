@@ -70,6 +70,7 @@ export class UserManagementComponent implements AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort; // sort
   @ViewChild('lockDialog') lockDialog!: TemplateRef<any>; 
+  @ViewChild('unlockDialog') unlockDialog!: TemplateRef<any>; 
 
   constructor(private userService: UserService, private dialog: MatDialog) {}
 
@@ -363,25 +364,33 @@ export class UserManagementComponent implements AfterViewInit {
 
 
   openLockDialog(user: any): void {
-    const dialogRef = this.dialog.open(this.lockDialog, {
-      data: user, // Truyền dữ liệu người dùng vào
-      width: '300px',
-    });
-  
-    // Khi dialog đóng, nhận kết quả trả về (true/false)
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        if (user.isActive) {
-          console.log('User confirmed lock action:', user.id);
-          this.lockUser(user.id); // Gọi hàm khóa nếu người dùng đang active
+    console.log('Opening lock dialog for user, isActive:', user?.isActive);
+    if (user.isActive){
+      const dialogRef = this.dialog.open(this.lockDialog, {
+        data: { user }, 
+      });
+       // Khi dialog đóng, nhận kết quả trả về (true/false)
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+            console.log('User confirmed lock action:', user.id);
+            this.lockUser(user.id); // Gọi hàm khóa nếu người dùng đang active
         } else {
+          console.log('User cancelled action:', user.id);
+        }
+      });
+    } else {
+      const dialogRef = this.dialog.open(this.unlockDialog, {
+        data: { user }, 
+      });
+       // Khi dialog đóng, nhận kết quả trả về (true/false)
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
           console.log('User confirmed unlock action:', user.id);
           this.unlockUser(user.id); // Gọi hàm mở khóa nếu người dùng đang không active
+        } else {
+          console.log('User cancelled action:', user.id);
         }
-      } else {
-        console.log('User cancelled action:', user.id);
-      }
-    });
+      });
+    }
   }
-
 }

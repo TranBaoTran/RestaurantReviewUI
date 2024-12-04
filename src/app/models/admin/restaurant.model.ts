@@ -14,4 +14,5 @@ export interface Restaurant {
     status: string
     categoryNames: string[]
     selected?: boolean; 
+    images: string
 }

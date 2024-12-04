@@ -206,9 +206,7 @@ export class RestaurantManagementComponent implements AfterViewInit{
       }
     );
   }
-
   deleteRestaurant(restaurantId: number){
-    
   }
 
  loadWaitingRes(): void {

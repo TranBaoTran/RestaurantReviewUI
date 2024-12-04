@@ -271,7 +271,7 @@ tr:nth-child(even) {
 
 .detail-box p {
   margin: 8px 0;
-  font-size: 14px;
+  font-size: 16px;
   color: #555;
 }
 
@@ -299,15 +299,19 @@ tr:nth-child(even) {
 
 /* CSS for Dialog Container */
 .dialog-content {
-  text-align: center;
+  display: flex;
+  flex-direction: column; /* Sắp xếp nội dung theo cột */
+  align-items: center; /* Căn giữa nội dung */
+  justify-content: center; /* Căn giữa theo chiều dọc */
+  text-align: center; /* Canh giữa text */
   padding: 20px;
-  min-height: 200px;
 }
 
+
 .dialog-content h3 {
-  margin: 0 0 12px;
+  margin-top: 0;
+  margin-bottom: 12px;
   font-size: 18px;
-  font-weight: bold;
   color: #333333;
 }
 
@@ -327,12 +331,11 @@ tr:nth-child(even) {
 
 .dialog-buttons button {
   padding: 8px 16px;
-
   border-radius: 4px;
   font-size: 14px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-top: 70px;
+  margin-top: 5px;
 }
 
 .dialog-buttons button[mat-button] {
@@ -358,24 +361,51 @@ tr:nth-child(even) {
 }
 
 .dialog-lock-icon {
-  position: absolute;
-  top: 70px; /* Điều chỉnh khoảng cách từ trên xuống */
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #fff;
-  border: 2px solid #ccc;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  display: flex;
+  display: flex; 
+  justify-content: center; 
   align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  z-index: 1;
+  flex-shrink: 0;
+  margin-bottom: 30px;
+  height: 50px;
+  width: 100%;
+  overflow: visible;
 }
 
-.dialog-lock-icon   ,
-.dialog-lock-icon i {
-  font-size: 26px;
-  color: #ff6b6b; /* Màu sắc của icon */
+.dialog-lock-icon mat-icon{
+  font-size: 64px; /* Tăng kích thước icon */
+  line-height: 1; /* Đảm bảo icon không bị ép theo dòng */
+  color: #ff6b6b;
+  width: auto; /* Loại bỏ bất kỳ giới hạn chiều rộng */
+  height: auto;
+}
+
+.image-gallery {
+  margin-top: 4px;
+}
+
+.image-gallery h5 {
+  margin-bottom: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #555;
+}
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 ảnh mỗi hàng */
+  gap: 8px; /* Khoảng cách giữa các ảnh */
+}
+
+.image-grid img {
+  width: 100%; /* Chiều rộng tự động theo khung */
+  aspect-ratio: 1; /* Giữ ảnh vuông */
+  object-fit: cover; /* Cắt hình vừa với khung */
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.image-grid img:hover {
+  transform: scale(1.05); /* Phóng to nhẹ khi hover */
 }
