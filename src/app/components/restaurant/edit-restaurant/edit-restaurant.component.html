@@ -144,7 +144,7 @@
                     @if(restaurant.status == "waiting"){
                         <div nz-typography nzType="danger">Nhà hàng của bạn đang được chờ duyệt.</div>
                     }
-                    @else if (restaurant.status == "unaccepted") {
+                    @else if (restaurant.status == "rejected") {
                         <button nz-button nzType="primary" style="margin-right: 5px;" (click)="clickReSendAcceptRes()">Gửi Xét Duyệt Lại</button>
                     }
                     @else {

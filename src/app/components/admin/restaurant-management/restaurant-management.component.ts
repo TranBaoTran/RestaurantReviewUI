@@ -10,7 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
 import { RestaurantService } from '../../../services/restaurant.service';
 import { Restaurant } from '../../../models/restaurant.model';
-import { Province } from '../../../models/district.model';
+import { District, Province } from '../../../models/district.model';
 import { forkJoin, map} from 'rxjs';
 import { CurrencyFormatPipe } from '../../currency-format.pipe';
 
@@ -23,19 +23,24 @@ import { CurrencyFormatPipe } from '../../currency-format.pipe';
 })
 export class RestaurantManagementComponent implements AfterViewInit{
   province : Province[] = [];
+  selectedProvinces: number = -1;
+  selectedDistricts: number= -1;
+  provinceDistricts : District[] = [];
   selectedImageUrl: string | null = null;
+  selectedStatus : number = -1;
 
   //filter
   isDropdownVisible = false;
   currentSortOrder: string = 'asc';
   searchTerm: string = '';
-  selectedCategory: string = '';
+  searchWaiting: string = '';
 
   // danh sách waiting restaurant
   waitingRestaurantsDataSource = new MatTableDataSource<any>();
   waitingRestaurants: any[] = [];
   waitingRestaurantsCount: number = 0;
   isWaitingPopupVisible: boolean = false;
+  cachedDistrictsAndProvinces: { [key: string]: { districtName: string, provinceName: string } } = {};
 
   // phân trang
   dataSource = new MatTableDataSource<Restaurant>([]); 
@@ -120,6 +125,15 @@ export class RestaurantManagementComponent implements AfterViewInit{
     this.restaurantService.getProvinces().subscribe({
       next : (data : Province[]) => {
         this.province = data;
+        this.province.forEach(prov => {
+          prov.districts.forEach(district => {
+            this.cachedDistrictsAndProvinces[district.id] = {
+              districtName: district.name,
+              provinceName: prov.name
+            };
+          });
+        });
+        this.provinceDistricts = this.province.flatMap((prov: Province) => prov.districts); 
       },
       error : (error) => {
         console.log("Error fetching province by id:" + error);
@@ -127,17 +141,8 @@ export class RestaurantManagementComponent implements AfterViewInit{
     });
   }
 
-  getDistrictAndProvinceName(districtID: number, provinces: Province[]): { districtName: string; provinceName: string } | null {
-    for (const province of provinces) {
-      const district = province.districts.find(d => d.id === districtID);
-      if (district) {
-        return {
-          districtName: district.name,
-          provinceName: province.name
-        };
-      }
-    }
-    return null;
+  getCachedDistrictAndProvinceName(districtId: number) {
+    return this.cachedDistrictsAndProvinces[districtId] || { districtName: '', provinceName: '' };
   }
 
   updatePaginatedRestaurant(pageIndex: number): void {
@@ -146,8 +151,45 @@ export class RestaurantManagementComponent implements AfterViewInit{
     this.dataSource.data = this.restaurants.slice(startIndex, endIndex);
   }
   
-  goBack(): void {
-
+  onFilterChange(): void {
+    let filteredRestaurant = this.restaurants;
+  
+    if (this.selectedProvinces !== -1) {
+      const selectedProvince = this.province.find((prov) => prov.id === this.selectedProvinces);
+      this.provinceDistricts = selectedProvince ? selectedProvince.districts : [];
+      
+      if (this.selectedDistricts === -1) {
+        filteredRestaurant = filteredRestaurant.filter(restaurant =>
+          this.provinceDistricts.some(district => district.id === restaurant.districtId)
+        );
+      } else {
+        filteredRestaurant = filteredRestaurant.filter(restaurant =>
+          restaurant.districtId === this.selectedDistricts
+        );
+      }
+    } else if (this.selectedDistricts !== -1) {
+      filteredRestaurant = filteredRestaurant.filter(restaurant =>
+        restaurant.districtId === this.selectedDistricts
+      );
+    }
+  
+    // Filter by Status
+    if (this.selectedStatus !== -1) {
+      filteredRestaurant = filteredRestaurant.filter(restaurant =>
+        restaurant.status === this.getStatusById(this.selectedStatus)
+      );
+    }
+  
+    this.dataSource.data = filteredRestaurant;
+  }
+  
+  getStatusById(statusId: number): string {
+    switch (statusId) {
+      case 0: return "waiting";
+      case 1: return "accepted";
+      case 2: return "rejected";
+      default: return "";
+    }
   }
 
   // Tìm kiếm người dùng theo tên
@@ -158,12 +200,14 @@ export class RestaurantManagementComponent implements AfterViewInit{
     this.dataSource.data = filteredRestaurant;
   }
 
-  deleteRestaurant(restaurantId: number){
-    
+  applyWaitingSearch(): void {
+    const filteredRestaurant = this.waitingRestaurants.filter(restaurant => 
+      restaurant.name.toLowerCase().includes(this.searchWaiting.toLowerCase())
+    );
+    this.waitingRestaurantsDataSource.data = filteredRestaurant;
   }
 
   openWaitingPopup(): void {
-    // this.getWaitingRestaurants(); 
     this.isWaitingPopupVisible = true; 
   }
 
@@ -266,12 +310,18 @@ export class RestaurantManagementComponent implements AfterViewInit{
 
   confirmDelete(): void{
     if (this.deleteRestaurantId !== null && this.deleteRestaurantId !== undefined) { 
-      const provinceId = this.deleteRestaurantId;
+      const resId = this.deleteRestaurantId;
 
-      console.log(provinceId)
-      this.closeDialog();
-
-      // cần LOAD LẠI TABLE
+      this.restaurantService.deleteRestaurant(resId).subscribe({
+        next : (data : {message : string}) => {
+          window.alert(data.message);
+          this.closeDialog();
+          this.getAllRestaurant();
+        },
+        error : (error) => {
+          console.error(error.error?.message);
+        }
+      });
     }
   }
 

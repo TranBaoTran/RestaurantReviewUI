@@ -9,6 +9,36 @@
                 (ngModelChange)="applySearch()">
         </div>
 
+        <mat-form-field class="me-3" style="min-width: 200px;">
+            <mat-label>Chọn Tỉnh/Thành phố</mat-label>
+            <mat-select [(ngModel)]="selectedProvinces" (ngModelChange)="onFilterChange()">
+            <mat-option [value]="-1" >Tất cả</mat-option>
+              <mat-option *ngFor="let prov of province" [value]="prov.id">
+                {{ prov.name }}
+              </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="me-3" style="min-width: 200px;">
+            <mat-label>Chọn Quận/Huyện</mat-label>
+            <mat-select [(ngModel)]="selectedDistricts" (ngModelChange)="onFilterChange()">
+            <mat-option [value]="-1" >Tất cả</mat-option>
+              <mat-option *ngFor="let dis of provinceDistricts" [value]="dis.id">
+                {{ dis.name }}
+              </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="me-3" style="min-width: 200px;">
+            <mat-label>Chọn Tình Trạng</mat-label>
+            <mat-select [(ngModel)]="selectedStatus" (ngModelChange)="onFilterChange()">
+            <mat-option [value]="-1" >Tất cả</mat-option>
+            <mat-option [value]="0" >Đang chờ</mat-option>
+            <mat-option [value]="1" >Đã chấp nhận</mat-option>
+            <mat-option [value]="2" >Từ chối</mat-option> 
+            </mat-select>
+        </mat-form-field>
+
         <!-- Waiting Restaurants Button with Count -->
         <button class="waiting-button" (click)="openWaitingPopup()">
             <i class="fas fa-clock"></i>
@@ -28,7 +58,8 @@
             <!-- search box -->
             <div class="search-waiting">
                 <div class="search-waiting-container">
-                    <input class="search-waiting-input" placeholder="Search..." type="text">
+                    <input class="search-waiting-input" placeholder="Tìm kiếm..." [(ngModel)]="searchWaiting"
+                    (ngModelChange)="applyWaitingSearch()" type="text" >
                     <i class="fa fa-search search-icon"></i>
                 </div>
             </div>
@@ -61,7 +92,7 @@
 
                 <ng-container matColumnDef="address">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Địa chỉ </th>
-                    <td mat-cell *matCellDef="let waitingRestaurants"> {{ waitingRestaurants . address }}, Quận {{ getDistrictAndProvinceName(waitingRestaurants.districtId, province)?.districtName}}, Thành phố {{ getDistrictAndProvinceName(waitingRestaurants.districtId, province)?.provinceName}} </td>
+                    <td mat-cell *matCellDef="let waitingRestaurants"> {{ waitingRestaurants . address }}, Quận {{ getCachedDistrictAndProvinceName(waitingRestaurants.districtId).districtName }}, Thành phố {{ getCachedDistrictAndProvinceName(waitingRestaurants.districtId).provinceName }} </td>
                 </ng-container>
 
                 <ng-container matColumnDef="detail">
@@ -90,7 +121,7 @@
                     {{item.name}}
                 }
             </p>
-            <p><strong>Địa Chỉ:</strong> {{ selectedWaitingRestaurant . address }}, Quận {{ getDistrictAndProvinceName(selectedWaitingRestaurant.districtId, province)?.districtName}}, Thành phố {{ getDistrictAndProvinceName(selectedWaitingRestaurant.districtId, province)?.provinceName}}</p>
+            <p><strong>Địa Chỉ:</strong> {{ selectedWaitingRestaurant . address }}, Quận {{ getCachedDistrictAndProvinceName(selectedWaitingRestaurant.districtId).districtName }}, Thành phố {{ getCachedDistrictAndProvinceName(selectedWaitingRestaurant.districtId).provinceName }}</p>
             <p><strong>Số Điện Thoại:</strong> {{ selectedWaitingRestaurant . phone }}</p>
             <p><strong>Giờ Hoạt Động:</strong> {{ selectedWaitingRestaurant . openedTime }} - {{ selectedWaitingRestaurant . closedTime }}</p>
             <p><strong>Giá Tiền:</strong> 
@@ -151,7 +182,7 @@
         <!-- District Column -->
         <ng-container matColumnDef="district">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Quận / Huyện </th>
-            <td mat-cell *matCellDef="let restaurant"> {{ getDistrictAndProvinceName(restaurant.districtId, province)?.districtName}},  {{ getDistrictAndProvinceName(restaurant.districtId, province)?.provinceName}}</td>
+            <td mat-cell *matCellDef="let restaurant"> {{ getCachedDistrictAndProvinceName(restaurant.districtId).districtName}},  {{ getCachedDistrictAndProvinceName(restaurant.districtId).provinceName}}</td>
         </ng-container>
 
         <!-- Phone Column -->
@@ -168,7 +199,7 @@
                     [ngClass]="{
                         'badge-success': restaurant.status === 'accepted',
                         'badge-warning': restaurant.status === 'waiting',
-                        'badge-danger': restaurant.status === 'unaccepted'
+                        'badge-danger': restaurant.status === 'rejected'
                     }" 
                     class="badge rounded-pill d-inline">
                     {{restaurant.status}}

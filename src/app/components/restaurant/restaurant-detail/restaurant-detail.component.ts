@@ -11,11 +11,12 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Province } from '../../../models/district.model';
 import { SearchComponent } from '../../search/search.component';
 import { SearchService } from '../../../services/search.service';
+import { CurrencyFormatPipe } from '../../currency-format.pipe';
 
 @Component({
   selector: 'app-restaurant-detail',
   standalone: true,
-  imports: [MdbCarouselModule, RestaurantReviewComponent,RatingStarComponent,RouterLink,CommonModule],
+  imports: [MdbCarouselModule, RestaurantReviewComponent,RatingStarComponent,RouterLink,CommonModule,CurrencyFormatPipe],
   templateUrl: './restaurant-detail.component.html',
   styleUrl: './restaurant-detail.component.css'
 })
@@ -27,6 +28,10 @@ export class RestaurantDetailComponent implements OnInit{
   Provinces: Province[] = [];
   Math = Math;
   sanitizedMapUrl!: SafeResourceUrl;
+
+  roundToFirstDecimal(value: number): number {
+    return Math.round(value * 10) / 10; 
+  }
   
   constructor( private sanitizer: DomSanitizer, private searchService : SearchService, private router : Router,
     private restaurantService: RestaurantService, private route: ActivatedRoute){}

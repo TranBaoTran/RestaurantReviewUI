@@ -191,12 +191,11 @@ export class EditRestaurantComponent implements OnDestroy,OnInit {
         next : (data : {message : string}) => {
           if(data){
             this.isLoading = false;
-            window.alert(data.message);
+            window.alert("Gửi xét duyệt thành công.");
             window.location.reload();
           }
         },
         error : (error) => {
-          window.alert("Gửi xét duyệt thành công.");
           console.error('Error : '+ error.message);
           this.isLoading = false;
         }
