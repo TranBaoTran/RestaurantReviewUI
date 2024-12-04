@@ -8,45 +8,23 @@ import { Province } from '../../models/admin/province.model';
   providedIn: 'root'
 })
 export class ProvinceService {
-    private apiUrl = 'http://localhost:5043/Province';
+    private apiUrl = 'http://localhost:5043/DistrictAndProvince';
 
     constructor(private http: HttpClient) { }
 
-    getProvinces(): Observable<any> {
-        return this.http.get<any>(this.apiUrl);
-      }
-    
-  getProvinceById(provinceId: number): Observable<Province | null> {
-    return this.http.get<Province>(`${this.apiUrl}/${provinceId}`).pipe(
-      catchError(error => {
-        if (error.status === 404) {
-          // Handle not found (e.g., return null or show an alert)
-          return of(null);
-        } else {
-          // Handle other potential errors
-          throw error;
-        }
-      })
-    );
-  }
+    updateProvinceById(provId : number, newName : string): Observable<{message : string}> {
+      return this.http.post<{message : string}>(`${this.apiUrl}/UpdateProvince/${provId}/${newName}`,null);
+    }
 
+    addProvince(name : string): Observable<{message : string}> {
+      return this.http.post<{message : string}>(`${this.apiUrl}/AddProvince`, {name : name, isAcitve : true});
+    }
 
-  // Khóa tài khoản người dùng
-  lockProvince(provinceId: number): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/lock/${provinceId}`, null).pipe(
-      catchError(error => {
-        // Xử lý lỗi nếu có
-        if (error.status === 404) {
-          console.error('User not found');
-        } else if (error.status === 400) {
-          console.error('User is already locked');
-        }
-        return of(null); // Trả về null nếu có lỗi
-      })
-    );
-  }
+    deleteProvince(provId : number): Observable<void> {
+      return this.http.post<void>(`${this.apiUrl}/DeleteProvince/${provId}`, null);
+    }
 
-  searchProvinces(searchTerm: string): Observable<Province[]> {
-    return this.http.get<Province[]>(`${this.apiUrl}/search?searchTerm=${searchTerm}`);
-  }
+    addDistrict(name : string, provId : number): Observable<{message : string}> {
+      return this.http.post<{message : string}>(`${this.apiUrl}/AddDistrict`, {name : name, provinceId : provId, isAcitve : true});
+    }
 }

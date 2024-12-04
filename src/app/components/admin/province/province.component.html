@@ -5,8 +5,8 @@
         <!-- Search Bar -->
         <div class="search-container">
             <i class="fas fa-search search-icon"></i>
-            <input type="text" class="search-input" placeholder="Tìm kiếm..." [(ngModel)]="query"
-                (ngModelChange)="onSearch()">
+            <input type="text" class="search-input" placeholder="Tìm kiếm..." [(ngModel)]="searchTerm"
+                (ngModelChange)="applySearch()">
         </div>
 
         <!-- Add Button " -->
@@ -25,14 +25,17 @@
         <div class="form-wrapper">
             <h3 class="form-title">Thêm Thành Phố / Tỉnh</h3>
             <div>
-                <form (ngSubmit)="onSave()">
+                <form #formProvince = "ngForm" (ngSubmit)="addProvince()">
                     <div class="form-group">
                         <label for="name">Tên Thành Phố / Tỉnh</label>
-                        <input [(ngModel)]="new.name" name="name" id="name" required />
+                        <input [(ngModel)]="new.name" name="name" id="name" #nameInput="ngModel" required />
+                        <div *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)" class="error">
+                            <small *ngIf="nameInput.errors?.['required']">Tên là bắt buộc.</small>
+                        </div>
                     </div>
                     <div class="button-container">
                         <button type="button" class="cancel" (click)="closeAddForm()">Thoát</button>
-                        <button type="submit" class="save">Thêm</button>
+                        <button type="submit" class="save" [disabled]="formProvince.invalid">Thêm</button>
                     </div>
                 </form>
             </div>
@@ -44,14 +47,17 @@
         <div class="form-wrapper">
             <h3 class="form-title">Chỉnh Sửa Thành Phố / Tỉnh</h3>
             <div *ngIf="editedProvince">
-                <form (ngSubmit)="onSave()">
+                <form #editProvince = "ngForm" (ngSubmit)="onSave()">
                     <div class="form-group">
                         <label for="name">Tên Thành Phố / Tỉnh</label>
-                        <input [(ngModel)]="editedProvince.name" name="name" required />
+                        <input [(ngModel)]="editedProvince.name" name="name" #editedName="ngModel" required />
+                        <div *ngIf="editedName.invalid && (editedName.dirty || editedName.touched)" class="error">
+                            <small *ngIf="editedName.errors?.['required']">Tên là bắt buộc.</small>
+                        </div>
                     </div>
                     <div class="button-container">
                         <button type="button" class="cancel" (click)="goBack()">Thoát</button>
-                        <button type="submit" class="save">Lưu</button>
+                        <button type="submit" class="save" [disabled]="editProvince.invalid">Lưu</button>
                     </div>
                 </form>
             </div>

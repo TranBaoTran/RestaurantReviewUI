@@ -50,12 +50,6 @@ export class DistrictComponent implements AfterViewInit{
   constructor(private districtService: DistrictService, private dialog: MatDialog) {}
 
   ngOnInit(): void {
-    // this.districtService.getDistricts().subscribe((districts: District[]) => {
-    //   this.districts = districts;
-    //   this.districtDataSource.data = districts;  // Set the data for the table
-    //   console.log('Dữ liệu người dùng:', this.districts);
-    // });
-    // this.selectedStatus = true;
     this.provinces = [
       { id: 1, name: 'Hà Nội', isActive: true },
       { id: 2, name: 'Hồ Chí Minh', isActive: true },
