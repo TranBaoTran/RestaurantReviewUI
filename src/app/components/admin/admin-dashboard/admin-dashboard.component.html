@@ -1,1 +1,85 @@
-<p>admin-dashboard works!</p>
+<div class="container">
+  <div class="block-container">
+    <div class="item-container">
+      <div class="stats-block">
+        <h2>Số lượng nhà hàng</h2>
+        <p>{{ restaurantCount }}</p>
+      </div>
+    </div>
+    <div class="item-container">
+      <div class="stats-block">
+        <h2>Số lượng tài khoản người dùng</h2>
+        <p>{{ userCount }}</p>
+      </div>
+    </div>
+    <div class="item-container">
+      <div class="pie-charts">
+        <canvas 
+          baseChart 
+          [data]="pieChartUserData" 
+          [options]="pieChartUserOptions" 
+          [type]="'pie'">
+        </canvas>
+      </div>
+      <h2 style="font-size: 20px;">Biểu đồ tròn thể hiện số lượng khách hàng</h2>
+    </div>
+  </div>
+
+  <!-- Khung chứa danh sách nhà hàng và biểu đồ bar -->
+  <h2 style="font-size: 20px;">Biểu đồ cột thể hiện số lượng yêu thích và đánh giá của nhà hàng</h2>
+  <div class="bar-chart-container">
+    <div class="bar-chart">
+      <canvas baseChart
+              [datasets]="barChartResData.datasets"
+              [labels]="barChartResData.labels"
+              [options]="barChartResOptions"
+              [type]="'bar'">
+      </canvas>
+    </div>
+    <div class="top-detail">
+      <!-- Danh sách tên nhà hàng với thứ tự xếp hạng theo bảng -->
+      <table class="restaurant-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Restaurant Name</th>
+            <th>Likes</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let restaurant of rankedRestaurants; let i = index">
+            <td>{{ i + 1 }}</td> <!-- Thứ tự nhà hàng -->
+            <td>{{ restaurant.restaurantName }}</td> <!-- Tên nhà hàng -->
+            <td>{{ restaurant.favoriteCount }}</td> <!-- Số lượng yêu thích -->
+            <td>{{ restaurant.reviewCount }}</td> <!-- Số lượng bình luận -->
+          </tr>
+      </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h2 style="font-size: 20px;">Biểu đồ cột thể hiện sự đánh giá của nhà hàng theo các tiêu chí</h2>
+  <div class="bar-chart-container">
+    <div class="bar-chart">
+      <canvas baseChart
+              [datasets]="barChartAverageData.datasets"
+              [labels]="barChartAverageData.labels"
+              [options]="barChartAverageOptions"
+              [type]="'bar'">
+      </canvas>
+    </div>
+  </div>
+
+  <h2 style="font-size: 20px;">Biểu đồ cột thể hiện số lượng nhà hàng theo khu vực </h2>
+  <div class="bar-chart-container">
+    <div class="bar-chart">
+      <canvas baseChart
+              [datasets]="barChartResbyDisData.datasets"
+              [labels]="barChartResbyDisData.labels"
+              [options]="barChartResOptions"
+              [type]="'bar'">
+      </canvas>
+    </div>
+  </div>
+</div>
