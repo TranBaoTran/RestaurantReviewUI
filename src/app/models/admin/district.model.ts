@@ -1,7 +1,7 @@
 export interface District {
-    id: number;
-    name: string;
+    id: number
+    name: string
     provinceId: number
-    isActive: boolean
+    provinceName: string
 }
 

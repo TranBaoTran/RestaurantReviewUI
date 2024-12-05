@@ -1,5 +1,4 @@
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
-import { Province } from '../../../models/admin/province.model';
 import { District } from '../../../models/admin/district.model';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
@@ -8,13 +7,17 @@ import { MatIcon } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-import { DistrictService } from '../../../services/admin/district.service';
 import { MatDialog } from '@angular/material/dialog';
+import { ProvinceService } from '../../../services/admin/province.service';
+import { Restaurant } from '../../../models/restaurant.model';
+import { RestaurantService } from '../../../services/restaurant.service';
+import { Province } from '../../../models/district.model';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-district',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatPaginatorModule, MatIcon, MatSelectModule, FormsModule, MatSortModule],
+  imports: [CommonModule, MatTableModule, MatPaginatorModule, MatIcon, MatSelectModule, FormsModule, MatSortModule, RouterModule],
   templateUrl: './district.component.html',
   styleUrl: './district.component.css'
 })
@@ -23,12 +26,13 @@ export class DistrictComponent implements AfterViewInit{
   editStatus = false;
   addStatus = false;
   editedDistrict: any = {
+    id : -1,
     name: '',
-    selectedProvinces: []
+    selectedProvince: -1
   };
   newDistrict = {
     name: '',
-    selectedProvince: null,
+    selectedProvince: -1,
   };
 
   //filter
@@ -38,8 +42,10 @@ export class DistrictComponent implements AfterViewInit{
 
   // phân trang
   districtDataSource = new MatTableDataSource<District>([]); 
-  provinces: Province[] = [];
   districts: District[] = [];
+  provinces : Province[] = [];
+  restaurants : Restaurant[] = []
+  selectedProvince : number = -1
   pageSize = 10;
 
 
@@ -47,42 +53,53 @@ export class DistrictComponent implements AfterViewInit{
   @ViewChild(MatSort) districtSort!: MatSort; 
   @ViewChild('lockDialog') lockDialog!: any;
 
-  constructor(private districtService: DistrictService, private dialog: MatDialog) {}
+  constructor(private provinceService: ProvinceService, private dialog: MatDialog, private restaurantService : RestaurantService) {}
 
   ngOnInit(): void {
-    this.provinces = [
-      { id: 1, name: 'Hà Nội', isActive: true },
-      { id: 2, name: 'Hồ Chí Minh', isActive: true },
-      { id: 3, name: 'Đà Nẵng', isActive: true },
-      { id: 4, name: 'Hải Phòng', isActive: true },
-      { id: 5, name: 'Cần Thơ', isActive: true },
-    ];
+    this.getAllDistrict();
+    this.getAllProvinces();
+    this.getAllRes();
+  }
 
-    this.districts = [
-      { id: 1, name: 'Ba Đình', provinceId: 1, isActive: true },
-      { id: 2, name: 'Đống Đa', provinceId: 1, isActive: true },
-      { id: 3, name: 'Quận 1', provinceId: 2, isActive: true },
-      { id: 4, name: 'Quận 3', provinceId: 2, isActive: false },
-      { id: 5, name: 'Hải Châu', provinceId: 3, isActive: true },
-      { id: 6, name: 'Thanh Khê', provinceId: 3, isActive: true },
-      { id: 7, name: 'Lê Chân', provinceId: 4, isActive: false },
-      { id: 8, name: 'Ngô Quyền', provinceId: 4, isActive: true },
-      { id: 9, name: 'Ninh Kiều', provinceId: 5, isActive: true },
-      { id: 10, name: 'Cái Răng', provinceId: 5, isActive: true },
-    ];
-    
-    // this.provinceDataSource.data = this.provinces;
-    
-    // Gán tên tỉnh dựa vào provinceId
-    this.districts = this.districts.map(district => {
-      const province = this.provinces.find(prov => prov.id === district.provinceId);
-      return {
-        ...district,
-        provinceName: province ? province.name : 'Unknown'
-      };
-    });
+  getAllDistrict(): void{
+    this.provinceService.getAllDistrict().subscribe({
+      next : (data : District[]) => {
+       if(data){
+        this.districts = data;
+        this.districtDataSource.data = this.districts;
+        this.onFilterChange()
+       }
+      },
+      error : (error) => {
+        console.error(error.error?.message);
+      }
+    })
+  }
 
-    this.districtDataSource.data = this.districts;
+  getAllProvinces(): void{
+    this.restaurantService.getProvinces().subscribe({
+      next : (data : Province[]) => {
+        if(data){
+         this.provinces = data;
+        }
+       },
+       error : (error) => {
+         console.error(error.error?.message);
+       }
+    })
+  }
+
+  getAllRes(): void{
+    this.restaurantService.getAllRestaurant().subscribe({
+      next : (data : Restaurant[]) => {
+        if(data){
+         this.restaurants = data.filter(res => res.status == "accepted");
+        }
+       },
+       error : (error) => {
+         console.error(error.error?.message);
+       }
+    })
   }
 
   ngAfterViewInit() {
@@ -96,13 +113,23 @@ export class DistrictComponent implements AfterViewInit{
     this.districtDataSource.data = this.districts.slice(startIndex, endIndex);
   }
 
+  onFilterChange(){
+    if(this.selectedProvince == -1){
+      this.districtDataSource.data = this.districts
+    }else{
+      const filterDistrict = this.districts.filter(dis => dis.provinceId === this.selectedProvince)
+      this.districtDataSource.data = filterDistrict
+    }
+  }
+
   // Mở form chỉnh sửa người dùng
   openEditForm(districtId: number): void {
     const district = this.districts.find((d) => d.id === districtId);
     if (district) {
       this.editedDistrict = {
-        ...district,
-        selectedProvinces: [district.provinceId], // Assuming a district initially belongs to one province
+        id : district.id,
+        name : district.name,
+        selectedProvince: district.provinceId,
       };
       this.editStatus = true;
     }
@@ -111,13 +138,17 @@ export class DistrictComponent implements AfterViewInit{
   // Close edit form
   goBack(): void {
     this.editStatus = false;
-    this.editedDistrict = null;
+    this.editedDistrict = {
+      id : -1,
+      name : '',
+      selectedProvince: -1,
+    };;
   }
 
   closeAddForm(): void {
     this.newDistrict = {
       name: '',
-      selectedProvince: null,
+      selectedProvince: -1,
     };
     this.addStatus = false;
   }
@@ -131,89 +162,48 @@ export class DistrictComponent implements AfterViewInit{
     this.districtDataSource.data = filterDistrict;
   }
 
-  // Lọc người dùng theo trạng thái (active/inactive)
-  applyStatusFilter(): void {
-    const filteredDistricts = this.districts.filter(district => 
-      this.selectedStatus === null || 
-      (district.isActive === true && this.selectedStatus === true) || 
-      (district.isActive === false && this.selectedStatus === false)
-    );
-    console.log(this.selectedStatus);
-    console.log(filteredDistricts);
-    this.districtDataSource.data = filteredDistricts;
-  }
-
-  // Xóa tạm thời
-  lockDistrict(districtId: number): void {
-    this.districtService.lockDistrict(districtId).subscribe({
-      next: (response) => {
-        window.alert('User account locked successfully');
-        // Reload data after locking
-        this.ngOnInit();
-      },
-      error: (error) => {
-        console.error('Error locking user:', error);
-        window.alert('Error occurred while locking user');
-      }
-    });
-  }
-
-
-  // Hàm gọi API để tìm kiếm 
-  onSearch(): void {
-    if (this.searchTerm.trim() !== '') {
-      this.districtService.searchDistricts(this.searchTerm).subscribe(
-        (districts: District[]) => {
-          this.districts = districts;
-          this.districtDataSource.data = this.districts; // Cập nhật dữ liệu cho bảng
-        },
-        (error) => {
-          console.error('Error searching districts:', error);
-        }
-      );
-    } else {
-      // Nếu không có từ khóa tìm kiếm, làm mới bảng (chạy lại tìm kiếm với từ khóa rỗng)
-      this.districtService.getDistricts().subscribe(
-        (districts: District[]) => {
-          this.districts = districts;
-          this.districtDataSource.data = this.districts; // Cập nhật dữ liệu cho bảng
-        },
-        (error) => {
-          console.error('Error fetching districts:', error);
-        }
-      );
-    }
-  }
-
-  // Hàm gọi API để lấy tất cả người dùng
-  loadDistricts(): void {
-    // this.districtService.getDistricts().subscribe(
-    //   (districts: District[]) => {
-    //     this.districts = districts;
-    //     this.districtDataSource.data = this.districts;
-    //   },
-    //   (error) => {
-    //     console.error('Error fetching districts:', error);
-    //   }
-    // );
-  }
-
   openAddDistrictForm(){
     this.addStatus = true;
   }
 
-  onSave(){
-    console.log('Saved District:', this.editedDistrict);
-    // Thực hiện lưu thông tin ở đây
+  onAdd(){
+    this.provinceService.addDistrict(this.newDistrict.name, this.newDistrict.selectedProvince).subscribe({
+      next : (data : {message : string}) => {
+        if(data){
+          window.alert(data.message);
+          this.getAllDistrict();
+          this.closeAddForm();
+        }
+       },
+       error : (error) => {
+          if (error.status === 400){
+            window.alert(error.error?.message);
+          }else{
+            console.error('Error:', error);
+          }  
+       }
+    })
   }
 
-  restaurants = [
-    { id: 1, districtId: 1, name: 'Restaurant A' },
-    { id: 2, districtId: 1, name: 'Restaurant B' },
-    { id: 3, districtId: 2, name: 'Restaurant C' },
-    { id: 4, districtId: 3, name: 'Restaurant D' },
-    { id: 5, districtId: 5, name: 'Restaurant E' },
-  ];
+  onSave(){
+    this.provinceService.updateDistrict(this.editedDistrict.name, this.editedDistrict.id).subscribe({
+      next : (data : {message : string}) => {
+        if(data){
+          window.alert(data.message);
+          this.getAllDistrict();
+          this.goBack();
+        }
+       },
+       error : (error) => {
+          if (error.status === 400){
+            window.alert(error.error?.message);
+          }else{
+            console.error('Error:', error);
+          }  
+       }
+    })
+  }
+
   selectedDistrictId: number | null = null;
   selectedDistrictName: string | null = null;
   restaurantsInDistrict: any[] = [];
@@ -263,11 +253,20 @@ export class DistrictComponent implements AfterViewInit{
   confirmDelete(): void{
     if (this.deleteDistrictId !== null && this.deleteDistrictId !== undefined) { 
       const districtId = this.deleteDistrictId;
-
-      console.log(districtId)
-      this.closeDialog();
-
-      // cần LOAD LẠI TABLE
+      this.provinceService.deleteDistrict(districtId).subscribe({
+        next : () => {
+            window.alert("Xoá thành công");
+            this.getAllDistrict();
+            this.closeDialog();
+         },
+         error : (error) => {
+            if (error.status === 400){
+              window.alert(error.error?.message);
+            }else{
+              console.error('Error:', error);
+            }  
+         }
+      })
     }
   }
 }

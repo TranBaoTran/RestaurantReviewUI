@@ -5,9 +5,19 @@
         <!-- Search Bar -->
         <div class="search-container">
             <i class="fas fa-search search-icon"></i>
-            <input type="text" class="search-input" placeholder="Tìm kiếm..." [(ngModel)]="query"
-                (ngModelChange)="onSearch()">
+            <input type="text" class="search-input" placeholder="Tìm kiếm..." [(ngModel)]="searchTerm"
+                (ngModelChange)="applySearch()">
         </div>
+
+        <mat-form-field class="me-3" style="min-width: 200px;">
+            <mat-label>Chọn Tỉnh/Thành phố</mat-label>
+            <mat-select [(ngModel)]="selectedProvince" (ngModelChange)="onFilterChange()">
+            <mat-option [value]="-1" >Tất cả</mat-option>
+              <mat-option *ngFor="let prov of provinces" [value]="prov.id">
+                {{ prov.name }}
+              </mat-option>
+            </mat-select>
+        </mat-form-field>
 
         <!-- Add Button (click)="openAdddistrictForm()" -->
         <button class="add-button" (click)="openAddDistrictForm()">
@@ -25,7 +35,7 @@
         <div class="form-wrapper">
             <h3 class="form-title">Thêm Quận / Huyện</h3>
             <div>
-                <form (ngSubmit)="onSave()">
+                <form (ngSubmit)="onAdd()">
                     <div class="form-group">
                         <label for="name">Tên Quận / Huyện</label>
                         <input [(ngModel)]="newDistrict.name" name="name" id="name" #nameInput="ngModel" required />
@@ -38,7 +48,7 @@
                         <label for="name">Tên Thành Phố / Tỉnh</label>
                         <mat-form-field appearance="fill" class="custom-form-field">
                             <mat-label>Chọn Thành Phố / Tỉnh</mat-label>
-                            <mat-select [(ngModel)]="newDistrict.selectedProvince" name="selectedProvince" #provinceInput="ngModel" multiple required>
+                            <mat-select [(ngModel)]="newDistrict.selectedProvince" name="selectedProvince" #provinceInput="ngModel" required>
                                 <mat-option *ngFor="let province of provinces" [value]="province.id">
                                     {{ province . name }}
                                 </mat-option>
@@ -66,17 +76,6 @@
                     <div class="form-group">
                         <label for="name">Tên Quận / Huyện</label>
                         <input [(ngModel)]="editedDistrict.name" name="name" required />
-                    </div>
-                    <div class="form-group">
-                        <label for="provinces">Tên Thành Phố / Tỉnh</label>
-                        <mat-form-field appearance="fill" class="custom-form-field">
-                            <mat-select [(ngModel)]="editedDistrict.selectedProvinces" name="selectedProvinces"
-                                multiple>
-                                <mat-option *ngFor="let province of provinces" [value]="province.id">
-                                    {{ province . name }}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
                     </div>
                     <div class="button-container">
                         <button type="button" class="cancel" (click)="goBack()">Thoát</button>
@@ -146,7 +145,7 @@
             <ul>
                 <li *ngFor="let restaurant of restaurantsInDistrict">
                     <span>{{ restaurant . name }}</span>
-                    <a href="#" class="detail-link">Detail</a>
+                    <a class="detail-link" [routerLink]="['/restaurants',restaurant.id]">Tới nhà hàng</a>
                 </li>
             </ul>
         </div>
