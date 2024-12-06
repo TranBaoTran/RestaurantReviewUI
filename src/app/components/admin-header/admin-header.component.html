@@ -13,20 +13,20 @@
                     <ul class="notification-list">
                         <li *ngFor="let restaurant of waitingRestaurants" class="notification-item"
                             (click)="navigateToRestaurantManagement()">
-                            {{ restaurant . name }} Is Waiting For Approving
+                            {{ restaurant . name }} Đang Chờ Được Duyệt.
                         </li>
                     </ul>
                 </div>
 
                 <div class="notification-dropdown no-notifications" *ngIf="waitingRestaurantsCount === 0">
-                    No restaurants are waiting for approval.
+                    Không có nhà hàng nào đang chờ duyệt.
                 </div>
             </div>
 
             <div class="user-container">
                 <i class="fa-solid fa-user user-icon"></i>
                 <div class="logout-option">
-                    <a (click)="logOut()">Log Out</a>
+                    <a (click)="logOut()">Đăng xuất</a>
                 </div>
             </div>
         </div>

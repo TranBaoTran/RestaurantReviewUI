@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Restaurant } from '../../models/admin/restaurant.model';
 import { Router, RouterModule } from '@angular/router';
-import { RestaurantService } from '../../services/admin/restaurant.service';
 import { SecureStorageService } from '../../services/secure-storage.service';
+import { RestaurantService } from '../../services/restaurant.service';
+import { Restaurant } from '../../models/restaurant.model';
 
 @Component({
   selector: 'app-admin-header',
@@ -21,31 +21,19 @@ export class AdminHeaderComponent implements OnInit {
       private secureStorageService: SecureStorageService) { }
 
   ngOnInit(): void {
-    // this.getWaitingRestaurants();
-
-    this.waitingRestaurants = [
-      { id: 1, userId: 101, name: 'Restaurant A', category: 'Italian', district: 'District 1' },
-      { id: 2, userId: 102, name: 'Restaurant B', category: 'Chinese', district: 'District 2' },
-      { id: 3, userId: 103, name: 'Restaurant C', category: 'Indian', district: 'District 3' },
-      { id: 4, userId: 104, name: 'Restaurant D', category: 'Thai', district: 'District 4' },
-    ];
-    
-    this.waitingRestaurantsCount = this.waitingRestaurants.length;
-
-    this.waitingRestaurantsCount = this.waitingRestaurants.length;
-
+    this.getWaitingRestaurants();
   }
 
   getWaitingRestaurants(): void {
-    this.restaurantService.getRestaurants().subscribe(
-      (data: Restaurant[]) => {  // Khai báo kiểu cho data trả về từ API
-        this.waitingRestaurants = data.filter((restaurant: Restaurant) => restaurant.status === 'waiting');
-        this.waitingRestaurantsCount = this.waitingRestaurants.length;  
-      },
-      (error) => {
-        console.error('Lỗi khi lấy dữ liệu nhà hàng:', error);
-      }
-    );
+    this.restaurantService.getAllRestaurant().subscribe({
+        next : (data: Restaurant[]) => {  // Khai báo kiểu cho data trả về từ API
+          this.waitingRestaurants = data.filter((restaurant: Restaurant) => restaurant.status === 'waiting');
+          this.waitingRestaurantsCount = this.waitingRestaurants.length;  
+        },
+        error : (error) => {
+          console.error('Lỗi khi lấy dữ liệu nhà hàng:', error);
+        }
+    });
   }
 
   navigateToRestaurantManagement() {
