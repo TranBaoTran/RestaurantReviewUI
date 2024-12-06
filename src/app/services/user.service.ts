@@ -55,4 +55,20 @@ export class UserService {
   editUserInfo(userid : number, name : string, phone : string): Observable<{message : string}> {
     return this.http.post<{message : string}>(`${this.apiUrl}/EditUserInfo/${userid}/${name}/${phone}`, null);
   }
+
+  getAllUser(): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiUrl}`);
+  }
+
+  lockUser(userId : number): Observable<{message : string}> {
+    return this.http.put<{message : string}>(`${this.apiUrl}/lock/${userId}`, null);
+  }
+
+  unlockUser(userId : number): Observable<{message : string}> {
+    return this.http.put<{message : string}>(`${this.apiUrl}/unlock/${userId}`, null);
+  }
+
+  addNewAdmin(formData : FormData): Observable<{message : string}> {
+    return this.http.post<{message : string}>(`${this.apiUrl}/AddNewAdmin`, formData);
+  }
 }
