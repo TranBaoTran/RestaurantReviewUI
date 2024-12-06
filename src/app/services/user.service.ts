@@ -24,6 +24,14 @@ export class UserService {
     return this.http.post<LoginResponse>(`${this.apiLoginUrl}/GGlogin`, data);
   }
 
+  forgotPassword(email : string): Observable<{message : string}>{
+    return this.http.post<{message : string}>(`${this.apiLoginUrl}/ForgotPassword`, {email : email});
+  }
+
+  resetPassword(token : string, newPass : string): Observable<{message : string}>{
+    return this.http.post<{message : string}>(`${this.apiLoginUrl}/ResetPassword`, {token : token, newPassword : newPass});
+  }
+
   getUserById(id : number): Observable<User>{
     return this.http.get<User>(`${this.apiUrl}/${id}`);
   }

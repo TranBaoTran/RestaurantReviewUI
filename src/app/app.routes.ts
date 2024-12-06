@@ -20,6 +20,8 @@ import { DistrictComponent } from './components/admin/district/district.componen
 import { ProvinceComponent } from './components/admin/province/province.component';
 import { AdminDashboardComponent } from './components/admin/admin-dashboard/admin-dashboard.component';
 import { adminAuthGuard } from './guards/admin-auth.guard';
+import { ConfirmEmailComponent } from './components/confirm-email/confirm-email.component';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 
 export const routes: Routes = [
     {   path: '', 
@@ -37,6 +39,8 @@ export const routes: Routes = [
         ]},
     {   path: 'login', component: LoginComponent},
     {   path: 'signup', component: SignupComponent},
+    {   path: 'confirm-email', component: ConfirmEmailComponent},
+    {   path: 'reset-password', component: ResetPasswordComponent},
     { 
         path: 'admin', 
         component: AdminComponent, 

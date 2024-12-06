@@ -1,0 +1,14 @@
+<body>
+    <div class="card">
+        <h2 style="color: white;">QUÊN MẬT KHẨU ?</h2>
+        <p>Bạn có thể làm mới mật khẩu ở đây.</p>
+        <input type="text" class="passInput" placeholder="Hãy nhập địa chỉ email!" [(ngModel)] = "emailText" #email = "ngModel" pattern="[^@\s]+@[^@\s]+\.[^@\s]+" required>
+        <div *ngIf="email.errors?.['required'] && (email.touched)" class="text-danger">
+            Email không được bỏ trống.
+          </div>
+          <div *ngIf="email.errors?.['pattern'] && (email.touched)" class="text-danger">
+            Vui lòng nhập email hợp lệ.
+          </div>
+        <button (click)="onSend()" [disabled]="email.invalid">Xác Nhận</button>
+    </div>
+</body>
