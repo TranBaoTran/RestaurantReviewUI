@@ -1,3 +1,5 @@
+var google : any;
+
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
@@ -41,6 +43,9 @@ export class AdminHeaderComponent implements OnInit {
   }
 
   logOut(): void {
+    if (google && google.accounts && google.accounts.id) {
+      google.accounts.id.disableAutoSelect();
+    }
     this.secureStorageService.clearStorage();
     this.router.navigate(['/']);
   }

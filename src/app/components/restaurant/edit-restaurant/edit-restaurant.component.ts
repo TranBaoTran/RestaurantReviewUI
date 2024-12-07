@@ -1,3 +1,5 @@
+var google : any;
+
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import {
@@ -12,7 +14,7 @@ import {
 } from '@angular/forms';
 import { Observable, Subject, Subscription, switchMap, tap } from 'rxjs';
 import { NzModalModule } from 'ng-zorro-antd/modal';
-import { NzUploadChangeParam, NzUploadFile, NzUploadModule, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
+import { NzUploadFile, NzUploadModule, NzUploadXHRArgs } from 'ng-zorro-antd/upload';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzTimePickerModule } from 'ng-zorro-antd/time-picker';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -24,7 +26,7 @@ import { RestaurantService } from '../../../services/restaurant.service';
 import { District, Province } from '../../../models/district.model';
 import { Category } from '../../../models/category.model';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ResCate, Restaurant, SentRestaurant} from '../../../models/restaurant.model';
+import { Restaurant, SentRestaurant} from '../../../models/restaurant.model';
 import { Image } from '../../../models/restaurant.model';
 import { SecureStorageService } from '../../../services/secure-storage.service';
 import { CommonModule } from '@angular/common';
@@ -105,7 +107,14 @@ export class EditRestaurantComponent implements OnDestroy,OnInit {
         this.checkStatus();
       },
       error: (err) => {
-        console.error('Error loading data:', err);
+        if (err.status === 401) {
+          window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+          this.secureStorageService.clearStorage();
+          google.accounts.id.disableAutoSelect();
+          this.router.navigate(['/login']);
+        } else {
+          console.error('Error loading data:', err);
+        }      
       },
     });
   }

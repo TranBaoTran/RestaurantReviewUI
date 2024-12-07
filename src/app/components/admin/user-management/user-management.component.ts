@@ -1,3 +1,5 @@
+var google : any;
+
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, TemplateRef, ViewChild } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -9,6 +11,8 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
 import { User } from '../../../models/user.model';
 import { UserService } from '../../../services/user.service';
+import { Router } from '@angular/router';
+import { SecureStorageService } from '../../../services/secure-storage.service';
 
 @Component({
   selector: 'app-user-management',
@@ -59,7 +63,7 @@ export class UserManagementComponent implements AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort; // sort
   @ViewChild('lockDialog') lockDialog!: TemplateRef<any>; 
 
-  constructor(private userService: UserService, private dialog: MatDialog) {}
+  constructor(private userService: UserService, private dialog: MatDialog, private secureStorageService : SecureStorageService, private router : Router) {}
 
   ngOnInit(): void {
     this.fetchUsers();
@@ -119,8 +123,15 @@ export class UserManagementComponent implements AfterViewInit {
         window.alert(data.message);
         this.fetchUsers();
       },
-      error: (error) => {
-        window.alert(error.error?.message);
+      error: (err) => {
+        if (err.status === 401) {
+          window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+          this.secureStorageService.clearStorage();
+          google.accounts.id.disableAutoSelect();
+          this.router.navigate(['/login']);
+        } else {
+          window.alert(err.error?.message);
+        }      
       }
     });
   }
@@ -132,8 +143,15 @@ export class UserManagementComponent implements AfterViewInit {
         window.alert(data.message);
         this.fetchUsers();
       },
-      error: (error) => {
-        window.alert(error.error?.message);
+      error: (err) => {
+        if (err.status === 401) {
+          window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+          this.secureStorageService.clearStorage();
+          google.accounts.id.disableAutoSelect();
+          this.router.navigate(['/login']);
+        } else {
+          window.alert(err.error?.message);
+        }  
       }
     });
   }

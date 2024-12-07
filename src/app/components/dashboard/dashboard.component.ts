@@ -9,7 +9,7 @@ import { UserService } from '../../services/user.service';
 import { forkJoin, map } from 'rxjs';
 import { SecureStorageService } from '../../services/secure-storage.service';
 import { Province } from '../../models/district.model';
-import { RestaurantDetailComponent } from "../restaurant/restaurant-detail/restaurant-detail.component";
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -30,6 +30,12 @@ export class DashboardComponent implements OnInit {
   constructor(private activedRoute : ActivatedRoute, private restaurantService : RestaurantService, private userService : UserService, private secureStorageService : SecureStorageService, private router : Router) {}
 
   ngOnInit(): void {
+    this.isUserLoggedIn = this.userService.isLoggedIn();
+    if(this.secureStorageService.getUserId()){
+      this.getFavoriteIds(Number(this.secureStorageService.getUserId()));
+      this.getReviewdRes(Number(this.secureStorageService.getUserId()));
+    }
+
     this.activedRoute.paramMap.subscribe(params => {
       const proID = params.get('query');
       if(proID){
@@ -50,11 +56,7 @@ export class DashboardComponent implements OnInit {
       }
     });
     
-    this.isUserLoggedIn = this.userService.isLoggedIn();
-    if(this.secureStorageService.getUserId()){
-      this.getFavoriteIds(Number(this.secureStorageService.getUserId()));
-      this.getReviewdRes(Number(this.secureStorageService.getUserId()));
-    }
+    
   }
 
   getFavoriteIds(id : number): void {

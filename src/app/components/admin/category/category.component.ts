@@ -1,3 +1,5 @@
+var google : any
+
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { Province } from '../../../models/admin/province.model';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -11,6 +13,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { Category } from '../../../models/admin/category.model';
 import { CategoryService } from '../../../services/admin/category.service';
 import { RestaurantService } from '../../../services/restaurant.service';
+import { Router } from '@angular/router';
+import { SecureStorageService } from '../../../services/secure-storage.service';
 
 @Component({
   selector: 'app-category',
@@ -50,7 +54,7 @@ export class CategoryComponent implements AfterViewInit{
   @ViewChild(MatSort) sort!: MatSort; 
   @ViewChild('lockDialog') lockDialog!: any;
 
-  constructor(private categoryService: CategoryService, private dialog: MatDialog, private restaurantService : RestaurantService) {}
+  constructor(private categoryService: CategoryService, private dialog: MatDialog, private restaurantService : RestaurantService, private secureStorageService : SecureStorageService, private router : Router) {}
 
   ngOnInit(): void {
     this.getCategories();
@@ -131,12 +135,16 @@ export class CategoryComponent implements AfterViewInit{
           this.addStatus = false;
         }
       },
-      error : (error) => {
-        if (error.status === 400){
-          window.alert(error.error?.message);
-        }else{
-          console.error('Error:', error);
-        }    
+      error : (err) => {
+        if (err.status === 401) {
+          window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+          this.secureStorageService.clearStorage();
+          google.accounts.id.disableAutoSelect();
+          this.router.navigate(['/login']);
+        } else {
+          window.alert(err.error?.message);
+          console.error('Error :', err);
+        }   
       }
     })
   }
@@ -150,12 +158,16 @@ export class CategoryComponent implements AfterViewInit{
           this.editStatus = false;
         }
       },
-      error : (error) => {
-        if (error.status === 400){
-          window.alert(error.error?.message);
-        }else{
-          console.error('Error:', error);
-        }
+      error : (err) => {
+        if (err.status === 401) {
+          window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+          this.secureStorageService.clearStorage();
+          google.accounts.id.disableAutoSelect();
+          this.router.navigate(['/login']);
+        } else {
+          window.alert(err.error?.message);
+          console.error('Error :', err);
+        }   
       }
     })
   }
@@ -184,8 +196,16 @@ export class CategoryComponent implements AfterViewInit{
             this.closeDialog();
           }
         },
-        error : (error) => {
-          console.error(error);
+        error : (err) => {
+          if (err.status === 401) {
+            window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+            this.secureStorageService.clearStorage();
+            google.accounts.id.disableAutoSelect();
+            this.router.navigate(['/login']);
+          } else {
+            window.alert(err.error?.message);
+            console.error('Error :', err);
+          }   
         }
       })
     }

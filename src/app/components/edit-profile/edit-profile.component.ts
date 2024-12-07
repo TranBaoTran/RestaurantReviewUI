@@ -1,9 +1,12 @@
+var google : any;
+
 import { Component, OnInit } from '@angular/core';
 import { User } from '../../models/user.model';
 import { UserService } from '../../services/user.service';
 import { SecureStorageService } from '../../services/secure-storage.service';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-edit-profile',
@@ -31,7 +34,7 @@ export class EditProfileComponent implements OnInit {
   userId : number = -1;
   isLoading = false;  
 
-  constructor(private userService : UserService, private secureStorageService : SecureStorageService, private fb: FormBuilder){
+  constructor(private userService : UserService, private secureStorageService : SecureStorageService, private fb: FormBuilder, private router : Router){
     this.validationForm = this.fb.group({
       username: [
         this.user.username,
@@ -90,8 +93,15 @@ export class EditProfileComponent implements OnInit {
               window.location.reload();
             }
           },
-          error : (error) => {
-            console.error('Error : '+error);
+          error : (err) => {
+            if (err.status === 401) {
+              window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+              this.secureStorageService.clearStorage();
+              google.accounts.id.disableAutoSelect();
+              this.router.navigate(['/login']);
+            } else {
+              console.error('Error loading data:', err);
+            }    
           }
         })
       }
@@ -120,8 +130,15 @@ export class EditProfileComponent implements OnInit {
             window.location.reload();
           }
         },
-        error : (error) => {
-          console.error('Error : '+error);
+        error : (err) => {
+          if (err.status === 401) {
+            window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+            this.secureStorageService.clearStorage();
+            google.accounts.id.disableAutoSelect();
+            this.router.navigate(['/login']);
+          } else {
+            console.error('Error loading data:', err);
+          } 
         }
       });
     }

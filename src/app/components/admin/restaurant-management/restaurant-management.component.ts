@@ -1,3 +1,5 @@
+var google : any;
+
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -7,12 +9,13 @@ import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { RestaurantService } from '../../../services/restaurant.service';
 import { Restaurant } from '../../../models/restaurant.model';
 import { District, Province } from '../../../models/district.model';
 import { forkJoin, map} from 'rxjs';
 import { CurrencyFormatPipe } from '../../currency-format.pipe';
+import { SecureStorageService } from '../../../services/secure-storage.service';
 
 @Component({
   selector: 'app-restaurant-management',
@@ -59,7 +62,7 @@ export class RestaurantManagementComponent implements AfterViewInit{
   @ViewChild(MatSort) waitingRestaurantsSort!: MatSort; //waiting table
   @ViewChild('lockDialog') lockDialog!: any;
 
-  constructor(private restaurantService : RestaurantService, private dialog: MatDialog) {}
+  constructor(private restaurantService : RestaurantService, private dialog: MatDialog, private secureStorageService : SecureStorageService, private router : Router) {}
 
   ngOnInit(): void {
     this.getAllRestaurant();
@@ -226,8 +229,14 @@ export class RestaurantManagementComponent implements AfterViewInit{
         this.getAllRestaurant();
       },
       error: (err) => {
-        console.error('Error during acceptance:', err);
-        window.alert('An error occurred while accepting the restaurants.');
+        if (err.status === 401) {
+          window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+          this.secureStorageService.clearStorage();
+          google.accounts.id.disableAutoSelect();
+          this.router.navigate(['/login']);
+        } else {
+          console.error('Error loading data:', err);
+        }    
       }
     });
   }
@@ -248,8 +257,14 @@ export class RestaurantManagementComponent implements AfterViewInit{
         this.getAllRestaurant();
       },
       error: (err) => {
-        console.error('Error during acceptance:', err);
-        window.alert('An error occurred while accepting the restaurants.');
+        if (err.status === 401) {
+          window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+          this.secureStorageService.clearStorage();
+          google.accounts.id.disableAutoSelect();
+          this.router.navigate(['/login']);
+        } else {
+          console.error('Error loading data:', err);
+        } 
       }
     });
   }

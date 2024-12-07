@@ -1,5 +1,7 @@
+var google : any;
+
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, Validators,ReactiveFormsModule, FormBuilder} from '@angular/forms';
+import { FormGroup, ReactiveFormsModule, FormBuilder} from '@angular/forms';
 import { MdbFormsModule } from 'mdb-angular-ui-kit/forms';
 import { MdbValidationModule } from 'mdb-angular-ui-kit/validation';
 import { RatingStarComponent } from "../rating-star/rating-star.component";
@@ -94,8 +96,15 @@ export class PostReviewComponent implements OnInit {
             this.router.navigate([`/restaurants/${this.restaurant.id}`]);
           }
         },
-        error : (error) => {
-          console.log("Error ; "+error);
+        error : (err) => {
+          if (err.status === 401) {
+            window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+            this.secureStorageService.clearStorage();
+            google.accounts.id.disableAutoSelect();
+            this.router.navigate(['/login']);
+          } else {
+            console.error('Error :', err);
+          }   
         }
       })
     }

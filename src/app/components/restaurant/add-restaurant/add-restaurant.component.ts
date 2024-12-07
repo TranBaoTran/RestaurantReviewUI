@@ -1,3 +1,5 @@
+var google : any;
+
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import {
@@ -100,7 +102,15 @@ export class AddRestaurantComponent implements OnDestroy,OnInit {
         }
       }, 
       error : (error) => {
-        console.error("Can'f fetch user restaurant : "+error.message);
+        if (error.status === 401) {
+          window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+          this.secureStorageService.clearStorage();
+          google.accounts.id.disableAutoSelect();
+          this.router.navigate(['/login']);
+        } else {
+          console.error('Error fetching user restaurant:', error);
+          window.alert('An error occurred while fetching user restaurant.');
+        }   
       }
     })
     this.loadProvince()

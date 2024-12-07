@@ -1,3 +1,5 @@
+var google : any;
+
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { District } from '../../../models/admin/district.model';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -12,7 +14,8 @@ import { ProvinceService } from '../../../services/admin/province.service';
 import { Restaurant } from '../../../models/restaurant.model';
 import { RestaurantService } from '../../../services/restaurant.service';
 import { Province } from '../../../models/district.model';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { SecureStorageService } from '../../../services/secure-storage.service';
 
 @Component({
   selector: 'app-district',
@@ -53,7 +56,7 @@ export class DistrictComponent implements AfterViewInit{
   @ViewChild(MatSort) districtSort!: MatSort; 
   @ViewChild('lockDialog') lockDialog!: any;
 
-  constructor(private provinceService: ProvinceService, private dialog: MatDialog, private restaurantService : RestaurantService) {}
+  constructor(private provinceService: ProvinceService, private dialog: MatDialog, private restaurantService : RestaurantService, private secureStorageService : SecureStorageService, private router : Router) {}
 
   ngOnInit(): void {
     this.getAllDistrict();
@@ -175,12 +178,16 @@ export class DistrictComponent implements AfterViewInit{
           this.closeAddForm();
         }
        },
-       error : (error) => {
-          if (error.status === 400){
-            window.alert(error.error?.message);
-          }else{
-            console.error('Error:', error);
-          }  
+       error : (err) => {
+        if (err.status === 401) {
+          window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+          this.secureStorageService.clearStorage();
+          google.accounts.id.disableAutoSelect();
+          this.router.navigate(['/login']);
+        } else {
+          window.alert(err.error?.message);
+          console.error('Error :', err);
+        }  
        }
     })
   }
@@ -194,12 +201,16 @@ export class DistrictComponent implements AfterViewInit{
           this.goBack();
         }
        },
-       error : (error) => {
-          if (error.status === 400){
-            window.alert(error.error?.message);
-          }else{
-            console.error('Error:', error);
-          }  
+       error : (err) => {
+        if (err.status === 401) {
+          window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+          this.secureStorageService.clearStorage();
+          google.accounts.id.disableAutoSelect();
+          this.router.navigate(['/login']);
+        } else {
+          window.alert(err.error?.message);
+          console.error('Error :', err);
+        }   
        }
     })
   }
@@ -259,12 +270,16 @@ export class DistrictComponent implements AfterViewInit{
             this.getAllDistrict();
             this.closeDialog();
          },
-         error : (error) => {
-            if (error.status === 400){
-              window.alert(error.error?.message);
-            }else{
-              console.error('Error:', error);
-            }  
+         error : (err) => {
+          if (err.status === 401) {
+            window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+            this.secureStorageService.clearStorage();
+            google.accounts.id.disableAutoSelect();
+            this.router.navigate(['/login']);
+          } else {
+            window.alert(err.error?.message);
+            console.error('Error :', err);
+          }  
          }
       })
     }

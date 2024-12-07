@@ -1,5 +1,6 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+var google : any;
 
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -11,6 +12,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { ProvinceService } from '../../../services/admin/province.service';
 import { Province } from '../../../models/district.model';
 import { RestaurantService } from '../../../services/restaurant.service';
+import { Router } from '@angular/router';
+import { SecureStorageService } from '../../../services/secure-storage.service';
 
 @Component({
   selector: 'app-province',
@@ -49,7 +52,7 @@ export class ProvinceComponent implements AfterViewInit{
   @ViewChild(MatSort) sort!: MatSort; 
   @ViewChild('lockDialog') lockDialog!: any;
 
-  constructor(private restaurantService : RestaurantService, private dialog: MatDialog, private provinceService : ProvinceService) {}
+  constructor(private restaurantService : RestaurantService, private dialog: MatDialog, private provinceService : ProvinceService, private secureStorageService : SecureStorageService, private router : Router) {}
 
   ngOnInit(): void {
     this.getProvince();
@@ -112,8 +115,16 @@ export class ProvinceComponent implements AfterViewInit{
           this.closeAddForm();
         }
       },
-      error : (error) => {
-        console.error(error.error?.message);
+      error : (err) => {
+        if (err.status === 401) {
+          window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+          this.secureStorageService.clearStorage();
+          google.accounts.id.disableAutoSelect();
+          this.router.navigate(['/login']);
+        } else {
+          window.alert(err.error?.message);
+          console.error('Error :', err);
+        }  
       }
     })
   }
@@ -139,8 +150,16 @@ export class ProvinceComponent implements AfterViewInit{
           this.goBack();
         }
       },
-      error : (error) => {
-        console.error(error.error?.message);
+      error : (err) => {
+        if (err.status === 401) {
+          window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+          this.secureStorageService.clearStorage();
+          google.accounts.id.disableAutoSelect();
+          this.router.navigate(['/login']);
+        } else {
+          window.alert(err.error?.message);
+          console.error('Error :', err);
+        }  
       }
     })
   }
@@ -165,8 +184,16 @@ export class ProvinceComponent implements AfterViewInit{
             this.getProvince();
             this.closeDialog();
         },
-        error : (error) => {
-          console.error(error.error?.message);
+        error : (err) => {
+          if (err.status === 401) {
+            window.alert("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
+            this.secureStorageService.clearStorage();
+            google.accounts.id.disableAutoSelect();
+            this.router.navigate(['/login']);
+          } else {
+            window.alert(err.error?.message);
+            console.error('Error :', err);
+          }  
         }
       })   
     }
