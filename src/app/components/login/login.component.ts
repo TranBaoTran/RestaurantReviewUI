@@ -88,12 +88,7 @@ export class LoginComponent implements OnInit {
         }
       },
       error: (error) => {
-        if (error.status === 401) {
-          window.alert("Tên đăng nhập hoặc mật khẩu không chính xác. Vui lòng thử lại!");
-        } else {
-          window.alert(`An error occurred: ${error.message}`);
-        }
-        console.error('Error:', error);
+        window.alert(error.error?.message);
       },
       complete: () => {
         window.alert("Đăng nhập thành công!");

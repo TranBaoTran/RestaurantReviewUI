@@ -47,12 +47,7 @@ export class SignupComponent implements OnInit{
         }
       },
       error: (error) => {
-        if (error.status === 400) {
-          window.alert(error.error.message);
-        } else {
-          window.alert(`An error occurred: ${error.message}`);
-        }
-        console.error('Error:', error);
+        window.alert(error.error?.message);
       }, 
       complete: () => {
         window.alert("Đăng ký thành công!");
